@@ -1,0 +1,8 @@
+<a *ngIf="chapterPrevious" [routerLink]="['/novel/', idNovel, chapterPrevious.no]"> Previous </a>
+<a *ngIf="chapterNext" [routerLink]="['/novel/', idNovel, chapterNext.no]"> Next </a>
+<ng-container *ngIf="chapter">
+	<h1 class='title'>{{ chapter.title }}</h1>
+	<div class="novel-content" innerHTML="{{ chapter.textOriginal }}">
+		
+	</div>
+</ng-container>

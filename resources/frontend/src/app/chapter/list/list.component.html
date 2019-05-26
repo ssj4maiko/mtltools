@@ -1,0 +1,33 @@
+<div class='button-row'>
+	<a routerLink="['/novel/',this.idNovel,'add']" class="button is-info">Import Chapter</a>
+	<a (click)="downloadChapter()" class="button is-info" *ngIf="novel && novel.flagSyosetu">Add Next Chapter</a>
+</div>
+
+<div>
+	<table class='table'>
+		<thead>
+			<tr>
+				<th>Number</th>
+				<th>Title</th>
+				<th>Date Created</th>
+				<th>Date Updated</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			<ng-container *ngFor="let chapter of chapters" >
+				<tr title="{{ novel.title }}">
+					<td>{{ chapter.no }}</td>
+					<td [routerLink]="['/novel/', chapter.idNovel, chapter.no]">{{ chapter.title }}</td>
+					<td [routerLink]="['/novel/', chapter.idNovel, chapter.no]">{{ chapter.dateCreated }}</td>
+					<td [routerLink]="['/novel/', chapter.idNovel, chapter.no]">{{ chapter.dateRevision }}</td>
+					<td>
+						<a [routerLink]="['/novel/', chapter.idNovel, chapter.no, 'edit']">UPD</a>
+						/
+						<a [routerLink]="['/novel/', chapter.idNovel, chapter.no, 'del']">DEL</a>
+					</td>
+				</tr>
+			</ng-container>
+		</tbody>
+	</table>
+</div>

@@ -1,0 +1,29 @@
+header {
+	background: #5e009f;
+	padding:0px;
+	margin:0px;
+	height:100px;
+}
+header > * {
+	float:left;
+}
+header > .appName {
+	height: 100%;
+}
+header > ul {
+	list-style: none;
+	height: 100%;
+	padding:0px;
+	margin:0px;
+}
+header ul li {
+	height: 100%;
+	display:block;
+	vertical-align: middle;
+	float:left;
+	margin: 25px 0px 0px 20px;
+}
+header ul li a {
+	margin: auto;
+	height:50px;
+}

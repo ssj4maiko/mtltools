@@ -1,0 +1,39 @@
+<h1 class="title">{{ formTitle }}</h1>
+<form [formGroup]="formGroup" (ngSubmit)="submitForm(formGroup.value)">
+	<div *ngFor="let field of form" class='field'>
+
+		<ng-container [ngSwitch]="field.type">
+
+			<ng-container #tempHidden *ngSwitchCase="'hidden'">
+				<input type="hidden" formControlName="{{ field.name }}">
+			</ng-container>
+
+			<ng-container #tempCheck *ngSwitchCase="'checkbox'">
+				<label class='checkbox'>
+					<input type="checkbox" formControlName="{{ field.name }}">
+					{{ field.label }}
+				</label>
+			</ng-container>
+
+			<ng-container #tempText *ngSwitchDefault>
+				<label class='label' for="{{ field.name }}">{{ field.label }}</label>
+				<div class="control">
+					<input type="{{ field.type }}" id="{{ field.name }}" formControlName="{{ field.name }}" class="input">
+				</div>
+	  			<!--p class="help is-success"></p-->
+	  			<!--p class="help is-danger"></p-->
+			</ng-container>
+
+		</ng-container>
+	</div>
+
+	<div class="field is-grouped">
+		<div class="control">
+			<button class="button is-link">Submit</button>
+		</div>
+		<div class="control">
+			<button class="button is-danger">Cancel</button>
+		</div>
+	</div>
+
+</form>

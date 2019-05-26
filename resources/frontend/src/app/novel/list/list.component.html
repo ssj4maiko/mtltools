@@ -1,0 +1,54 @@
+<div class='button-row'>
+	<a [routerLink]="['/novel/add']" class="button is-info">Add Novel</a>
+</div>
+
+<div>
+	<table class='table'>
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Code</th>
+				<th>Name</th>
+				<th>Name Japanese</th>
+				<th>Chapters</th>
+				<th>Syosetu</th>
+				<th>R18</th>
+				<th>Added By</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			<ng-container *ngFor="let novel of novels" >
+				<tr title="{{ novel.nameOriginal }}" *ngIf="novel.show">
+					<td>{{ novel.id }}</td>
+					<td [routerLink]="['/novel/', novel.id]">{{ novel.code }}</td>
+					<td [routerLink]="['/novel/', novel.id]">{{ novel.nameCustom }}</td>
+					<td [routerLink]="['/novel/', novel.id]">{{ novel.nameOriginal }}</td>
+					<td>{{ novel.numberChapters }}</td>
+					<td><ng-container *ngIf="novel.flagSyosetu == 1; then success else danger"></ng-container></td>
+					<td><ng-container *ngIf="novel.flagR18 == 1; then success else danger"></ng-container></td>
+					<td>{{ novel.addedBy }}</td>
+					<td>
+						<a [routerLink]="['/novel/edit', novel.id]">UPD</a>
+						/
+						<a [routerLink]="['/novel/del', novel.id]">DEL</a>
+					</td>
+					<ng-template #success>
+						<a class='button is-success'>
+							<span class="icon is-small">
+								<i class="fas fa-check"></i>
+							</span>
+						</a>
+					</ng-template>
+					<ng-template #danger>
+						<a class='button is-danger'>
+							<span class="icon is-small">
+								<i class="fas fa-times"></i>
+							</span>
+						</a>
+					</ng-template>
+				</tr>
+			</ng-container>
+		</tbody>
+	</table>
+</div>
