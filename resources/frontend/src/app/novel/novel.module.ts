@@ -5,7 +5,6 @@ import { RouterModule } from '@angular/router';
 import { ListComponent } from './list/list.component';
 import { AddComponent } from './add/add.component';
 import { EditComponent } from './edit/edit.component';
-import { DetailComponent } from './detail/detail.component';
 
 import { NovelRoutingModule } from './novel-routing.module';
 
@@ -19,7 +18,6 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
 		ListComponent,
 		AddComponent,
 		EditComponent,
-		DetailComponent,
 	],
 	imports: [
 		CommonModule,
