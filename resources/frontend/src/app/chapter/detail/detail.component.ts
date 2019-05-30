@@ -7,7 +7,7 @@ import { Chapter } from '../../_models/chapter';
 import { Novel } from '../../_models/novel';
 
 @Component({
-	selector: 'app-detail',
+	selector: 'app-chapter-detail',
 	templateUrl: './detail.component.html',
 	styleUrls: ['./detail.component.css']
 })

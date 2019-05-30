@@ -6,7 +6,7 @@ import { Chapter } from '../../_models/chapter';
 import { Novel } from '../../_models/novel';
 
 @Component({
-	selector: 'app-list',
+	selector: 'app-chapter-list',
 	templateUrl: './list.component.html',
 	styleUrls: ['./list.component.css']
 })

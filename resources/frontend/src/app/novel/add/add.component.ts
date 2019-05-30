@@ -7,7 +7,7 @@ import { Novel } from '../../_models/novel';
 import { FormField } from '../../_models/formField';
 
 @Component({
-	selector: 'app-add',
+	selector: 'app-novel-add',
 	templateUrl: '../../_views/form/form.component.html',
 	styleUrls: ['../../_views/form/form.component.css']
 })
@@ -57,6 +57,9 @@ export class AddComponent implements OnInit {
 			}, (err) => {
 				console.log(err);
 			});
+	}
+	goBack() {
+		this.router.navigate(['/novel/list']);
 	}
 
 

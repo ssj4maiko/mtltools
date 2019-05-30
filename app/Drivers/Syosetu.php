@@ -35,7 +35,7 @@ class Syosetu extends Model
 		$response = $client->request('GET',$this->prepareUrl());
 
 		if($response->getStatusCode() == 200){
-			return $response->getBody();
+			return $response->getBody()->getContents();
 		}
 		else {
 			return false;
@@ -86,5 +86,72 @@ class Syosetu extends Model
 			return $chapter;
 		}
 		return null;
+	}
+	public function importContent($no){
+		$this->setChapter($no);
+		$content = $this->callUrl();
+		$this->setChapter('');
+
+		if($content){
+			return $this->HTMLgetContent($content);
+		}
+		return null;
+	}
+
+	private function parseIndex($html, $idNovel){
+		$Found = true;
+		$posStart = 0;
+
+		$listOfChapters = [];
+
+		for($index=1; $Found; ++$index){
+
+			$needle = $this->currentCode.'/'.$index;
+			$posStart = strpos($html, $needle, $posStart);
+
+			if($posStart>0){
+
+				$posStart += strlen($needle)+3;
+				$posEnd = strpos($html, '</a>', $posStart);
+				$title = substr($html, $posStart, $posEnd - $posStart);
+				$posEnd = $posStart;
+
+				$needle = '<dt class="long_update">';
+				$posStart = strpos($html, $needle, $posStart);
+				$posStart += strlen($needle)+1;
+				$posEnd = strpos($html, '</dt>', $posStart);
+				$dates = substr($html, $posStart, $posEnd - $posStart);
+
+				$dateOriginalPost = null;
+				$dateOriginalRevision = null;
+
+					$dateOriginalPost = str_replace('/', '-', substr($dates, 0, 16)).':00';
+
+					$needle2 = "title=";
+					$posStart2 = strpos($dates, $needle2, 16);
+					if($posStart2 > 0){
+						$dateOriginalRevision = str_replace('/', '-', substr($dates, $posStart2 + 6 + 1, 16)).':00';
+					}
+
+				$listOfChapters[$index] = [
+					'idNovel'				=>	$idNovel,
+					'no'					=>	$index,
+					'title'					=>	$title,
+					'dateOriginalPost'		=>	$dateOriginalPost,
+					'dateOriginalRevision'	=>	$dateOriginalRevision,
+				];
+
+			} else {
+				$Found = false;
+				break;
+			}
+
+		}
+		return $listOfChapters;
+	}
+	public function importIndex($idNovel){
+		$content = $this->callUrl();
+		$listOfChapters = $this->parseIndex($content, $idNovel);
+		return $listOfChapters;
 	}
 }

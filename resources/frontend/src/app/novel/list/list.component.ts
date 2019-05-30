@@ -6,7 +6,7 @@ import { Observable } from 'rxjs/Observable';
 import { Novel } from '../../_models/novel';
 
 @Component({
-	selector: 'app-list',
+	selector: 'app-novel-list',
 	templateUrl: './list.component.html',
 	styleUrls: ['./list.component.css']
 })

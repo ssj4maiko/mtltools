@@ -7,7 +7,7 @@ import { Novel } from '../../_models/novel';
 import { FormField } from '../../_models/formField';
 
 @Component({
-	selector: 'app-edit',
+	selector: 'app-novel-edit',
 	templateUrl: '../../_views/form/form.component.html',
 	styleUrls: ['../../_views/form/form.component.css']
 })
@@ -79,6 +79,9 @@ export class EditComponent implements OnInit {
 			}, (err) => {
 				console.log(err);
 			});
+	}
+	goBack() {
+		this.router.navigate(['/novel/list']);
 	}
 
 }

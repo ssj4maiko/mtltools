@@ -1,0 +1,30 @@
+<ng-template #actionButtons>
+	<div class="columns actionButtons">
+		<div class="column">
+			<a [routerLink]="['/novel/dictionary', idNovel, idDictionary, 'add']" class="button is-info">Add Category</a>
+		</div>
+	</div>
+</ng-template>
+
+<ng-container *ngTemplateOutlet="actionButtons"></ng-container>
+
+<div>
+	<table class='table is-striped is-hoverable is-fullwidth'>
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr *ngFor="let category of categories">
+				<td [routerLink]="['/novel/dictionary', idNovel, idDictionary, category.id]">{{ category.name }}</td>
+				<td>
+					<a [routerLink]="['/novel/dictionary', idNovel, idDictionary, category.id, 'edit']">UPD</a>
+					/
+					<a [routerLink]="['/novel/dictionary', idNovel, idDictionary, category.id, '/del']">DEL</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

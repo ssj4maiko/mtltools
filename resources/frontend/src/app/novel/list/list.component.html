@@ -1,9 +1,15 @@
-<div class='button-row'>
-	<a [routerLink]="['/novel/add']" class="button is-info">Add Novel</a>
-</div>
+<ng-template #actionButtons>
+	<div class="columns actionButtons">
+		<div class="column">
+			<a [routerLink]="['/novel/add']" class="button is-info">Add Novel</a>
+		</div>
+	</div>
+</ng-template>
+
+<ng-container *ngTemplateOutlet="actionButtons"></ng-container>
 
 <div>
-	<table class='table'>
+	<table class='table is-striped is-hoverable is-fullwidth'>
 		<thead>
 			<tr>
 				<th>ID</th>
@@ -14,6 +20,7 @@
 				<th>Syosetu</th>
 				<th>R18</th>
 				<th>Added By</th>
+				<th>Dictionary</th>
 				<th>Actions</th>
 			</tr>
 		</thead>
@@ -28,6 +35,7 @@
 					<td><ng-container *ngIf="novel.flagSyosetu == 1; then success else danger"></ng-container></td>
 					<td><ng-container *ngIf="novel.flagR18 == 1; then success else danger"></ng-container></td>
 					<td>{{ novel.addedBy }}</td>
+					<td><a [routerLink]="['/novel/dictionary', novel.id]">Check</a></td>
 					<td>
 						<a [routerLink]="['/novel/edit', novel.id]">UPD</a>
 						/

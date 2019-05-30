@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
 
 import { ChapterModule } from '../chapter';
+import { DictionaryModule } from '../dictionary';
 
 import { ListComponent } from './list/list.component';
 import { AddComponent } from './add/add.component';
@@ -23,6 +24,11 @@ const routes: Routes = [
 		 path: 'edit/:idNovel'
 		,component: EditComponent
 		,data: { title: 'Edit Novel' }
+	},
+	{
+		 path: 'dictionary/:idNovel'
+		,loadChildren: () => DictionaryModule
+		,data: { title: 'View dictionary' }
 	},
 	{
 		 path: ':idNovel'

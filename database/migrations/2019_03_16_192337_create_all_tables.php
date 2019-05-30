@@ -30,8 +30,11 @@ class CreateAllTables extends Migration
             $table->unsignedSmallInteger('idNovel');
             $table->unsignedSmallInteger('no');
             $table->string('title',100);
-            $table->text('textOriginal');
-            $table->text('textCustom')->nullable();
+            $table->mediumText('textOriginal')->nullable();
+            $table->mediumText('textRevised')->nullable();
+            $table->mediumText('textCustom')->nullable();
+            $table->dateTimeTz('dateOriginalPost')->nullable();
+            $table->dateTimeTz('dateOriginalRevision')->nullable();
             $table->timestampTz('dateCreated')->useCurrent();
             $table->dateTimeTz('dateRevision')->nullable();
 
@@ -49,17 +52,6 @@ class CreateAllTables extends Migration
             $table->foreign('idNovel')->references('id')->on('novels');
         });
 
-        Schema::create('dictionaryEntries', function (Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedSmallInteger('idDictionary');
-            $table->string('entryOriginal',20);
-            $table->string('entryTranslation',50);
-            $table->string('description',1500)->nullable(); //Should be TINYTEXT...
-            $table->unsignedTinyInteger('length');
-
-            $table->foreign('idDictionary')->references('id')->on('dictionaries');
-        });
-
         Schema::create('dictionaryCategories', function (Blueprint $table) {
             $table->mediumIncrements('id');
             $table->unsignedSmallInteger('idDictionary');
@@ -68,15 +60,26 @@ class CreateAllTables extends Migration
             $table->foreign('idDictionary')->references('id')->on('dictionaries');
         });
 
-        Schema::create('dictionaryEntCat', function (Blueprint $table) {
-            $table->unsignedInteger('idEntry');
+        Schema::create('dictionaryEntries', function (Blueprint $table) {
+            $table->increments('id');
             $table->unsignedMediumInteger('idCategory');
+            $table->string('entryOriginal',20);
+            $table->string('entryTranslation',50);
+            $table->string('description',1500)->nullable(); //Should be TINYTEXT...
+            $table->unsignedTinyInteger('length');
 
-            $table->primary(['idEntry','idCategory']);
-            $table->foreign('idEntry')->references('id')->on('dictionaryEntries');
             $table->foreign('idCategory')->references('id')->on('dictionaryCategories');
         });
+        /*
+            Schema::create('dictionaryEntCat', function (Blueprint $table) {
+                $table->unsignedInteger('idEntry');
+                $table->unsignedMediumInteger('idCategory');
 
+                $table->primary(['idEntry','idCategory']);
+                $table->foreign('idEntry')->references('id')->on('dictionaryEntries');
+                $table->foreign('idCategory')->references('id')->on('dictionaryCategories');
+            });
+        */
         Schema::create('filters', function (Blueprint $table) {
             $table->smallIncrements('id');
             $table->unsignedSmallInteger('idNovel');

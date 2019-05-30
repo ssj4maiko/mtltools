@@ -15,6 +15,15 @@
 				</label>
 			</ng-container>
 
+			<ng-container #tempCheck *ngSwitchCase="'select'">
+				<label>{{ field.label }}</label>
+				<div class="control">
+					<select formControlName="{{ field.name }}">
+						<option *ngFor="let option of field.options" value="{{ option.value }}">{{ option.label }}</option>
+					</select>
+				</div>
+			</ng-container>
+
 			<ng-container #tempText *ngSwitchDefault>
 				<label class='label' for="{{ field.name }}">{{ field.label }}</label>
 				<div class="control">
@@ -29,10 +38,10 @@
 
 	<div class="field is-grouped">
 		<div class="control">
-			<button class="button is-link">Submit</button>
+			<input type="submit" class="button is-link" value="Submit" />
 		</div>
 		<div class="control">
-			<button class="button is-danger">Cancel</button>
+			<input (click)="goBack()" class="button is-danger" value="Cancel" />
 		</div>
 	</div>
 

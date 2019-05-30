@@ -1,0 +1,37 @@
+<ng-template #actionButtons>
+	<div class="columns actionButtons">
+		<div class="column">
+			<a [routerLink]="['/novel/dictionary', idNovel, idDictionary,idCategory, 'add']" class="button is-info">Import List</a>
+		</div>
+		<div class="column">
+			<a [routerLink]="['/novel/dictionary', idNovel, idDictionary,idCategory, 'add']" class="button is-info">Add Entry</a>
+		</div>
+	</div>
+</ng-template>
+
+<ng-container *ngTemplateOutlet="actionButtons"></ng-container>
+
+<div>
+	<table class='table is-striped is-hoverable is-fullwidth'>
+		<thead>
+			<tr>
+				<th>Original</th>
+				<th>Translated</th>
+				<th>Description</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr *ngFor="let entry of entries">
+				<td [routerLink]="['/novel/dictionary', idNovel, idDictionary, idCategory, entry.id]">{{ entry.entryOriginal }}</td>
+				<td [routerLink]="['/novel/dictionary', idNovel, idDictionary, idCategory, entry.id]">{{ entry.entryTranslation }}</td>
+				<td [routerLink]="['/novel/dictionary', idNovel, idDictionary, idCategory, entry.id]">{{ entry.description }}</td>
+				<td>
+					<a [routerLink]="['/novel/dictionary', idNovel, idDictionary, idCategory, entry.id, 'edit']">UPD</a>
+					/
+					<a [routerLink]="['/novel/dictionary', idNovel, idDictionary, idCategory, entry.id, '/del']">DEL</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

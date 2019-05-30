@@ -12,12 +12,17 @@ class Chapter extends Model
 	const CREATED_AT = 'dateCreated';
 	const UPDATED_AT = 'dateRevision';
 
+	//Pseudo-column = addSelect(DB::raw('(textOriginal IS NOT NULL) as hasText'))
+
 	protected $fillable = [
 		 'idNovel'
 		,'no'
 		,'title'
 		,'textOriginal'
+		,'textRevised'
 		,'textCustom'
+		,'dateOriginalPost'
+		,'dateOriginalRevision'
 	];
 	public static function prepare($data){
 
