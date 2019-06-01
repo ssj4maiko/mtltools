@@ -24,7 +24,7 @@
             ],
             "styles": [
               "src/assets/css/bulma.css",
-              "src/styles.css"
+              "src/styles.scss"
             ],
             "scripts": [],
             "es5BrowserSupport": true
@@ -131,7 +131,12 @@
           }
         }
       }
-    },
+    }
   },
-  "defaultProject": "frontend"
+  "defaultProject": "frontend",
+  "schematics": {
+    "@schematics/angular:component": {
+      "styleext": "scss"
+    }
+  }
 }

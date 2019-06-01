@@ -10,7 +10,7 @@ import { FormField, Option } from '../../_models/formField';
 @Component({
 	selector: 'app-category-add',
 	templateUrl: '../../_views/form/form.component.html',
-	styleUrls: ['../../_views/form/form.component.css']
+	styleUrls: ['../../_views/form/form.component.scss']
 })
 
 export class AddComponent implements OnInit {
