@@ -1,4 +1,7 @@
-.actionButtons a {
+.actionButtons a, .actionButtons button {
 	text-align: center;
 	width:100%;
+}
+.hidden {
+    display:none;
 }

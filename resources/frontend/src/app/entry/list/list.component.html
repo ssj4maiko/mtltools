@@ -3,8 +3,16 @@
 		<div class="column">
 			<a [routerLink]="['/novel/dictionary', idNovel, idDictionary,idCategory, 'add']" class="button is-info">Import List</a>
 		</div>
+	</div>
+</ng-template>
+<ng-template #footerButtons>
+	<div class="columns actionButtons">
 		<div class="column">
-			<a [routerLink]="['/novel/dictionary', idNovel, idDictionary,idCategory, 'add']" class="button is-info">Add Entry</a>
+			<button (click)="submitForm()" class="button is-info">Save</button>
+		</div>
+		<div class="column">
+			<!--a [routerLink]="['/novel/dictionary', idNovel, idDictionary,idCategory, 'add']" class="button is-info">Add Entry</a-->
+			<a (click)="addItem()" class="button is-info">Add Entry</a>
 		</div>
 	</div>
 </ng-template>
@@ -12,26 +20,54 @@
 <ng-container *ngTemplateOutlet="actionButtons"></ng-container>
 
 <div>
-	<table class='table is-striped is-hoverable is-fullwidth'>
-		<thead>
-			<tr>
-				<th>Original</th>
-				<th>Translated</th>
-				<th>Description</th>
-				<th>Actions</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr *ngFor="let entry of entries">
-				<td [routerLink]="['/novel/dictionary', idNovel, idDictionary, idCategory, entry.id]">{{ entry.entryOriginal }}</td>
-				<td [routerLink]="['/novel/dictionary', idNovel, idDictionary, idCategory, entry.id]">{{ entry.entryTranslation }}</td>
-				<td [routerLink]="['/novel/dictionary', idNovel, idDictionary, idCategory, entry.id]">{{ entry.description }}</td>
-				<td>
-					<a [routerLink]="['/novel/dictionary', idNovel, idDictionary, idCategory, entry.id, 'edit']">UPD</a>
-					/
-					<a [routerLink]="['/novel/dictionary', idNovel, idDictionary, idCategory, entry.id, '/del']">DEL</a>
-				</td>
-			</tr>
-		</tbody>
-	</table>
+	<form [formGroup]="entryForm" (submit)="submitForm(entryForm.values)" id="entryForm">
+		<input type="hidden" formControlName="idCategory" />
+		<table class='table is-striped is-hoverable is-fullwidth'>
+			<thead>
+				<tr>
+					<th>Original</th>
+					<th>Translated</th>
+					<th>Description</th>
+					<th>Reset</th>
+					<th>Delete</th>
+				</tr>
+			</thead>
+			<tbody class="tableContent">
+				<tr formArrayName="entries" *ngFor="let entry of entryForm.get('entries').controls; let i = index">
+					<!--td [routerLink]="['/novel/dictionary', idNovel, idDictionary, idCategory, entry.id]">{{ entry.entryOriginal }}</td>
+					<td [routerLink]="['/novel/dictionary', idNovel, idDictionary, idCategory, entry.id]">{{ entry.entryTranslation }}</td>
+					<td [routerLink]="['/novel/dictionary', idNovel, idDictionary, idCategory, entry.id]">{{ entry.description }}</td-->
+					<!--td>
+						<a [routerLink]="['/novel/dictionary', idNovel, idDictionary, idCategory, entry.id, 'edit']">UPD</a>
+						/
+						<a [routerLink]="['/novel/dictionary', idNovel, idDictionary, idCategory, entry.id, '/del']">DEL</a>
+					</td-->
+					<ng-container [formGroupName]="i">
+						<td>
+							<input formControlName="id" type="hidden" />
+                            <input formControlName="update" type="hidden" />
+							<input formControlName="original" class="input" type="text" />
+						</td>
+						<td>
+							<input formControlName="translation" class="input" type="text" />
+						</td>
+						<td>
+							<textarea formControlName="description" class="textarea" rows="1"></textarea>
+                        </td>
+                        <td>
+                            <label class="delete is-large">
+                                <input formControlName="reset" class='hidden' type="checkbox" />
+                            </label>
+                        </td>
+						<td>
+                            <label class="delete is-large">
+                                <input formControlName="delete" class='hidden' type="checkbox" />
+                            </label>
+						</td>
+					</ng-container>
+				</tr>
+			</tbody>
+		</table>
+	</form>
 </div>
+<ng-container *ngTemplateOutlet="footerButtons"></ng-container>

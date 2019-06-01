@@ -2,3 +2,6 @@
 	width:100%;
 	text-align: center;
 }
+.title, .novel-content{
+    color: white;
+}
