@@ -12,9 +12,9 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "~8.0.0",
-    "@angular/common": "~8.0.0",
+    "@angular/common": "^8.0.0",
     "@angular/compiler": "~8.0.0",
-    "@angular/core": "~8.0.0",
+    "@angular/core": "^8.0.0",
     "@angular/forms": "~8.0.0",
     "@angular/platform-browser": "~8.0.0",
     "@angular/platform-browser-dynamic": "~8.0.0",
@@ -22,11 +22,12 @@
     "@fortawesome/angular-fontawesome": "^0.3.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.18",
     "@fortawesome/free-solid-svg-icons": "^5.8.2",
+    "@ngtools/webpack": "^8.0.1",
     "bulma": "^0.7.5",
     "core-js": "^2.6.9",
+    "ngx-papaparse": "^3.0.2",
     "rxjs": "^6.5.2",
     "rxjs-compat": "^6.5.2",
-    "tslib": "^1.9.0",
     "zone.js": "~0.9.1"
   },
   "devDependencies": {
@@ -38,7 +39,7 @@
     "@types/jasmine": "~2.8.8",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "~8.9.4",
-    "codelyzer": "~4.5.0",
+    "codelyzer": "^5.0.1",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "~3.1.1",
@@ -49,9 +50,9 @@
     "ng-packagr": "^5.2.0",
     "protractor": "~5.4.0",
     "ts-node": "~7.0.0",
-    "tsickle": ">=0.34.0",
+    "tsickle": "^0.35.0",
     "tslib": "^1.9.0",
     "tslint": "~5.11.0",
-    "typescript": "^3.4.5"
+    "typescript": "^3.4.2"
   }
 }

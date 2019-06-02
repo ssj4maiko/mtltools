@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Optional } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { catchError, tap, map } from 'rxjs/operators';
@@ -455,8 +455,9 @@ export class ApiService {
 				return this._entries[idCategory][id];
 		return null;
 	}
-	getEntries(idCategory): Observable<{}>{
-		const url = `${apiUrl}entry/${idCategory}`;
+	getEntries(idCategory, force?:boolean): Observable<{}>{
+        const url = `${apiUrl}entry/${idCategory}`;
+        if(force){ this.cacheService.delete(url); }
 
 		return this.cacheService.get(
 			url,
@@ -496,16 +497,11 @@ export class ApiService {
 		);
 	}
 
-	addEntry(idCategory:number, category): Observable<DictionaryEntry> {
-		const url = `${apiUrl}entry/${idCategory}`;
-		return this.http.post<DictionaryEntry>(url, category, httpOptions)
+	addEntries(idCategory:number, entries): Observable<any> {
+        const url = `${apiUrl}entry/updatecategory/${idCategory}`;
+		return this.http.post<DictionaryEntry>(url, entries, httpOptions)
 			.pipe(
-				 tap((category: DictionaryEntry) => {
-				 	console.log(`Registered Category id=${category.id}`);
-			 		if(!this._entries[ category.idCategory ])
-			 			this._entries[ category.idCategory ] = {};
-				 	this._entries[ category.idCategory ][ category.id ] = category;
-				 })
+				 tap()
 				,catchError(this.handleError<DictionaryEntry>('addCategory'))
 			);
 	}

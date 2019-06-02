@@ -1,5 +1,27 @@
 /* You can add global styles to this file, and also import other style files */
+@import './app/_services/modal/modal.component.scss';
+
 html {
     background-color: black;
     color: white;
+}
+// Dictionary Entry upload
+jw-modal#import-list .jw-modal .jw-modal-body {
+    width:500px;
+    margin:20px auto;
+}
+jw-modal#confirm-import .jw-modal .jw-modal-body {
+    width:500px;
+    margin:20px auto;
+}
+
+.actionButtons{
+    margin:0px auto 0;
+}
+.actionButtons .column{
+    padding-top:0;
+    padding-bottom:0;
+}
+.clickable-table tr td{
+    cursor:pointer;
 }

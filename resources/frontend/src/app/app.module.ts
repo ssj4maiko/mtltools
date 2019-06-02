@@ -5,8 +5,10 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { PapaParseModule } from 'ngx-papaparse';
 
 import { HeaderComponent } from './header/header.component';
+import { ModalComponent } from './_services/modal/modal.component';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -24,9 +26,12 @@ library.add(fas);
 		HttpClientModule, 	// Necessary for API Services
 		FormsModule,		// Necessary for Dynamic Forms
 		ReactiveFormsModule,// Necessary for Dynamic Forms
-		FontAwesomeModule,	// Necessary for SVG
-	],
-	providers: [],
+        FontAwesomeModule,	// Necessary for SVG
+        PapaParseModule,    // Necessary for CSV
+    ],
+	providers: [
+        ModalComponent,
+    ],
 	bootstrap: [AppComponent]
 })
 export class AppModule { }

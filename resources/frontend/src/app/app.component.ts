@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 	templateUrl: './app.component.html',
 	styleUrls: [
 		'./app.component.scss',
+        './_services/modal/modal.component.scss',
 	]
 })
 export class AppComponent {

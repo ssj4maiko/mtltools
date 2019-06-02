@@ -13,16 +13,22 @@
 		<thead>
 			<tr>
 				<th>Name</th>
-				<th>Actions</th>
+				<th style="width: 200px;"># of Entries</th>
+				<th style="width: 150px;">Actions</th>
 			</tr>
 		</thead>
-		<tbody>
-			<tr *ngFor="let category of categories">
-				<td [routerLink]="['/novel/dictionary', idNovel, idDictionary, category.id]">{{ category.name }}</td>
+		<tbody class="clickable-table">
+			<tr *ngFor="let category of categories"  [routerLink]="['/novel/dictionary', idNovel, idDictionary, category.id]">
+				<td>{{ category.name }}</td>
+				<td>-</td>
 				<td>
-					<a [routerLink]="['/novel/dictionary', idNovel, idDictionary, category.id, 'edit']">UPD</a>
-					/
-					<a [routerLink]="['/novel/dictionary', idNovel, idDictionary, category.id, '/del']">DEL</a>
+                    <a [routerLink]="['/novel/dictionary', idNovel, idDictionary, category.id, 'edit']" class="icon has-text-success">
+                        <i class="fas fa-info-circle"></i>
+                    </a>
+                    /
+                    <a [routerLink]="['/novel/dictionary', idNovel, idDictionary, category.id, '/del']" class="icon has-text-danger">
+                        <i class="fas fa-ban"></i>
+                    </a>
 				</td>
 			</tr>
 		</tbody>

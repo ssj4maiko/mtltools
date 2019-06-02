@@ -48,7 +48,6 @@ export class AddComponent implements OnInit {
 	}
 
 	submitForm(form:NgForm){
-		console.log(form);
 		this.api.addNovel(form)
 			.subscribe(res => {
 				console.log(res);

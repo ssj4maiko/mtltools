@@ -23,7 +23,7 @@ Route::middleware(['cors'])->group(function(){
 	Route::get('chapter/auto/{idNovel}', 'ChapterController@importNext');
 	Route::get('chapter/autoIndex/{idNovel}', 'ChapterController@importIndex');
 	Route::get('chapter/autoUpdate/{idNovel}', 'ChapterController@updateIndex');
-	
+
 	Route::get('chapter/{idNovel}', 'ChapterController@getAll');
 	Route::get('chapter/{idNovel}/{no}', 'ChapterController@get');
 	Route::post('chapter/{idNovel}', 'ChapterController@insert');
@@ -45,6 +45,7 @@ Route::middleware(['cors'])->group(function(){
 	Route::delete('category/{idNovel}/{no}', 'DictionaryCategoryController@delete');
 
 	Route::get('entry/{idNovel}', 'DictionaryEntryController@getAll');
+	Route::post('entry/updatecategory/{idNovel}', 'DictionaryEntryController@updateCategory');
 	Route::get('entry/{idNovel}/{no}', 'DictionaryEntryController@get');
 	Route::post('entry/{idNovel}', 'DictionaryEntryController@insert');
 	Route::put('entry/{idNovel}/{no}', 'DictionaryEntryController@update');

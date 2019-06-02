@@ -1,7 +1,59 @@
+<!--
+    This view contains: 2 modals, 2 buttom-rows and 1 list/form down below.
+-->
+<jw-modal id="import-list">
+    <h1 class='h1'>Importing a file</h1>
+    <p ><b>File type</b>: CSV</p>
+    <p ><b>Columns</b>: "Original";"Translated";"Description"</p>
+    <p >
+        <b>Instructions</b>: Select the file and the imported data will be shown below before they are commited to the main screen.
+        In case of error, check the file through a normal text editor and see if it follows the above style.
+        Also, there is no header, so in case your file has it, you can manually delete it later
+    </p>
+    <div class="columns actionButtons">
+        <div class="column">
+            <label class="button is-primary">
+                Select File
+                <input type="file" (change)="uploadFile($event)" class="hidden" />
+            </label>
+        </div>
+        <div class="column">
+            <button (click)="closeModal('import-list');" class="button is-danger">Close</button>
+        </div>
+    </div>
+</jw-modal>
+<jw-modal id="confirm-import">
+    <h1>Is this what you were looking for?</h1>
+    <table class="table" *ngIf="tmpResult.length">
+        <thead>
+            <tr>
+                <th>Original</th>
+                <th>Translated</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let item of tmpResult">
+                <td>{{item[0]}}</td>
+                <td>{{item[1]}}</td>
+                <td>{{item[2]}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="columns actionButtons">
+        <div class="column">
+            <button (click)="commitImport();" class="button is-primary">Yes</button>
+        </div>
+        <div class="column">
+            <button (click)="cancelImport();" class="button is-danger">No</button>
+        </div>
+    </div>
+</jw-modal >
+
 <ng-template #actionButtons>
 	<div class="columns actionButtons">
 		<div class="column">
-			<a [routerLink]="['/novel/dictionary', idNovel, idDictionary,idCategory, 'add']" class="button is-info">Import List</a>
+			<a (click)="openModal('import-list');" class="button is-info">Import List</a>
 		</div>
 	</div>
 </ng-template>
@@ -55,12 +107,14 @@
 							<textarea formControlName="description" class="textarea" rows="1"></textarea>
                         </td>
                         <td>
-                            <label class="delete is-large">
+                            <label class="icon  is-large">
+                                <i class="fas fa-exclamation-triangle"></i>
                                 <input formControlName="reset" class='hidden' type="checkbox" />
                             </label>
                         </td>
 						<td>
-                            <label class="delete is-large">
+                            <label class="icon is-large">
+                                <i class="fas fa-times"></i>
                                 <input formControlName="delete" class='hidden' type="checkbox" />
                             </label>
 						</td>

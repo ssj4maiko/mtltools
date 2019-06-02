@@ -1,13 +1,13 @@
 <ng-template #actionButtons>
 	<div class="columns actionButtons">
+        <div class="column">
+            <a [routerLink]="['/novel/dictionary', idNovel]" class="button is-primary">Dictionary</a>
+        </div>
 		<div class="column" *ngIf="novel && !novel.flagSyosetu">
 			<a routerLink="['/novel/',idNovel,'add']" class="button is-info">Import Chapter</a>
 		</div>
 		<div class="column" *ngIf="novel && novel.flagSyosetu">
 			<a (click)="downloadChapter()" class="button is-info">Add Next Chapter</a>
-		</div>
-		<div class="column">
-			<a [routerLink]="['/novel/dictionary', idNovel]"  class="button is-primary">Dictionary</a>
 		</div>
 	</div>
 </ng-template>
@@ -21,8 +21,8 @@
 				<th>Title</th>
 				<th>Date Created</th>
 				<th>Date Updated</th>
-				<th>Complete</th>
-				<th>Actions</th>
+				<th>Loaded</th>
+				<!--th>Actions</th-->
 			</tr>
 		</thead>
 		<tbody>
@@ -33,11 +33,11 @@
 					<td [routerLink]="['/novel/', chapter.idNovel, chapter.no]">{{ chapter.dateOriginalPost }}</td>
 					<td [routerLink]="['/novel/', chapter.idNovel, chapter.no]">{{ chapter.dateOriginalRevision }}</td>
 					<td><ng-container *ngIf="chapter.hasText == 1; then success else danger"></ng-container></td>
-					<td>
+					<!--td>
 						<a [routerLink]="['/novel/', chapter.idNovel, chapter.no, 'edit']">UPD</a>
 						/
 						<a [routerLink]="['/novel/', chapter.idNovel, chapter.no, 'del']">DEL</a>
-					</td>
+					</td-->
 					<ng-template #success>
 						<a class='button is-success'>
 							<span class="icon is-small">

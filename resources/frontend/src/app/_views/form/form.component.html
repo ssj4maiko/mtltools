@@ -1,48 +1,50 @@
-<h1 class="title">{{ formTitle }}</h1>
-<form [formGroup]="formGroup" (ngSubmit)="submitForm(formGroup.value)">
-	<div *ngFor="let field of form" class='field'>
+<div class="form-content">
+    <h1 class="title">{{ formTitle }}</h1>
+    <form [formGroup]="formGroup" (ngSubmit)="submitForm(formGroup.value)">
+        <div *ngFor="let field of form" class='field'>
 
-		<ng-container [ngSwitch]="field.type">
+            <ng-container [ngSwitch]="field.type">
 
-			<ng-container #tempHidden *ngSwitchCase="'hidden'">
-				<input type="hidden" formControlName="{{ field.name }}">
-			</ng-container>
+                <ng-container #tempHidden *ngSwitchCase="'hidden'">
+                    <input type="hidden" formControlName="{{ field.name }}">
+                </ng-container>
 
-			<ng-container #tempCheck *ngSwitchCase="'checkbox'">
-				<label class='checkbox'>
-					<input type="checkbox" formControlName="{{ field.name }}">
-					{{ field.label }}
-				</label>
-			</ng-container>
+                <ng-container #tempCheck *ngSwitchCase="'checkbox'">
+                    <label class='checkbox'>
+                        <input type="checkbox" formControlName="{{ field.name }}">
+                        {{ field.label }}
+                    </label>
+                </ng-container>
 
-			<ng-container #tempCheck *ngSwitchCase="'select'">
-				<label>{{ field.label }}</label>
-				<div class="control">
-					<select formControlName="{{ field.name }}">
-						<option *ngFor="let option of field.options" value="{{ option.value }}">{{ option.label }}</option>
-					</select>
-				</div>
-			</ng-container>
+                <ng-container #tempCheck *ngSwitchCase="'select'">
+                    <label>{{ field.label }}</label>
+                    <div class="control">
+                        <select formControlName="{{ field.name }}">
+                            <option *ngFor="let option of field.options" value="{{ option.value }}">{{ option.label }}</option>
+                        </select>
+                    </div>
+                </ng-container>
 
-			<ng-container #tempText *ngSwitchDefault>
-				<label class='label' for="{{ field.name }}">{{ field.label }}</label>
-				<div class="control">
-					<input type="{{ field.type }}" id="{{ field.name }}" formControlName="{{ field.name }}" class="input">
-				</div>
-	  			<!--p class="help is-success"></p-->
-	  			<!--p class="help is-danger"></p-->
-			</ng-container>
+                <ng-container #tempText *ngSwitchDefault>
+                    <label class='label' for="{{ field.name }}">{{ field.label }}</label>
+                    <div class="control">
+                        <input type="{{ field.type }}" id="{{ field.name }}" formControlName="{{ field.name }}" class="input">
+                    </div>
+                    <!--p class="help is-success"></p-->
+                    <!--p class="help is-danger"></p-->
+                </ng-container>
 
-		</ng-container>
-	</div>
+            </ng-container>
+        </div>
 
-	<div class="field is-grouped">
-		<div class="control">
-			<input type="submit" class="button is-link" value="Submit" />
-		</div>
-		<div class="control">
-			<input (click)="goBack()" class="button is-danger" value="Cancel" />
-		</div>
-	</div>
+        <div class="field is-grouped">
+            <div class="control">
+                <input type="submit" class="button is-link" value="Submit" />
+            </div>
+            <div class="control">
+                <input (click)="goBack()" class="button is-danger" value="Cancel" />
+            </div>
+        </div>
 
-</form>
+    </form>
+</div>

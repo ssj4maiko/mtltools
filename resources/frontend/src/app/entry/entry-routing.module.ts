@@ -10,7 +10,7 @@ import { EditComponent } from './edit/edit.component';
 
 const routes: Routes = [
 	{
-		 path: 'list'
+		 path: ''
 		,component: ListComponent
 		,data: { title: 'List Entries' }
 	},
@@ -26,7 +26,7 @@ const routes: Routes = [
 	},
 	{
 		 path: '**'
-		,redirectTo: 'list'
+		,redirectTo: ''
 	}
 ];
 

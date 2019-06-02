@@ -3,9 +3,6 @@
 		<div class="column">
 			<a [routerLink]="['/novel/dictionary',idNovel,'add']" class="button is-info">Add Dictionary</a>
 		</div>
-		<div class="column">
-			<a [routerLink]="['/novel/dictionary', idNovel]"  class="button is-primary">Check Categories</a>
-		</div>
 	</div>
 </ng-template>
 
@@ -15,19 +12,23 @@
 		<thead>
 			<tr>
 				<th>Language</th>
-				<th>Categories</th>
-				<th>Actions</th>
+				<th style="width: 200px;"># of Categories</th>
+				<th style="width: 150px;">Actions</th>
 			</tr>
 		</thead>
 		<tbody>
 			<ng-container *ngFor="let dictionary of dictionaries" >
-				<tr>
-					<td>{{ dictionary.language }}</td>
-					<td><a [routerLink]="['/novel/dictionary/', dictionary.idNovel, dictionary.id]">Check</a></td>
+				<tr [routerLink]="['/novel/dictionary/', dictionary.idNovel, dictionary.id]">
+                    <td>{{ dictionary.language }}</td>
+                    <th>-</th>
 					<td>
-						<a [routerLink]="['/novel/dictionary/', dictionary.idNovel, dictionary.id, 'edit']">UPD</a>
+                        <a [routerLink]="['/novel/dictionary/', dictionary.idNovel, dictionary.id, 'edit']" class="icon has-text-success">
+                               <i class="fas fa-info-circle"></i>
+                        </a>
 						/
-						<a [routerLink]="['/novel/dictionary/', dictionary.idNovel, dictionary.id, 'del']">DEL</a>
+                        <a [routerLink]="['/novel/dictionary/', dictionary.idNovel, dictionary.id, 'del']" class="icon has-text-danger">
+                            <i class="fas fa-ban"></i>
+                        </a>
 					</td>
 				</tr>
 			</ng-container>
