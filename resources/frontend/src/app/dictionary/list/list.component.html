@@ -20,7 +20,7 @@
 			<ng-container *ngFor="let dictionary of dictionaries" >
 				<tr [routerLink]="['/novel/dictionary/', dictionary.idNovel, dictionary.id]">
                     <td>{{ dictionary.language }}</td>
-                    <th>-</th>
+                    <th>{{ dictionary.count_categories[0].count }}</th>
 					<td>
                         <a [routerLink]="['/novel/dictionary/', dictionary.idNovel, dictionary.id, 'edit']" class="icon has-text-success">
                                <i class="fas fa-info-circle"></i>

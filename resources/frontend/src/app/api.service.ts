@@ -1,5 +1,5 @@
 import { Injectable, Optional } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of, throwError, VirtualTimeScheduler } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { catchError, tap, map } from 'rxjs/operators';
 
@@ -122,7 +122,23 @@ export class ApiService {
 				 })
 				,catchError(this.handleError<Novel>('deleteNovel'))
 			);
-	}
+    }
+
+    updateIndexNovel(id): Observable<Novel> {
+        const url = `${apiUrl}chapter/autoUpdate/${id}`;
+        return this.http.get<Novel>(url)
+            .pipe(
+                tap((novel: Novel) => {
+                    console.log(`Updated All Chapters id=${novel.id}`);
+                    this._novels[novel.id] = novel;
+
+                    this.cacheService.delete(`${apiUrl}chapter/${novel.id}`);
+                    if (this._chapters[novel.id])
+                        delete this._chapters[novel.id];
+                })
+                , catchError(this.handleError<Novel>('updateIndexNovel'))
+            );
+    }
 
 
 
@@ -143,7 +159,7 @@ export class ApiService {
 			if(this._chapters[idNovel][noChapter])
 				return this._chapters[idNovel][noChapter];
 		return null;
-	}
+    }
 	getChapters(idNovel): Observable<{}>{
 		const url = `${apiUrl}chapter/${idNovel}`;
 		return this.cacheService.get(
@@ -263,8 +279,7 @@ export class ApiService {
 						 tap(dictionaries => {
 						 	console.log('Fetched Dictionaries');
 						 	if(dictionaries && dictionaries[0]){
-						 		if(!this._dictionaries[ idNovel ])
-						 			this._dictionaries[ idNovel ] = {};
+						 		this._dictionaries[ idNovel ] = {};
 
 								for(let i in dictionaries){
 									this._dictionaries[ idNovel ][ dictionaries[i].id ] = dictionaries[i];
@@ -338,7 +353,18 @@ export class ApiService {
 
 
 
-
+    updateCounterCategory(no:any, idNovel:number, idDictionary:number): void{
+        switch(no){
+            case '+':
+                ++this._dictionaries[idNovel][idDictionary].count_categories[0].count;
+                break;
+            case '-':
+                --this._dictionaries[idNovel][idDictionary].count_categories[0].count;
+                break;
+            default:
+                this._dictionaries[idNovel][idDictionary].count_categories[0].count = no
+        }
+    }
 
 	_categories: object = {};
 
@@ -353,8 +379,8 @@ export class ApiService {
 			if(this._categories[idDictionary][id])
 				return this._categories[idDictionary][id];
 		return null;
-	}
-	getCategories(idDictionary): Observable<{}>{
+    }
+	getCategories(idNovel, idDictionary): Observable<{}>{
 		const url = `${apiUrl}category/${idDictionary}`;
 
 		return this.cacheService.get(
@@ -364,12 +390,14 @@ export class ApiService {
 						 tap(categories => {
 						 	console.log('Fetched Category');
 						 	if(categories && categories[0]){
-						 		if(!this._categories[ idDictionary ])
-						 			this._categories[ idDictionary ] = {};
+						 		this._categories[ idDictionary ] = {};
 
+                                let counter = 0;
 								for(let i in categories){
+                                    ++counter;
 									this._categories[ idDictionary ][ categories[i].id ] = categories[i];
-								}
+                                }
+                                this.updateCounterCategory(counter,idNovel,idDictionary);
 						 	}
 						 })
 						,catchError(this.handleError('getCategory',[]))
@@ -377,7 +405,7 @@ export class ApiService {
 		)
 	}
 
-	getCategory(idDictionary:number, id: number): Observable<DictionaryCategory>{
+    getCategory(idNovel,idDictionary:number, id: number): Observable<DictionaryCategory>{
 		const url = `${apiUrl}category/${idDictionary}/${id}`;
 		return this.cacheService.get(
 			url,
@@ -395,7 +423,7 @@ export class ApiService {
 		);
 	}
 
-	addCategory(idDictionary:number, category): Observable<DictionaryCategory> {
+	addCategory(idNovel:number, idDictionary:number, category): Observable<DictionaryCategory> {
 		const url = `${apiUrl}category/${idDictionary}`;
 		return this.http.post<DictionaryCategory>(url, category, httpOptions)
 			.pipe(
@@ -403,13 +431,14 @@ export class ApiService {
 				 	console.log(`Registered Category id=${category.id}`);
 			 		if(!this._categories[ category.idDictionary ])
 			 			this._categories[ category.idDictionary ] = {};
-				 	this._categories[ category.idDictionary ][ category.id ] = category;
+                     this._categories[category.idDictionary][category.id] = category;
+                     this.updateCounterCategory('+', idNovel, idDictionary);
 				 })
 				,catchError(this.handleError<DictionaryCategory>('addCategory'))
 			);
 	}
 
-	updateCategory(idDictionary:number,id:number,category): Observable<any> {
+    updateCategory(ídNovel: number, idDictionary:number,id:number,category): Observable<any> {
 		const url = `${apiUrl}category/${idDictionary}/${id}`;
 		return this.http.put<DictionaryCategory>(url, category, httpOptions)
 			.pipe(
@@ -423,14 +452,15 @@ export class ApiService {
 			);
 	}
 
-	deleteCategory(idDictionary:number,id): Observable<DictionaryCategory> {
+	deleteCategory(idNovel, idDictionary:number,id): Observable<DictionaryCategory> {
 		const url = `${apiUrl}category/${idDictionary}/${id}`;
 
 		return this.http.delete<DictionaryCategory>(url, httpOptions)
 			.pipe(
 				 tap(_ => {
 				 	console.log(`Deleted Category id=${id}`);
-				 	delete this._categories[idDictionary][id];
+                    delete this._categories[idDictionary][id];
+                    this.updateCounterCategory('-', idNovel, idDictionary);
 				 })
 				,catchError(this.handleError<DictionaryCategory>('deleteNovel'))
 			);
@@ -440,6 +470,21 @@ export class ApiService {
 
 
 
+    updateCounterEntry(no: any, idDictionary: number, idCategory: number): void {
+        if (this._categories[idDictionary][idCategory].count_entries)
+            switch (no) {
+                case '+':
+                    ++this._categories[ idDictionary ][ idCategory ].count_entries[0].count;
+                    break;
+                case '-':
+                    --this._categories[ idDictionary ][ idCategory ].count_entries[0].count;
+                    break;
+                default:
+                    if (this._categories[idDictionary][idCategory].count_entries)
+                        this._categories[idDictionary][idCategory].count_entries = [];
+                    this._categories[ idDictionary ][ idCategory ].count_entries[0].count = no
+            }
+    }
 
 	_entries: object = {};
 
@@ -447,7 +492,7 @@ export class ApiService {
 		if(this._entries[idCategory])
 			return this._entries[idCategory];
 		else
-			return null;
+			return [];
 	}
 	Entry(idCategory, id:number): DictionaryEntry{
 		if(this._entries[idCategory])
@@ -455,24 +500,26 @@ export class ApiService {
 				return this._entries[idCategory][id];
 		return null;
 	}
-	getEntries(idCategory, force?:boolean): Observable<{}>{
+    getEntries(idDictionary:number, idCategory, force?:boolean): Observable<{}>{
         const url = `${apiUrl}entry/${idCategory}`;
         if(force){ this.cacheService.delete(url); }
 
 		return this.cacheService.get(
 			url,
-			this.http.get<{}>(url)
+            this.http.get<DictionaryEntry[]>(url)
 					.pipe(
 						 tap(entries => {
-						 	console.log('Fetched Category');
+						 	console.log('Fetched Entries');
 						 	if(entries && entries[0]){
-						 		if(!this._entries[ idCategory ])
-						 			this._entries[ idCategory ] = {};
+						 		this._entries[ idCategory ] = {};
 
 								for(let i in entries){
 									this._entries[ idCategory ][ entries[i].id ] = entries[i];
 								}
-						 	}
+                             }
+                             if (force)
+                                this.updateCounterEntry(entries.length,idDictionary,idCategory);
+
 						 })
 						,catchError(this.handleError('getCategory',[]))
 			)
@@ -497,11 +544,13 @@ export class ApiService {
 		);
 	}
 
-	addEntries(idCategory:number, entries): Observable<any> {
+    addEntries(idDictionary:number, idCategory:number, entries): Observable<any> {
         const url = `${apiUrl}entry/updatecategory/${idCategory}`;
 		return this.http.post<DictionaryEntry>(url, entries, httpOptions)
 			.pipe(
-				 tap()
+				 tap(_ => {
+                    // this.getEntries(idDictionary, idCategory, true);
+                 })
 				,catchError(this.handleError<DictionaryEntry>('addCategory'))
 			);
 	}

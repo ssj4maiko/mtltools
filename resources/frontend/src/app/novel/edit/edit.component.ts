@@ -37,11 +37,10 @@ export class EditComponent implements OnInit {
 
 	ngOnInit() {
 		this.idNovel =this.route.snapshot.params['idNovel'];
-		this.getNovel();
 
 		this.formTitle = "Edit Novel";
 		this.formGroup = this.formBuilder.group({
-			 id				: [null]
+            id				: [null]
 			,code			: [null]
 			,nameOriginal	: [null]
 			,nameCustom		: [null]
@@ -49,7 +48,9 @@ export class EditComponent implements OnInit {
 			,flagSyosetu	: [null]
 			,flagR18		: [null]
 			,show			: [null]
-		});
+        });
+
+        this.getNovel();
 	}
 
 	getNovel() {

@@ -38,18 +38,19 @@ export class EditComponent implements OnInit {
 		this.idNovel = this.route.snapshot.params['idNovel'];
 		this.idDictionary = this.route.snapshot.params['idDictionary'];
 		this.idCategory = this.route.snapshot.params['idCategory'];
-		this.getCategory()
 		this.formTitle = "Update Category";
 		this.formGroup = this.formBuilder.group({
-			 'id'	: [null]
+            'id'	: [null]
 			,'idDictionary'	: [null]
 			,'name'	: [null]
-		});
+        });
+
+        this.getCategory();
 	}
 
 
 	getCategory() {
-		this.api.getCategory(this.idDictionary,this.idCategory)
+        this.api.getCategory(this.idNovel,this.idDictionary,this.idCategory)
 			.subscribe(data => {
 
 				data = this.api.Category(this.idDictionary,this.idCategory);
@@ -64,7 +65,7 @@ export class EditComponent implements OnInit {
 
 	submitForm(form:NgForm){
 		console.log(form);
-		this.api.updateCategory(this.idDictionary,this.idCategory,form)
+		this.api.updateCategory(this.idNovel, this.idDictionary,this.idCategory,form)
 			.subscribe(res => {
 				console.log(res);
 				let id = res['id'];

@@ -22,13 +22,25 @@ export class ListComponent implements OnInit {
 	ngOnInit() {
 		// Get list of novels
 		this.api.getNovels()
-			.subscribe(_ => {
-				// Always take from the updated api.Novels()
-				this.novels = Object.values(this.api.Novels());
-				console.log(this.novels);
-			}, err => {
+            .subscribe(_ => {
+                // Always take from the updated api.Novels()
+                this.novels = Object.values(this.api.Novels());
+                console.log(this.novels);
+            }, err => {
 				console.log(err);
-			});
+            }
+        );
 	}
 
+    autoUpdate(id:number){
+        this.api.updateIndexNovel(id)
+            .subscribe(_ => {
+                // Always take from the updated api.Novels()
+                this.novels = Object.values(this.api.Novels());
+                console.log(this.novels);
+            }, err => {
+                console.log(err);
+            }
+        );
+    }
 }

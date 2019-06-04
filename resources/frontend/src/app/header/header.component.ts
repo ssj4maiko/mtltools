@@ -26,7 +26,7 @@ export class HeaderComponent implements OnInit {
         ).subscribe(() => {
             this.breadcrumbs = this.buildBreadCrumb(this.activatedRoute.root);
             this.renameLabels();
-            console.log(this.breadcrumbs);
+            //console.log(this.breadcrumbs);
         })
 	}
 
@@ -64,7 +64,6 @@ export class HeaderComponent implements OnInit {
 
     private renameLabels(){
         this.breadcrumbs.forEach(el => {
-            console.log(el);
             if(el.url.indexOf('dictionary') > 0){
                 switch(el.label){
                     case 'idNovel':
@@ -80,10 +79,10 @@ export class HeaderComponent implements OnInit {
             } else {
                 switch (el.label) {
                     case 'idNovel':
-                        el.label = 'List Chapters';
+                        el.label = 'Chapter List';
                         break;
                     case 'noChapter':
-                        el.label = 'Categories';
+                        el.label = 'Current Chapter';
                         break;
                 }
             }

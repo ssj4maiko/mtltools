@@ -10,7 +10,8 @@ use App\Dictionary;
 class DictionaryController extends Controller
 {
 	public function getAll($idNovel){
-		return Dictionary::where(['idNovel' => $idNovel])
+        return Dictionary::where(['idNovel' => $idNovel])
+                         ->with('countCategories')
 						 ->get();
 	}
 	public function get($idNovel,$id) {

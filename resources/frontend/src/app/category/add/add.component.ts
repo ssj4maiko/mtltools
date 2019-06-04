@@ -45,7 +45,7 @@ export class AddComponent implements OnInit {
 
 	submitForm(form:NgForm){
 		console.log(form);
-		this.api.addCategory(this.idDictionary,form)
+        this.api.addCategory(this.idNovel,this.idDictionary,form)
 			.subscribe(res => {
 				console.log(res);
 				let id = res['id'];

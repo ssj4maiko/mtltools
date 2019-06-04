@@ -4,27 +4,43 @@ header {
 	margin:0px;
     height:100px;
     cursor: pointer;
-}
-header > * {
-	float:left;
-}
-header > .appName {
-	height: 100%;
-}
-header > ul {
-	list-style: none;
-	height: 100%;
-	padding:0px;
-	margin:0px;
-}
-header ul li {
-	height: 100%;
-	display:block;
-	vertical-align: middle;
-	float:left;
-	margin: 25px 0px 0px 20px;
-}
-header ul li a {
-	margin: auto;
-	height:50px;
+
+    & > * {
+        float:left;
+    }
+    & > .appName {
+        height: 100%;
+    }
+    & > ul {
+        list-style: none;
+        height: 100%;
+        padding:0px;
+        margin:0px;
+
+        & li {
+            height: 100%;
+            display:block;
+            float:left;
+            margin: 25px 0px 0px 20px;
+
+            & a {
+                margin: auto;
+                height:50px;
+                border-radius:20px 20px 0px 20px;
+
+                &:after {
+                    content: '';
+                    display:block;
+                    width: 0;
+                    height: 0;
+                    border: 13px solid transparent;
+                    border-right-color: inherit;
+                    position: absolute;
+                    bottom: -14px;
+                    right: -14px;
+                    transform: rotate(-135deg);
+                }
+            }
+        }
+    }
 }

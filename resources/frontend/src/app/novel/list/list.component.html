@@ -21,6 +21,7 @@
 				<th>R18</th>
 				<th>Added By</th>
 				<th>Dictionary</th>
+				<th>Update Chapters</th>
 				<th>Actions</th>
 			</tr>
 		</thead>
@@ -35,7 +36,8 @@
 					<td><ng-container *ngIf="novel.flagSyosetu == 1; then success else danger"></ng-container></td>
 					<td><ng-container *ngIf="novel.flagR18 == 1; then success else danger"></ng-container></td>
 					<td>{{ novel.addedBy }}</td>
-					<td><a [routerLink]="['/novel/dictionary', novel.id]">Check</a></td>
+					<td [routerLink]="['/novel/dictionary', novel.id]"><a>Check</a></td>
+					<td (click)="autoUpdate(novel.id)"><a>Update</a></td>
 					<td>
 						<a [routerLink]="['/novel/edit', novel.id]">UPD</a>
 						/

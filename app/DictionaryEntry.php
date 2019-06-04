@@ -53,7 +53,7 @@ class DictionaryEntry extends Model
     }
     public function massDelete(){
         if(count($this->delete) > 0){
-            DB::table($this->table)->whereIn($this->primaryKey, $this->delete);
+            DB::table($this->table)->whereIn($this->primaryKey, $this->delete)->delete();
             return true;
         }
         return false;
@@ -65,7 +65,7 @@ class DictionaryEntry extends Model
                     $this->delete[] = $v['id'];
                 }
                 elseif($v['update']){
-                    $tmp = DictionaryEntry::find($id);
+                    $tmp = DictionaryEntry::find($v['id']);
                     $tmp->entryOriginal = $v['original'];
                     $tmp->entryTranslation = $v['translation'];
                     $tmp->description = $v['description'];
@@ -75,14 +75,13 @@ class DictionaryEntry extends Model
                 }
             } else {
                 if($v['original']
-                || $v['translation']
-                || $v['description']){
+                || $v['translation']){
                     $this->insert[] = [
                         'idCategory'        =>  $idCategory,
-                        'entryOriginal'     =>  $v['original'],
-                        'entryTranslation'  =>  $v['translation'],
+                        'entryOriginal'     =>  !empty($v['original']) ? $v['original'] : $v['translation'],
+                        'entryTranslation'  =>  !empty($v['translation']) ? $v['translation'] : $v['original'],
                         'description'       =>  $v['description'],
-                        'length'            =>  strlen($v['original'])
+                        'length'            =>  strlen(!empty($v['original']) ? $v['original'] : $v['translation'])
                     ];
                 }
             }

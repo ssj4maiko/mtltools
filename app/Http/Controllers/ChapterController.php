@@ -80,12 +80,12 @@ class ChapterController extends Controller
 
 		$novel->numberChapters = count($chapters);
 		//$novel->save();
-		
+
 		return $chapters;
 		//foreach ($chapters as $value) {}
 	}
 
-	public function updateIndex(NovelController $NC, $idNovel){
+    public function updateIndex(NovelController $NC, $idNovel){
 		$novel = $NC->get($idNovel);
 		if(!$novel->flagSyosetu){
 			return null;
@@ -93,10 +93,6 @@ class ChapterController extends Controller
 
 		$syosetu = new Syosetu($novel->code);
 		$chapters = $syosetu->importIndex($idNovel);
-
-		$novel->numberChapters = count($chapters);
-		$novel->save();
-
 		$KnownChapters = $this->getAll($idNovel);
 
 
@@ -130,9 +126,9 @@ class ChapterController extends Controller
 			}
 		}
 
-		// If there are 
+        // If there are more
 		$length = count($chapters);
-		for(;$counter < $length; ++$counter){
+		for(++$counter;$counter <= $length; ++$counter){
 
 			$chapter = new Chapter();
 			$chapter->idNovel = $chapters[ $counter ]['idNovel'];
@@ -141,7 +137,11 @@ class ChapterController extends Controller
 			$chapter->textOriginal = $syosetu->importContent($counter);
 			$chapter->dateOriginalPost = $chapters[ $counter ]['dateOriginalPost'];
 			$chapter->dateOriginalRevision = $chapters[ $counter ]['dateOriginalRevision'];
-			$chapter->save();
-		}
+            $chapter->save();
+        }
+		$novel->numberChapters = count($chapters);
+		$novel->save();
+
+        return $novel;
 	}
 }

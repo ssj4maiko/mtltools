@@ -39,14 +39,15 @@ export class EditComponent implements OnInit {
 	ngOnInit() {
 		this.idNovel = this.route.snapshot.params['idNovel'];
 		this.idDictionary = this.route.snapshot.params['idDictionary'];
-		this.getDictionary();
 		this.formTitle = "Edit Dictionary";
 
 		this.formGroup = this.formBuilder.group({
-			 'id'		: [null]
+            'id'		: [null]
 			,'idNovel'	: [null]
 			,'language'	: [null]
-		});
+        });
+
+        this.getDictionary();
 	}
 
 	getDictionary() {

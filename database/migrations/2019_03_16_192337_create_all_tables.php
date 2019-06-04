@@ -63,8 +63,8 @@ class CreateAllTables extends Migration
         Schema::create('dictionaryEntries', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedMediumInteger('idCategory');
-            $table->string('entryOriginal',20);
-            $table->string('entryTranslation',50);
+            $table->string('entryOriginal',60);
+            $table->string('entryTranslation',80);
             $table->string('description',1500)->nullable(); //Should be TINYTEXT...
             $table->unsignedTinyInteger('length');
 
