@@ -11,7 +11,7 @@ class DictionaryCategory extends Model
 	protected $table = 'dictionaryCategories';
 	protected $primaryKey = 'id';
 	public $timestamps = false;
-	protected $defaultForeignKey = 'idCategory';
+	public static $defaultForeignKey = 'idCategory';
 	//const CREATED_AT = 'dateCreated';
 	//const UPDATED_AT = 'dateRevised';
 
@@ -20,11 +20,14 @@ class DictionaryCategory extends Model
 		,'idDictionary'
 		,'name'
     ];
+    public function dictionary(){
+        return $this->belongsTo(Dictionary::class, 'idDictionary', 'id');
+    }
     public function dictionaryEntry(){
-        return $this->hasMany(DictionaryEntry::class, $this->defaultForeignKey);
+        return $this->hasMany(DictionaryEntry::class, self::$defaultForeignKey);
     }
     public function countEntries(){
-        return $this->dictionaryEntry()->select($this->defaultForeignKey,DB::raw('count(*) as count'))->groupBy($this->defaultForeignKey);
+        return $this->dictionaryEntry()->select(self::$defaultForeignKey,DB::raw('count(*) as count'))->groupBy(self::$defaultForeignKey);
     }
 
 	public static function prepare($data){

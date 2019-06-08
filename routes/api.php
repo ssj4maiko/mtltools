@@ -32,22 +32,23 @@ Route::middleware(['cors'])->group(function(){
 
 
 
+	Route::get('dictionary/createCache/{idNovel}/{idDictionary}', 'DictionaryController@createCache');
 	Route::get('dictionary/{idNovel}', 'DictionaryController@getAll');
-	Route::get('dictionary/{idNovel}/{no}', 'DictionaryController@get');
+	Route::get('dictionary/{idNovel}/{idDictionary}', 'DictionaryController@get');
 	Route::post('dictionary/{idNovel}', 'DictionaryController@insert');
-	Route::put('dictionary/{idNovel}/{no}', 'DictionaryController@update');
-	Route::delete('dictionary/{idNovel}/{no}', 'DictionaryController@delete');
+	Route::put('dictionary/{idNovel}/{idDictionary}', 'DictionaryController@update');
+	Route::delete('dictionary/{idNovel}/{idDictionary}', 'DictionaryController@delete');
 
-	Route::get('category/{idNovel}', 'DictionaryCategoryController@getAll');
-	Route::get('category/{idNovel}/{no}', 'DictionaryCategoryController@get');
-	Route::post('category/{idNovel}', 'DictionaryCategoryController@insert');
-	Route::put('category/{idNovel}/{no}', 'DictionaryCategoryController@update');
-	Route::delete('category/{idNovel}/{no}', 'DictionaryCategoryController@delete');
+	Route::get('category/{idDictionary}', 'DictionaryCategoryController@getAll');
+	Route::get('category/{idDictionary}/{idCategory}', 'DictionaryCategoryController@get');
+	Route::post('category/{idDictionary}', 'DictionaryCategoryController@insert');
+	Route::put('category/{idDictionary}/{idCategory}', 'DictionaryCategoryController@update');
+	Route::delete('category/{idDictionary}/{idCategory}', 'DictionaryCategoryController@delete');
 
-	Route::get('entry/{idNovel}', 'DictionaryEntryController@getAll');
-	Route::post('entry/updatecategory/{idNovel}', 'DictionaryEntryController@updateCategory');
-	Route::get('entry/{idNovel}/{no}', 'DictionaryEntryController@get');
-	Route::post('entry/{idNovel}', 'DictionaryEntryController@insert');
-	Route::put('entry/{idNovel}/{no}', 'DictionaryEntryController@update');
-	Route::delete('entry/{idNovel}/{no}', 'DictionaryEntryController@delete');
+	Route::get('entry/{idCategory}', 'DictionaryEntryController@getAll');
+	Route::post('entry/updatecategory/{idCategory}', 'DictionaryEntryController@updateCategory');
+	Route::get('entry/{idCategory}/{idEntry}', 'DictionaryEntryController@get');
+	Route::post('entry/{idCategory}', 'DictionaryEntryController@insert');
+	Route::put('entry/{idCategory}/{idEntry}', 'DictionaryEntryController@update');
+	Route::delete('entry/{idCategory}/{idEntry}', 'DictionaryEntryController@delete');
 });

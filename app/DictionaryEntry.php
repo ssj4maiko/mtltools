@@ -24,6 +24,9 @@ class DictionaryEntry extends Model
 	protected $hidden = [
     ];
 
+    public function dictionaryCategory(){
+        return $this->belongsTo(DictionaryCategory::class, 'idCategory', 'id');
+    }
 
     private $insert = [];
     private $update = [];

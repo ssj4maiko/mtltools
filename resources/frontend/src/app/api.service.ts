@@ -160,8 +160,10 @@ export class ApiService {
 				return this._chapters[idNovel][noChapter];
 		return null;
     }
-	getChapters(idNovel): Observable<{}>{
-		const url = `${apiUrl}chapter/${idNovel}`;
+    getChapters(idNovel, force?: boolean): Observable<{}>{
+        const url = `${apiUrl}chapter/${idNovel}`;
+        if (force) { this.cacheService.delete(url); }
+
 		return this.cacheService.get(
 			url,
 			this.http.get<{}>(url)
@@ -174,10 +176,13 @@ export class ApiService {
 
 								for(let i in chapters){
 									// No need to rewrite entries with filled chapters
-									if(this._chapters[ idNovel ][ chapters[i].no ])
-										if(this._chapters[ idNovel ][ chapters[i].no ].textOriginal)
-											continue;
-
+									if(this._chapters[ idNovel ][ chapters[i].no ]){
+										if(this._chapters[ idNovel ][ chapters[i].no ].textOriginal){
+                                            if (this._chapters[idNovel][chapters[i].no].dateOriginalRevision == chapters[i].dateOriginalRevision){
+                                                continue;
+                                            }
+                                        }
+                                    }
 									this._chapters[ idNovel ][ chapters[i].no ] = chapters[i];
 								}
 						 	}
@@ -215,7 +220,16 @@ export class ApiService {
 				,catchError(this.handleError<Chapter>('addChapter'))
 			);
 	}
-
+    autoUpdateChapters(idNovel): Observable<any> {
+        const url = `${apiUrl}chapter/autoUpdate/${idNovel}`;
+        return this.http.get(url)
+            .pipe(
+                tap((novel: Novel) => {
+                    this._novels[idNovel] = novel;
+                })
+                , catchError(this.handleError<Chapter>('addChapter'))
+            );
+    }
 	getChapter(idNovel, noChapter: number): Observable<Chapter>{
 		const url = `${apiUrl}chapter/${idNovel}/${noChapter}`;
 		return this.http.get<Chapter>(url)
@@ -348,7 +362,19 @@ export class ApiService {
 				 })
 				,catchError(this.handleError<Dictionary>('deleteNovel'))
 			);
-	}
+    }
+    dictionaryCreateCache(idNovel: number, idDictionary: number): Observable<any> {
+        const url = `${apiUrl}dictionary/createCache/${idNovel}/${idDictionary}`;
+
+        return this.http.get<Dictionary>(url, httpOptions)
+            .pipe(
+                tap(_ => {
+                    console.log(`Cached Dictionary id=${idDictionary}`);
+                    console.log(_);
+                })
+                , catchError(this.handleError<Dictionary>('deleteNovel'))
+            );
+    }
 
 
 

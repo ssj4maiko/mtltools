@@ -41,8 +41,8 @@ export class ListComponent implements OnInit {
 			this.chapterList();
 		}
 	}
-	private chapterList(){
-		this.api.getChapters(this.idNovel)
+    private chapterList(force?: boolean){
+		this.api.getChapters(this.idNovel,force)
 			.subscribe(res => {
 				let chapters = this.api.Chapters(this.idNovel);
 				if(chapters)
@@ -55,6 +55,15 @@ export class ListComponent implements OnInit {
 
 	downloadChapter() {
 		this.api.getAutoChapter(this.idNovel)
+            .subscribe(res => {
+                this.chapterList(true);
+			}, err => {
+				console.log(err);
+			});
+	}
+
+	updateChapters() {
+        this.api.autoUpdateChapters(this.idNovel)
 			.subscribe(res => {
 				console.log(res);
 				this.chapters.push(res);

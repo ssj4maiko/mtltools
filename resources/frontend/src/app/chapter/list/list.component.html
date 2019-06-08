@@ -7,6 +7,9 @@
 			<a routerLink="['/novel/',idNovel,'add']" class="button is-info">Import Chapter</a>
 		</div>
 		<div class="column" *ngIf="novel && novel.flagSyosetu">
+			<a (click)="updateChapters()" class="button is-info">Update Chapters</a>
+		</div>
+		<div class="column" *ngIf="novel && novel.flagSyosetu">
 			<a (click)="downloadChapter()" class="button is-info">Add Next Chapter</a>
 		</div>
 	</div>

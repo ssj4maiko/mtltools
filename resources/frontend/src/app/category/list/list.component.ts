@@ -65,6 +65,15 @@ export class ListComponent implements OnInit {
 			}, err => {
 				console.log(err);
 			});
-	}
+    }
+
+    private createCache(){
+        this.api.dictionaryCreateCache(this.idNovel, this.idDictionary)
+            .subscribe(res => {
+                alert(res);
+            }, err => {
+                console.log(err);
+            });
+    }
 
 }

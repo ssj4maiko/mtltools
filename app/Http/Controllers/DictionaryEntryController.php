@@ -19,12 +19,18 @@ class DictionaryEntryController extends Controller
 		return DictionaryEntry::where(['id' => $id])->first();
 	}
     public function updateCategory(DictionaryEntry $Entry, Request $request, $idCategory){
+
         $data = $Entry->prepare($request->json()->all(),$idCategory);
         $data = $Entry->getInsert();
 
-        return ['changes' => $Entry->massInsert()
-            || $Entry->massUpdate()
-            || $Entry->massDelete()];
+        $changes = $Entry->massInsert()
+                || $Entry->massUpdate()
+                || $Entry->massDelete();
+
+        if($changes)
+            Dictionary::updateRevision(null,1);
+
+        return ['changes' => $changes];
     }
 	public function insert(Request $request, $idCategory) {
 		$data = DictionaryEntry::prepare($request->json()->all());

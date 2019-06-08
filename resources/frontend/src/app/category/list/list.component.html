@@ -1,6 +1,9 @@
 <ng-template #actionButtons>
 	<div class="columns actionButtons">
 		<div class="column">
+			<a (click)="createCache();" class="button is-primary">Update Dictionary Cache</a>
+		</div>
+		<div class="column">
 			<a [routerLink]="['/novel/dictionary', idNovel, idDictionary, 'add']" class="button is-info">Add Category</a>
 		</div>
 	</div>
