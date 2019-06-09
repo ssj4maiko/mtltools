@@ -64,6 +64,7 @@ export class DetailComponent implements OnInit {
 		}
 	}
 	ngOnInit() {
+        console.log('onInit');
 		this.startContent();
 	}
 	ngDoCheck(){

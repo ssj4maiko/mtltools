@@ -33,6 +33,7 @@ Route::middleware(['cors'])->group(function(){
 
 
 	Route::get('dictionary/createCache/{idNovel}/{idDictionary}', 'DictionaryController@createCache');
+	Route::get('dictionary/cache/{idNovel}/{idDictionary}', 'DictionaryController@getCache');
 	Route::get('dictionary/{idNovel}', 'DictionaryController@getAll');
 	Route::get('dictionary/{idNovel}/{idDictionary}', 'DictionaryController@get');
 	Route::post('dictionary/{idNovel}', 'DictionaryController@insert');

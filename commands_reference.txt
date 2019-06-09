@@ -38,4 +38,4 @@ ng g component chapter/detail
 ng g component chapter/add
 ng g component chapter/edit
 
-ng g library libNovels
+ng g component chapter/sidebar

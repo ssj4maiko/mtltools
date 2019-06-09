@@ -50,6 +50,7 @@ class DictionaryController extends Controller
 
 
     private const CACHEFOLDER = 'public/cache/';
+    private $forceCache = false;
     public function createCache($idNovel, $idDictionary){
 
         $dictionary = Dictionary::find($idDictionary);
@@ -58,16 +59,18 @@ class DictionaryController extends Controller
             $cacheName = self::CACHEFOLDER.$idNovel.'-'.$idDictionary.'.json';
             $dateName = self::CACHEFOLDER.$idNovel.'-'.$idDictionary.'.txt';
 
-            $key = array_filter($files, function($el) use ($idNovel, $idDictionary) {
-                return strpos($el, self::CACHEFOLDER.$idNovel.'-'.$idDictionary) === 0;
-            });
+            if(!$this->forceCache){
+                $key = array_filter($files, function($el) use ($idNovel, $idDictionary) {
+                    return strpos($el, self::CACHEFOLDER.$idNovel.'-'.$idDictionary) === 0;
+                });
 
-            // Found the cache for the current novel-dictionary
-            if(!empty($key)){
-                $date = Storage::get($dateName);
-                // There has been no update, so there is nothing to do
-                if($date == $dictionary->dateRevision)
+                // Found the cache for the current novel-dictionary
+                if(!empty($key)){
+                    $date = Storage::get($dateName);
+                    // There has been no update, so there is nothing to do
+                    if($date == $dictionary->dateRevision)
                     return Storage::url($cacheName);
+                }
             }
 
             $entries = Dictionary::with(['dictionaryCategory','dictionaryEntry'])
@@ -77,9 +80,18 @@ class DictionaryController extends Controller
             Storage::put($cacheName, $entries);
 
             return Storage::url($cacheName);
-
-            return Storage::allFiles('public/cache');
         }
         throw new \Exception("No Dictionary found", 1);
+    }
+
+    public function getCache($idNovel, $idDictionary){
+        $cacheName = self::CACHEFOLDER.$idNovel.'-'.$idDictionary.'.json';
+        if(Storage::exists($cacheName)){
+            return Storage::get($cacheName);
+        } else {
+            $this->forceCache = true;
+            $this->createCache($idNovel,$idDictionary);
+            return Storage::get($cacheName);
+        }
     }
 }

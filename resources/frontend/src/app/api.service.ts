@@ -152,7 +152,7 @@ export class ApiService {
 		if(this._chapters[idNovel])
 			return this._chapters[idNovel];
 		else
-			return null;
+			return [];
 	}
 	Chapter(idNovel, noChapter:number): Chapter{
 		if(this._chapters[idNovel])
@@ -275,7 +275,7 @@ export class ApiService {
 		if(this._dictionaries[idNovel])
 			return this._dictionaries[idNovel];
 		else
-			return null;
+			return [];
 	}
 	Dictionary(idNovel, language:number): Dictionary{
 		if(this._dictionaries[idNovel])
@@ -363,6 +363,7 @@ export class ApiService {
 				,catchError(this.handleError<Dictionary>('deleteNovel'))
 			);
     }
+
     dictionaryCreateCache(idNovel: number, idDictionary: number): Observable<any> {
         const url = `${apiUrl}dictionary/createCache/${idNovel}/${idDictionary}`;
 
@@ -374,6 +375,59 @@ export class ApiService {
                 })
                 , catchError(this.handleError<Dictionary>('deleteNovel'))
             );
+    }
+    dictionaryCache(idNovel: number, idDictionary: number): Observable<{}> {
+        const url = `${apiUrl}dictionary/cache/${idNovel}/${idDictionary}`;
+
+        return this.cacheService.get(
+            url,
+            this.http.get<any>(url)
+                .pipe(
+                    tap(cache => {
+                        console.log('Fetched Cache');
+
+                        if(cache.length == 1){
+                            cache = cache[0];
+                            if (cache.dictionary_entry.length > 0){
+                                cache.dictionary_entry.forEach(entry => {
+                                    if (!this._entries[entry.idCategory])
+                                        this._entries[entry.idCategory] = [];
+                                    this._entries[entry.idCategory][entry.id] = entry;
+                                });
+                            }
+                            if (cache.dictionary_category.length > 0) {
+                                if (!this._categories[idDictionary])
+                                    this._categories[idDictionary] = [];
+                                cache.dictionary_category.forEach(category => {
+                                    if(!this._categories[category.idDictionary][category.id])
+                                        this._categories[category.idDictionary][category.id] = {};
+                                    for(let i in category){
+                                        this._categories[category.idDictionary][category.id][i] = category[i];
+                                    }
+                                    this._categories[category.idDictionary][category.id].count_entries = [];
+                                    this._categories[category.idDictionary][category.id].count_entries[0] = {};
+                                    this._categories[category.idDictionary][category.id].count_entries[0].count = Object.keys(this._entries[category.id]).length;
+                                });
+                            }
+                        }
+                        /*
+                         if(entries && entries.length > 0){
+                           for(let i=0;i<entries.length;++i){
+                               this._entries[ idCategory ] = {};
+
+                               for(let i in entries){
+                                   this._entries[ idCategory ][ entries[i].id ] = entries[i];
+                               }
+                           }
+                        }
+                        if (force)
+                           this.updateCounterEntry(entries.length,idDictionary,idCategory);
+                       */
+
+                    })
+                    , catchError(this.handleError('getCategory', []))
+                )
+        )
     }
 
 
@@ -398,7 +452,7 @@ export class ApiService {
 		if(this._categories[idDictionary])
 			return this._categories[idDictionary];
 		else
-			return null;
+			return [];
 	}
 	Category(idDictionary, id:number): DictionaryCategory{
 		if(this._categories[idDictionary])
@@ -585,11 +639,11 @@ export class ApiService {
 		const url = `${apiUrl}entry/${idCategory}/${id}`;
 		return this.http.put<DictionaryEntry>(url, category, httpOptions)
 			.pipe(
-				 tap((category: DictionaryEntry) => {
-				 	console.log(`Updated Category id=${category.id}`);
-			 		if(!this._entries[ category.idCategory ])
-			 			this._entries[ category.idCategory ] = {};
-				 	this._entries[ category.idCategory ][ category.id ] = category;
+				 tap((entry: DictionaryEntry) => {
+				 	console.log(`Updated entry id=${entry.id}`);
+			 		if(!this._entries[ entry.idCategory ])
+                            this._entries[entry.idCategory ] = {};
+                     this._entries[entry.idCategory][entry.id] = entry;
 				 })
 				,catchError(this.handleError<DictionaryEntry>('updateCategory'))
 			);

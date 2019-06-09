@@ -1,3 +1,7 @@
+<div class="sidebar">
+    <app-chapter-sidebar></app-chapter-sidebar>
+</div>
+
 <ng-template #controlButtons>
 	<div class="columns controlButtons">
 		<div class="column">
@@ -17,7 +21,8 @@
 	<h1 class='title'>{{ chapter.title }}</h1>
 	<hr />
 	<div class="novel-content" innerHTML="{{ chapter.textOriginal }}">
-		
+
 	</div>
 </ng-container>
 <ng-container *ngTemplateOutlet="controlButtons"></ng-container>
+
