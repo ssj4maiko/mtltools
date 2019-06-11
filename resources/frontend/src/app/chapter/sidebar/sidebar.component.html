@@ -5,19 +5,20 @@
             <option *ngFor="let option of dictionaries" value="{{option.id}}">{{ option.language }}</option>
         </select>
     </li>
-    <li *ngFor="let category of categories; let i = index" class='categories'>
-        <h1  (click)="selectOpenCategory = i">
-            <input class="category-name" type="text" [(ngModel)]="category.name" />
-        </h1>
-        <ul class="entries" *ngIf="selectOpenCategory == i">
-            <li>
-                <ng-container *ngFor="let entry of category.entries">
-                    <input class="entry-original" type="text" [(ngModel)]="entry.entryOriginal" placeholder="Original" />
-                    <input class="entry-translation" type="text" [(ngModel)]="entry.entryTranslation" placeholder="Translation" />
-                    <input class="entry-description" type="text" [(ngModel)]="entry.description" placeholder="Description" />
-                </ng-container>
-                <input type="button" (click)="addEntry(category.entries, category.id)" value='Add new Entry' />
-            </li>
-        </ul>
-    </li>
+    <ng-container *ngFor="let category of categories; let i = index">
+        <li class='categories'>
+            <h1 (click)="selectOpenCategory = i">
+                <input class="category-name" type="text" [(ngModel)]="category.name" />
+            </h1>
+        </li>
+        <li class="entries" [ngClass]="{'hidden': (selectOpenCategory != i)}">
+            <ng-container *ngFor="let entry of category.entries">
+                <input class="entry-original" type="text" [(ngModel)]="entry.entryOriginal" placeholder="Original" />
+                <input class="entry-translation" type="text" [(ngModel)]="entry.entryTranslation" placeholder="Translation" />
+                <input class="entry-description" type="text" [(ngModel)]="entry.description" placeholder="Description" />
+            </ng-container>
+            <input type="button" (click)="addEntry(category.entries, category.id)" value='Add new Entry' />
+        </li>
+    </ng-container>
+
 </ul>
