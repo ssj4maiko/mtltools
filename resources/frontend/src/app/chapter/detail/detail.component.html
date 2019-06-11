@@ -1,5 +1,5 @@
 <div class="sidebar">
-    <app-chapter-sidebar></app-chapter-sidebar>
+    <app-chapter-sidebar (Sidebar2Chapter)="translateText($event)"></app-chapter-sidebar>
 </div>
 
 <ng-template #controlButtons>
@@ -18,9 +18,9 @@
 
 <ng-container *ngTemplateOutlet="controlButtons"></ng-container>
 <ng-container *ngIf="chapter">
-	<h1 class='title'>{{ chapter.title }}</h1>
+	<h1 class='title'>{{ this.renderedTitle }}</h1>
 	<hr />
-	<div class="novel-content" innerHTML="{{ chapter.textOriginal }}">
+	<div class="novel-content" innerHTML="{{ this.renderedText }}">
 
 	</div>
 </ng-container>

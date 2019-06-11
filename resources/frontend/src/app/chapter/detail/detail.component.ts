@@ -5,6 +5,9 @@ import { DomSanitizer } from '@angular/platform-browser';
 
 import { Chapter } from '../../_models/chapter';
 import { Novel } from '../../_models/novel';
+import { DictionaryCategory } from 'src/app/_models/dictionarycategory';
+import { CategoryModule } from 'src/app/category';
+import { count } from 'rxjs-compat/operator/count';
 
 @Component({
 	selector: 'app-chapter-detail',
@@ -19,7 +22,10 @@ export class DetailComponent implements OnInit {
 	noChapter: number;
 
 	chapterPrevious: Chapter;
-	chapterNext: Chapter;
+    chapterNext: Chapter;
+
+    renderedTitle: string;
+    renderedText: string;
 
 	constructor(
 		private router: Router,
@@ -36,10 +42,7 @@ export class DetailComponent implements OnInit {
 		this.api.getChapters(this.idNovel)
 				.subscribe(res => {
 						this.chapterPrevious = this.api.Chapter(this.idNovel, (+this.noChapter)-1)
-						this.chapterNext = this.api.Chapter(this.idNovel, (+this.noChapter)+1)
-						console.log(this.chapterPrevious);
-						console.log(this.chapterNext);
-						console.log(this.api.Chapters(this.idNovel));
+                        this.chapterNext = this.api.Chapter(this.idNovel, (+this.noChapter)+1)
 					}, err => {
 						console.log(err);
 					}
@@ -60,9 +63,14 @@ export class DetailComponent implements OnInit {
 			this.getChapter();
 		}
 		else {
-			this.chapter = this.api.Chapter(this.idNovel, this.noChapter);
+            this.chapter = this.api.Chapter(this.idNovel, this.noChapter);
+            this.renderDataView();
 		}
-	}
+    }
+    renderDataView(){
+        this.renderedTitle = this.chapter.title;
+        this.renderedText = !!this.chapter.textRevised ? this.chapter.textRevised : this.chapter.textOriginal;
+    }
 	ngOnInit() {
         console.log('onInit');
 		this.startContent();
@@ -70,31 +78,51 @@ export class DetailComponent implements OnInit {
 	ngDoCheck(){
 		if(this.noChapter != this.route.snapshot.params['noChapter'])
 			this.startContent();
-	}
-	/*
-	ngAfterContentInit(){
-		console.log('ngAfterContentInit');
-	}
-	ngAfterContentChecked(){
-		console.log('ngAfterContentChecked');
-	}
-	ngAfterViewInit(){
-		console.log('ngAfterViewInit');
-	}
-	ngAfterViewChecked(){
-		console.log('ngAfterViewChecked');
-	}
-	ngOnChanges(){
-		console.log('ngOnChanges');
-	}
-	ngOnDestroy(){
-		console.log('ngOnDestroy');
-	}
-	*/
+    }
+    translateText(categories:DictionaryCategory[]){
+        let entries = [];
+        categories.forEach(category => {
+            category.entries.forEach(entry => {
+                let length = entry.entryOriginal.length;
+                if (!entries[length])
+                    entries[length] = [];
+                entries[length].push({
+                    'entryOriginal': entry.entryOriginal,
+                    'entryTranslation': entry.entryTranslation,
+                    'idEntry': entry.id,
+                    'idCategory': category.id,
+                    'category': category.name,
+                });
+            });
+        });
+        for(let i = entries.length; i>0; --i){
+            if (entries[i]){
+                entries[i].forEach(entry => {
+                    //console.log('Change ', entry.entryOriginal, entry.entryTranslation);
+                    let regex = new RegExp(entry.entryOriginal, 'g');
+                    this.renderedTitle = this.renderedTitle.replace(regex, '\[\['+entry.entryTranslation+'\]\]');
+                    this.renderedText = this.renderedText.replace(regex, '\[\['+entry.entryTranslation+'\]\]');
+                });
+                console.log('before');
+            }
+        }
+        // The extra characters are to allow to create a space in between translated words
+        let regex = new RegExp("\\]\\]\\[\\[", 'g');
+        this.renderedTitle = this.renderedTitle.replace(regex, ' ');
+        this.renderedText = this.renderedText.replace(regex, ' ');
+        regex = new RegExp('\\]\\]', 'g');
+        this.renderedTitle = this.renderedTitle.replace(regex, '');
+        this.renderedText = this.renderedText.replace(regex, '');
+        regex = new RegExp('\\[\\[', 'g');
+        this.renderedTitle = this.renderedTitle.replace(regex, '');
+        this.renderedText = this.renderedText.replace(regex, '');
+
+    }
 	private getChapter(){
 		this.api.getChapter(this.idNovel, this.noChapter)
 			.subscribe(res => {
-				this.chapter = this.api.Chapter(this.idNovel, this.noChapter);
+                this.chapter = this.api.Chapter(this.idNovel, this.noChapter);
+                this.renderDataView();
 			}, err => {
 				console.log(err);
 			});

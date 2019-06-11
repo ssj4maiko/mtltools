@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NgModel } from '@angular/forms';
 
@@ -14,7 +14,8 @@ import { ApiService } from 'src/app/api.service';
 })
 export class SidebarComponent implements OnInit {
 
-    entries: DictionaryEntry[][] = [];
+    @Output() Sidebar2Chapter: EventEmitter<DictionaryCategory[]> = new EventEmitter<DictionaryCategory[]>();
+
     dictionaries: Dictionary[] = [];
     categories: DictionaryCategory[] = [];
     idCategory: number;
@@ -73,15 +74,16 @@ export class SidebarComponent implements OnInit {
             ,'idCategory'       : idCategory
         })
     }
-    private entryList() {
-        if(this.entries.length > 0){
-            this.api.dictionaryCache(this.idDictionary, this.idCategory)
-            .subscribe(res => {
-                this.entries = Object.values(this.api.Entries(this.idCategory));
-            }, err => {
-                console.log(err);
-            });
-        }
+    private addCategory(){
+        this.categories.push({
+             'id'           : 0
+            ,'idDictionary' : this.idDictionary
+            ,'name'         : ''
+            ,'entries'      : []
+        });
+    }
+    refreshTranslation(){
+        this.Sidebar2Chapter.emit(this.categories);
     }
 
 }

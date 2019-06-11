@@ -4,11 +4,12 @@
             <option value='' selected='selected'>Choose a language</option>
             <option *ngFor="let option of dictionaries" value="{{option.id}}">{{ option.language }}</option>
         </select>
+        <input type="button" class="button" value="Refresh Translation" (click)="refreshTranslation()" />
     </li>
     <ng-container *ngFor="let category of categories; let i = index">
         <li class='categories'>
             <h1 (click)="selectOpenCategory = i">
-                <input class="category-name" type="text" [(ngModel)]="category.name" />
+                <input class="category-name" type="text" [(ngModel)]="category.name" placeholder="Category Name" />
             </h1>
         </li>
         <li class="entries" [ngClass]="{'hidden': (selectOpenCategory != i)}">
@@ -17,8 +18,10 @@
                 <input class="entry-translation" type="text" [(ngModel)]="entry.entryTranslation" placeholder="Translation" />
                 <input class="entry-description" type="text" [(ngModel)]="entry.description" placeholder="Description" />
             </ng-container>
-            <input type="button" (click)="addEntry(category.entries, category.id)" value='Add new Entry' />
+            <input type="button" (click)="addEntry(category.entries, category.id)" value='+ Add new Entry' />
         </li>
     </ng-container>
-
+    <li class="categories">
+        <input type="button" (click)="addCategory()" value='+ Add new Category'  class="category-name" />
+    </li>
 </ul>
