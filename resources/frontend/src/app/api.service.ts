@@ -377,7 +377,7 @@ export class ApiService {
             );
     }
     dictionaryCache(idNovel: number, idDictionary: number): Observable<{}> {
-        const url = `${apiUrl}dictionary/cache/${idNovel}/${idDictionary}`;
+        const url = `${apiUrl}dictionary/cache/${idNovel}/${idDictionary}?${this._dictionaries[idNovel][idDictionary].dateRevision}`;
 
         return this.cacheService.get(
             url,
@@ -410,24 +410,20 @@ export class ApiService {
                                 });
                             }
                         }
-                        /*
-                         if(entries && entries.length > 0){
-                           for(let i=0;i<entries.length;++i){
-                               this._entries[ idCategory ] = {};
-
-                               for(let i in entries){
-                                   this._entries[ idCategory ][ entries[i].id ] = entries[i];
-                               }
-                           }
-                        }
-                        if (force)
-                           this.updateCounterEntry(entries.length,idDictionary,idCategory);
-                       */
-
                     })
                     , catchError(this.handleError('getCategory', []))
                 )
         )
+    }
+    saveFullDictionary(idNovel: number, idDictionary: number, dictionary:any): Observable<Dictionary> {
+        const url = `${apiUrl}dictionary/fullSave/${idNovel}/${idDictionary}`;
+        return this.http.put<Dictionary>(url, dictionary, httpOptions)
+            .pipe(
+                tap((dictionary: Dictionary) => {
+                    console.log(dictionary);
+                })
+                , catchError(this.handleError<Dictionary>('getCategory'))
+            )
     }
 
 

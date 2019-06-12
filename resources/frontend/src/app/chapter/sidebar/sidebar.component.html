@@ -4,12 +4,14 @@
             <option value='' selected='selected'>Choose a language</option>
             <option *ngFor="let option of dictionaries" value="{{option.id}}">{{ option.language }}</option>
         </select>
-        <input type="button" class="button" value="Refresh Translation" (click)="refreshTranslation()" />
+        <input type="button" class="button is-small is-info" value="Refresh Translation" (click)="refreshTranslation()" />
+        <input type="button" class="button is-small is-warning" value="Refresh to Original" (click)="refreshOriginal()" />
     </li>
     <ng-container *ngFor="let category of categories; let i = index">
         <li class='categories'>
             <h1 (click)="selectOpenCategory = i">
                 <input class="category-name" type="text" [(ngModel)]="category.name" placeholder="Category Name" />
+                <input type="hidden" [(ngModel)]="category.id" />
             </h1>
         </li>
         <li class="entries" [ngClass]="{'hidden': (selectOpenCategory != i)}">
@@ -17,11 +19,19 @@
                 <input class="entry-original" type="text" [(ngModel)]="entry.entryOriginal" placeholder="Original" />
                 <input class="entry-translation" type="text" [(ngModel)]="entry.entryTranslation" placeholder="Translation" />
                 <input class="entry-description" type="text" [(ngModel)]="entry.description" placeholder="Description" />
+                <input type="hidden" #_entryOriginal value="{entry.entryOriginal}" />
+                <input type="hidden" #_entryTranslation value="{entry.entryTranslation}" />
+                <input type="hidden" #_description value="{entry.description}" />
+                <input type="hidden" [(ngModel)]="entry.update" [value]="entry.entryOriginal == _entryOriginal.value" />
+                <input type="hidden" [(ngModel)]="entry.idCategory" />
             </ng-container>
             <input type="button" (click)="addEntry(category.entries, category.id)" value='+ Add new Entry' />
         </li>
     </ng-container>
     <li class="categories">
-        <input type="button" (click)="addCategory()" value='+ Add new Category'  class="category-name" />
+    </li>
+    <li class="dictionary-buttons">
+        <input type="button" (click)="addCategory()" value='+ Add new Category' class="button is-small is-primary" />
+        <input type="button" (click)="saveModifications()" value='Save Modifications'  class="button is-small is-danger" />
     </li>
 </ul>

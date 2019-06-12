@@ -8,9 +8,9 @@
         align-self: flex-start;
         width:100%;
 
-
-        select{
-            width:50%;
+        &>*{
+            width: 33.3%;
+            height:100%;
         }
     }
     li:last-child {
@@ -57,5 +57,13 @@
     }
     .hidden {
         display:none;
+    }
+    .dictionary-buttons {
+        width:100%;
+
+        &>*{
+            width: 50%;
+            height:100%;
+        }
     }
 }

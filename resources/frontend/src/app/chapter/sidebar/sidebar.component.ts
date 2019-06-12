@@ -45,6 +45,9 @@ export class SidebarComponent implements OnInit {
                 }, err => {
                     console.log(err);
                 });
+        } else {
+            this.dictionarySelector = this.dictionaries[0].id;
+            this.dictionarySelected(this.dictionarySelector);
         }
     }
     dictionarySelected(idDictionary:number){
@@ -55,22 +58,25 @@ export class SidebarComponent implements OnInit {
         if (this.categories.length == 0){
             this.api.dictionaryCache(this.idNovel, this.idDictionary)
             .subscribe(res => {
-                console.log(res);
                 this.categories = Object.values(this.api.Categories(this.idDictionary));
                 this.categories.forEach(category => {
                     category.entries = Object.values(this.api.Entries(category.id));
                 });
-                console.log(this.categories);
+                this.refreshTranslation();
             }, err => {
                 console.log(err);
             });
+        } else {
+            this.refreshTranslation();
         }
     }
     private addEntry(entries, idCategory){
         entries.push({
-             'entryOriginal'    :   ''
+             'id'               :   ''
+            ,'entryOriginal'    :   ''
             ,'entryTranslation' :   ''
             ,'description'      :   ''
+            ,'update'           :   0
             ,'idCategory'       : idCategory
         })
     }
@@ -84,6 +90,18 @@ export class SidebarComponent implements OnInit {
     }
     refreshTranslation(){
         this.Sidebar2Chapter.emit(this.categories);
+    }
+    refreshOriginal(){
+        this.Sidebar2Chapter.emit([]);
+    }
+    saveModifications(){
+        this.api.saveFullDictionary(this.idNovel, this.idDictionary, this.categories)
+            .subscribe(res => {
+                console.log(res);
+            }, err => {
+                console.log(err);
+            });
+        console.log(this.categories);
     }
 
 }
