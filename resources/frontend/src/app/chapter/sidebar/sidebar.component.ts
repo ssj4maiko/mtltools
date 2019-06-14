@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NgModel } from '@angular/forms';
 
@@ -12,12 +12,14 @@ import { ApiService } from 'src/app/api.service';
 	templateUrl: './sidebar.component.html',
 	styleUrls: ['./sidebar.component.scss']
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit, OnDestroy {
 
     @Output() Sidebar2Chapter: EventEmitter<DictionaryCategory[]> = new EventEmitter<DictionaryCategory[]>();
 
     dictionaries: Dictionary[] = [];
     categories: DictionaryCategory[] = [];
+    entriesOriginalValues: {} = {};
+    categoriesOriginalValues: {} = {};
     idCategory: number;
     idDictionary: number;
     idNovel: number;
@@ -50,6 +52,17 @@ export class SidebarComponent implements OnInit {
             this.dictionarySelected(this.dictionarySelector);
         }
     }
+    ngOnDestroy(){
+        delete this.dictionaries;
+        delete this.categories;
+        delete this.entriesOriginalValues;
+        delete this.categoriesOriginalValues;
+        delete this.idCategory;
+        delete this.idDictionary;
+        delete this.idNovel;
+        delete this.dictionarySelector;
+        console.log('destroy Sidebar');
+    }
     dictionarySelected(idDictionary:number){
         this.idDictionary = idDictionary;
         this.getChache();
@@ -60,7 +73,21 @@ export class SidebarComponent implements OnInit {
             .subscribe(res => {
                 this.categories = Object.values(this.api.Categories(this.idDictionary));
                 this.categories.forEach(category => {
+                    this.categoriesOriginalValues[category.id] = {
+                        'name'  :   category.name
+                    }
                     category.entries = Object.values(this.api.Entries(category.id));
+                    category.entries.forEach(entry => {
+                        if(!this.entriesOriginalValues[category.id]){
+                            this.entriesOriginalValues[category.id] = {};
+                        }
+                        this.entriesOriginalValues[category.id][entry.id] = {
+                             'entryOriginal'    : ''+entry.entryOriginal
+                            ,'entryTranslation' : ''+entry.entryTranslation
+                            ,'description'      : ''+entry.description
+                            ,'idCategory'       : ''+entry.idCategory
+                        }
+                    });
                 });
                 this.refreshTranslation();
             }, err => {
@@ -70,14 +97,30 @@ export class SidebarComponent implements OnInit {
             this.refreshTranslation();
         }
     }
+    changeEntry(entry){
+        if(entry.id > 0){
+            entry.update = entry.entryOriginal != this.entriesOriginalValues[entry.idCategory][entry.id].entryOriginal
+                        || entry.entryTranslation != this.entriesOriginalValues[entry.idCategory][entry.id].entryTranslation
+                        || (!!entry.description && (entry.description != this.entriesOriginalValues[entry.idCategory][entry.id].description))
+                        || entry.idCategory != this.entriesOriginalValues[entry.idCategory][entry.id].idCategory
+            ;
+        }
+    }
+    changeCategory(category){
+        if(category.id > 0){
+            category.update = category.name != this.categoriesOriginalValues[category.id].name;
+            ;
+            console.log(category.update);
+        }
+    }
     private addEntry(entries, idCategory){
         entries.push({
-             'id'               :   ''
+             'id'               :   0
             ,'entryOriginal'    :   ''
             ,'entryTranslation' :   ''
             ,'description'      :   ''
-            ,'update'           :   0
-            ,'idCategory'       : idCategory
+            ,'update'           :   false
+            ,'idCategory'       :   idCategory
         })
     }
     private addCategory(){
@@ -85,6 +128,7 @@ export class SidebarComponent implements OnInit {
              'id'           : 0
             ,'idDictionary' : this.idDictionary
             ,'name'         : ''
+            ,'update'       : false
             ,'entries'      : []
         });
     }

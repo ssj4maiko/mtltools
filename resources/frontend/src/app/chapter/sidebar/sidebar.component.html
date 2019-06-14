@@ -10,21 +10,17 @@
     <ng-container *ngFor="let category of categories; let i = index">
         <li class='categories'>
             <h1 (click)="selectOpenCategory = i">
-                <input class="category-name" type="text" [(ngModel)]="category.name" placeholder="Category Name" />
-                <input type="hidden" [(ngModel)]="category.id" />
+                <input class="category-name" type="text" [(ngModel)]="category.name" placeholder="Category Name" (ngModelChange)="changeCategory(category)" />
             </h1>
         </li>
         <li class="entries" [ngClass]="{'hidden': (selectOpenCategory != i)}">
-            <ng-container *ngFor="let entry of category.entries">
-                <input class="entry-original" type="text" [(ngModel)]="entry.entryOriginal" placeholder="Original" />
-                <input class="entry-translation" type="text" [(ngModel)]="entry.entryTranslation" placeholder="Translation" />
-                <input class="entry-description" type="text" [(ngModel)]="entry.description" placeholder="Description" />
-                <input type="hidden" #_entryOriginal value="{entry.entryOriginal}" />
-                <input type="hidden" #_entryTranslation value="{entry.entryTranslation}" />
-                <input type="hidden" #_description value="{entry.description}" />
-                <input type="hidden" [(ngModel)]="entry.update" [value]="entry.entryOriginal == _entryOriginal.value" />
+            <div *ngFor="let entry of category.entries" [ngClass]="{'changed': entry.update == true }">
+                <input class="entry-original" type="text" [(ngModel)]="entry.entryOriginal" placeholder="Original" (ngModelChange)="changeEntry(entry)" />
+                <input class="entry-translation" type="text" [(ngModel)]="entry.entryTranslation" placeholder="Translation" (ngModelChange)="changeEntry(entry)" />
+                <input class="entry-description" type="text" [(ngModel)]="entry.description" placeholder="Description" (ngModelChange)="changeEntry(entry)" />
+                <!--input  type="hidden" [(ngModel)]="entry.update" /-->
                 <input type="hidden" [(ngModel)]="entry.idCategory" />
-            </ng-container>
+            </div>
             <input type="button" (click)="addEntry(category.entries, category.id)" value='+ Add new Entry' />
         </li>
     </ng-container>

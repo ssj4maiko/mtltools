@@ -94,4 +94,8 @@ class DictionaryController extends Controller
             return Storage::get($cacheName);
         }
     }
+
+    public function fullSave($idNovel, $idDictionary){
+
+    }
 }

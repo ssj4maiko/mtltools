@@ -36,8 +36,12 @@
         padding: left 10;
         overflow-y:auto;
 
-        &:nth-child(odd){
+
+        & > div:nth-child(odd){
             background-color:gray;
+        }
+        .changed {
+            background-color:green;
         }
 
         input {

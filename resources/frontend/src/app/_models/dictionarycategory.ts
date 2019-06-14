@@ -3,4 +3,5 @@ export class DictionaryCategory {
 	idDictionary: number;
 	name: string;
     entries: any[];
+    update: boolean;
 }
