@@ -10,13 +10,14 @@ import { Novel } from './_models/novel';
 import { Dictionary } from './_models/dictionary';
 import { DictionaryCategory } from './_models/dictionarycategory';
 import { DictionaryEntry } from './_models/dictionaryentry';
+import { environment } from 'src/environments/environment';
 
 const httpOptions = {
 	headers: new HttpHeaders({
 		'Content-Type': 'application/json'
 	})
 };
-const apiUrl = "http://192.168.1.9:4000/api/";
+const apiUrl = "http://" + environment.backendServer + "/api/";
 
 @Injectable({
 	providedIn: 'root'
@@ -415,14 +416,17 @@ export class ApiService {
                 )
         )
     }
-    saveFullDictionary(idNovel: number, idDictionary: number, dictionary:any): Observable<Dictionary> {
+    saveFullDictionary(idNovel: number, idDictionary: number, dictionary:any): Observable<any> {
         const url = `${apiUrl}dictionary/fullSave/${idNovel}/${idDictionary}`;
-        return this.http.put<Dictionary>(url, dictionary, httpOptions)
+        return this.http.put<any>(url, dictionary, httpOptions)
             .pipe(
-                tap((dictionary: Dictionary) => {
-                    console.log(dictionary);
+                tap(res => {
+                    if(res.changes){
+                        this._dictionaries[idNovel][idDictionary].dateRevision = res.dateRevision;
+                        this.cacheService.delete(`${apiUrl}dictionary/cache/${idNovel}/${idDictionary}?${this._dictionaries[idNovel][idDictionary].dateRevision}`);
+                    }
                 })
-                , catchError(this.handleError<Dictionary>('getCategory'))
+                , catchError(this.handleError<any>('getCategory'))
             )
     }
 

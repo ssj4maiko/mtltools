@@ -42,6 +42,7 @@ class Dictionary extends Model
             $D->dateRevision = Carbon::now();
             $D->update();
         }
+        return $D;
     }
     public function countCategories(){
         return $this->dictionaryCategory()

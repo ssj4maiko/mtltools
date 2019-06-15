@@ -66,7 +66,7 @@ export class ListComponent implements OnInit {
         this.api.autoUpdateChapters(this.idNovel)
 			.subscribe(res => {
 				console.log(res);
-				this.chapters.push(res);
+                this.chapterList(true);
 			}, err => {
 				console.log(err);
 			});

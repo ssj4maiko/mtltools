@@ -19,7 +19,8 @@ class DictionaryCategoryController extends Controller
 		return DictionaryCategory::where(['id' => $id])
                                  ->with('countEntries')
                                  ->first();
-	}
+    }
+
 	public function insert(Request $request, $idDictionary, $defaultParameters = false) {
 		if(!$defaultParameters)
 			$data = DictionaryCategory::prepare($request->json()->all());
@@ -28,13 +29,27 @@ class DictionaryCategoryController extends Controller
         $data['idDictionary'] = $idDictionary;
         $category = DictionaryCategory::create($data);
 		return $this->get($idDictionary,$category->id);
-	}
+    }
+    public function internalInsert($idNovel, $idDictionary, $data){
+		$data = DictionaryCategory::prepare($data);
+        $data['idDictionary'] = $idDictionary;
+        $category = DictionaryCategory::create($data);
+
+        return $category->id;
+    }
+
 	public function update(Request $request, $idDictionary, $id) {
 		$category = DictionaryCategory::findOrFail($id);
 		$data = DictionaryCategory::prepare($request->json()->all());
 		$category->update($data);
 
 		return $this->get($idDictionary,$category->id);
+	}
+
+	public function internalUpdate($idNovel, $idDictionary, $id, $data) {
+		$category = DictionaryCategory::findOrFail($id);
+		$data = DictionaryCategory::prepare($data);
+		return $category->update($data);
 	}
 	public function delete($idDictionary, $id) {
 		DictionaryCategory::where(['id' => $id])

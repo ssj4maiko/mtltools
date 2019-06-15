@@ -8,6 +8,7 @@ use App\Novel;
 use App\Dictionary;
 use App\DictionaryCategory;
 use App\DictionaryEntry;
+use App\Http\Controllers\DictionaryController;
 
 class DictionaryEntryController extends Controller
 {
@@ -19,18 +20,33 @@ class DictionaryEntryController extends Controller
 		return DictionaryEntry::where(['id' => $id])->first();
 	}
     public function updateCategory(DictionaryEntry $Entry, Request $request, $idCategory){
-
-        $data = $Entry->prepare($request->json()->all(),$idCategory);
+        return $this->updateAllEntries($Entry, $request->json()->all(), $idCategory, true);
+    }
+    public function updateAllEntries(DictionaryEntry $Entry, $data, $idCategory, $updateCache = false){
+        $data = $Entry->prepare($data,$idCategory);
         $data = $Entry->getInsert();
 
         $changes = $Entry->massInsert()
                 || $Entry->massUpdate()
                 || $Entry->massDelete();
 
-        if($changes)
-            Dictionary::updateRevision(null,1);
+        $return = ['changes' => $changes];
+        if($changes && $updateCache){
+            $DIC = Dictionary::updateRevision(null,1);
+            $return['dateRevision'] = $DIC->dateRevision;
+            $DICC = new DictionaryController();
+            $DICC->delCache($DIC->idNovel, $DIC->id);
+        }
 
-        return ['changes' => $changes];
+        return $return;
+
+    }
+    public function internalInsert($idCategory, $data){
+		$data = DictionaryEntry::prepare($data);
+        $data['idDictionary'] = $idDictionary;
+        $category = DictionaryEntry::create($data);
+
+        return $category->id;
     }
 	public function insert(Request $request, $idCategory) {
 		$data = DictionaryEntry::prepare($request->json()->all());

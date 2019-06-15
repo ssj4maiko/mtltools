@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 
 use App\Novel;
 use App\Dictionary;
+use App\DictionaryEntry;
+use App\Http\Controllers\DictionaryCategoryController;
+use App\Http\Controllers\DictionaryEntryController;
 
 use Illuminate\Support\Facades\Storage;
 
@@ -94,8 +97,46 @@ class DictionaryController extends Controller
             return Storage::get($cacheName);
         }
     }
+    public function delCache($idNovel, $idDictionary){
+        $cacheName = self::CACHEFOLDER.$idNovel.'-'.$idDictionary.'.json';
+        return Storage::delete($cacheName);
+    }
 
-    public function fullSave($idNovel, $idDictionary){
+    private $clearCache = false;
+    public function fullSave(DictionaryCategoryController $CATC, DictionaryEntryController $ENTC, Request $request, $idNovel, $idDictionary){
+        $categories = $request->json()->all();
 
+        foreach($categories as $category){
+            if($category['id'] == 0){
+                $this->clearCache = true;
+                $category['id'] = $CATC->internalInsert($idNovel, $idDictionary,[
+                    'name' => $category['name']
+                ]);
+            }
+            $idCategory = $category['id'];
+            if(isset($category['update']) && $category['update']){
+                $this->clearCache = true;
+                $CATC->internalUpdate($idNovel, $idDictionary,$idCategory,[
+                    'name' => $category['name']
+                ]);
+            }
+            if(isset($category['entries'])){
+                $changes = $ENTC->updateAllEntries(new DictionaryEntry(), $category, $idCategory, false);
+                if($changes['changes'])
+                    $this->clearCache = true;
+            }
+        }
+
+        $return = ['changes' => $this->clearCache];
+
+        if($this->clearCache){
+            $DIC = Dictionary::updateRevision($idDictionary,null);
+            $return['dateRevision'] = $DIC->dateRevision;
+            $this->delCache($DIC->idNovel, $DIC->id);
+        }
+
+        return $return;
+    }
+    private function fullSaveEntries(DictionaryEntryController $ENTC, $idNovel, $idDictionary, $idCategory, $entries){
     }
 }

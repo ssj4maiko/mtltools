@@ -25,6 +25,14 @@
             width:100%;
             background: linear-gradient(to bottom, #e570e7 0%,#c85ec7 47%,#a849a3 100%);
         }
+
+        & > h1.changed {
+            background: linear-gradient(to bottom, #009013 0%,#00b469 47%,#107020 100%);
+        }
+
+        & > h1.new {
+            background: linear-gradient(to bottom, #393cff 0%,#1f00cc 47%,#1400cc 100%);
+        }
         .category-name {
             background-color:transparent;
             border:0px solid white;
@@ -40,8 +48,11 @@
         & > div:nth-child(odd){
             background-color:gray;
         }
-        .changed {
+        & > div.changed {
             background-color:green;
+        }
+        & > div.new {
+            background-color:blue;
         }
 
         input {

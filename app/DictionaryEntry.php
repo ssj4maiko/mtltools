@@ -63,29 +63,30 @@ class DictionaryEntry extends Model
     }
 	public function prepare($data, $idCategory){
         foreach($data['entries'] as $v){
-            if($v['id']){
-                if($v['delete']){
+            if($v['id'] && $v['id'] > 0){
+                if(isset($v['delete']) && $v['delete']){
                     $this->delete[] = $v['id'];
                 }
-                elseif($v['update']){
+                elseif(isset($v['update']) && $v['update']){
                     $tmp = DictionaryEntry::find($v['id']);
-                    $tmp->entryOriginal = $v['original'];
-                    $tmp->entryTranslation = $v['translation'];
+                    $tmp->entryOriginal = $v['entryOriginal'];
+                    $tmp->entryTranslation = $v['entryTranslation'];
                     $tmp->description = $v['description'];
-                    $tmp->length = strlen($v['original']);
+                    $tmp->length = strlen($v['entryOriginal']);
 
                     $this->update[] = $tmp;
                 }
             } else {
-                if($v['original']
-                || $v['translation']){
-                    $this->insert[] = [
+                if($v['entryOriginal']
+                || $v['entryTranslation']){
+                    $insert = [
                         'idCategory'        =>  $idCategory,
-                        'entryOriginal'     =>  !empty($v['original']) ? $v['original'] : $v['translation'],
-                        'entryTranslation'  =>  !empty($v['translation']) ? $v['translation'] : $v['original'],
+                        'entryOriginal'     =>  !empty($v['entryOriginal']) ? $v['entryOriginal'] : $v['entryTranslation'],
+                        'entryTranslation'  =>  !empty($v['entryTranslation']) ? $v['entryTranslation'] : $v['entryOriginal'],
                         'description'       =>  $v['description'],
-                        'length'            =>  strlen(!empty($v['original']) ? $v['original'] : $v['translation'])
                     ];
+                    $insert['length'] = strlen($v['entryOriginal']);
+                    $this->insert[] = $insert;
                 }
             }
         }

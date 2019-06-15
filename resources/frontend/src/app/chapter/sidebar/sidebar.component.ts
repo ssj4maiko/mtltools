@@ -6,6 +6,7 @@ import { DictionaryEntry } from '../../_models/dictionaryentry';
 import { DictionaryCategory } from '../../_models/dictionarycategory';
 import { Dictionary } from '../../_models/dictionary';
 import { ApiService } from 'src/app/api.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
 	selector: 'app-chapter-sidebar',
@@ -65,12 +66,16 @@ export class SidebarComponent implements OnInit, OnDestroy {
     }
     dictionarySelected(idDictionary:number){
         this.idDictionary = idDictionary;
-        this.getChache();
+        this.getCache();
     }
-    private getChache() {
+    private getCache() {
         if (this.categories.length == 0){
             this.api.dictionaryCache(this.idNovel, this.idDictionary)
             .subscribe(res => {
+                this.categories = [];
+                this.categoriesOriginalValues = {};
+                this.entriesOriginalValues = {};
+
                 this.categories = Object.values(this.api.Categories(this.idDictionary));
                 this.categories.forEach(category => {
                     this.categoriesOriginalValues[category.id] = {
@@ -141,6 +146,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
     saveModifications(){
         this.api.saveFullDictionary(this.idNovel, this.idDictionary, this.categories)
             .subscribe(res => {
+                if (res.changes) {
+                    this.dictionaries = Object.values(this.api.Dictionaries(this.idNovel));
+                    this.categories = [];
+                    this.getCache();
+                }
                 console.log(res);
             }, err => {
                 console.log(err);
@@ -148,4 +158,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
         console.log(this.categories);
     }
 
+    openOutside(translate){
+        let url = `${environment.backendServer}/novel/${this.idNovel}/${this.idDictionary}/`;
+        window.open()
+    }
 }
