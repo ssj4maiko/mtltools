@@ -17,7 +17,7 @@ const httpOptions = {
 		'Content-Type': 'application/json'
 	})
 };
-const apiUrl = "http://" + environment.backendServer + "/api/";
+const apiUrl = environment.backendServer + "/api/";
 
 @Injectable({
 	providedIn: 'root'

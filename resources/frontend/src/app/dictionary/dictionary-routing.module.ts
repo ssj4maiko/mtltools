@@ -27,7 +27,7 @@ const routes: Routes = [
 	},
 	{
 		 path: ':idDictionary'
-		,loadChildren: () => CategoryModule
+        , loadChildren: '../category#CategoryModule'
 		,data: { title: 'View chapters' }
 	},
 	{

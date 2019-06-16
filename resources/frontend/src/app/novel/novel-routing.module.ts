@@ -27,12 +27,12 @@ const routes: Routes = [
 	},
 	{
 		 path: 'dictionary/:idNovel'
-		,loadChildren: () => DictionaryModule
+		,loadChildren: '../dictionary#DictionaryModule'
 		,data: { title: 'View dictionary' }
 	},
 	{
 		 path: ':idNovel'
-		,loadChildren: () => ChapterModule
+		,loadChildren: '../chapter#ChapterModule'
 		,data: { title: 'View chapters' }
 	},
 	{

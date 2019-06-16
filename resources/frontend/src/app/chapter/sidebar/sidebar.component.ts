@@ -118,7 +118,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
             console.log(category.update);
         }
     }
-    private addEntry(entries, idCategory){
+    addEntry(entries, idCategory){
         entries.push({
              'id'               :   0
             ,'entryOriginal'    :   ''
@@ -128,7 +128,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
             ,'idCategory'       :   idCategory
         })
     }
-    private addCategory(){
+    addCategory(){
         this.categories.push({
              'id'           : 0
             ,'idDictionary' : this.idDictionary
@@ -159,7 +159,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
     }
 
     openOutside(translate){
-        let url = `${environment.backendServer}/novel/${this.idNovel}/${this.idDictionary}/`;
-        window.open()
+        let no = this.route.snapshot.params['noChapter'];
+        let url = `${environment.backendServer}/static/${this.idNovel}/${this.idDictionary}/${no}/`;
+        window.open(url);
     }
 }

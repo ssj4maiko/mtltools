@@ -4,8 +4,8 @@
 
 export const environment = {
     production: false,
-    currentUrl: '192.168.1.9:4200',
-    backendServer: '192.168.1.9:4000',
+    currentUrl: 'http://192.168.1.9:4200',
+    backendServer: 'http://192.168.1.9:4000',
 };
 
 /*

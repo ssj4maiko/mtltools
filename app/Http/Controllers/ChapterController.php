@@ -3,15 +3,22 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Contracts\Routing\UrlGenerator;
 use App\Http\Controllers\NovelController;
+use App\Http\Controllers\DictionaryController;
 
 use App\Novel;
 use App\Chapter;
 
 use App\Drivers\Syosetu;
+use Illuminate\Support\Facades\Storage;
 
 class ChapterController extends Controller
 {
+    private $URL;
+    public function __construct(UrlGenerator $url){
+        $this->URL = $url;
+    }
 	public function getAll($idNovel){
 		return Chapter::select('idNovel','no','title','dateCreated', 'dateRevision','dateOriginalPost', 'dateOriginalRevision')
 					  ->addSelect(DB::raw('(textOriginal IS NOT NULL) as hasText'))
@@ -143,5 +150,108 @@ class ChapterController extends Controller
 		$novel->save();
 
         return $novel;
-	}
+    }
+
+    private const CACHEFOLDER = 'public/chapters/';
+    private const AVERAGE_CHAR_COUNT = 25000;
+    private $forceCache = false;
+    public function getCache($idNovel, $idDictionary, $noChapter, $part){
+        $cacheName = self::CACHEFOLDER.$idNovel.'/'.$idDictionary.'/'.$noChapter.'-'.$part.'.html';
+        if(Storage::exists($cacheName)){
+            return Storage::get($cacheName);
+        } else {
+            $this->forceCache = true;
+            $url = $this->createCache($idNovel, $idDictionary, $noChapter);
+            return Storage::get($cacheName);
+        }
+    }
+    private function UrlCreator($novel, $idDictionary, $noChapter, $part, $total, $direction = '='){
+        // URL::current();
+        switch($direction){
+            case '-':
+                --$part;
+                if($part < 0){
+                    $part = 1;
+                    --$noChapter;
+                    if($noChapter==0){
+                        return null;
+                    }
+                }
+                break;
+            case '+':
+                ++$part;
+                if($part >= $total){
+                    $part = 1;
+                    ++$noChapter;
+
+                    // If it's syosetu, there could still be more chapters, but if it's manually uploaded, then there shouldn't be any
+                    // Otherwise, they just need to reset the cache in this rare situation
+                    if(!$novel->flagSyosetu && $noChapter > $novel->numberChapters){
+                        return null;
+                    }
+                }
+                break;
+        }
+        $array = [$novel->id, $idDictionary, $noChapter, $part+1];
+        return $this->URL->to('/static/'.implode('/',$array));
+    }
+    public function createCache($idNovel, $idDictionary, $noChapter){
+        $DICC = new DictionaryController();
+
+        $cacheName = self::CACHEFOLDER.$idNovel.'/'.$idDictionary.'/'.$noChapter.'-{part}.html';
+
+        $cache = $DICC->getCache($idNovel, $idDictionary);
+        if($cache){
+
+            $NOVC = new NovelController();
+            $novel = $NOVC->get($idNovel);
+            $cacheDictionary = json_decode($cache);
+            $chapter = $this->get($idNovel, $noChapter);
+            $translatedText = $chapter->translateText($cacheDictionary[0]);
+
+            $strStart = $strEnd = 0;
+            $textLength = strlen($translatedText);
+            $chunks = [];
+            while($textLength > $strStart) {
+                $strEnd+=self::AVERAGE_CHAR_COUNT;
+                if($strEnd < $textLength){
+                    $strEnd = strpos($translatedText, "\n", $strEnd);
+                    $chunks[] = substr($translatedText, $strStart, $strEnd);
+                } else {
+                    $chunks[] = substr($translatedText, $strStart);
+                }
+                $strStart = $strEnd+1;
+            };
+
+            $total = count($chunks);
+            for($i = 0; $i < $total; ++$i){
+                Storage::put(str_replace('{part}',$i+1,$cacheName), view('cache/chapter',[
+                                                    'text'      => $chunks[$i],
+                                                    'novel'     => $novel,
+                                                    'chapter'   => $chapter,
+                                                    'total'     => $total,
+                                                    'part'      => $i+1,
+                                                    'control'   =>  [
+                                                        'previous'  =>  $this->UrlCreator($novel,$idDictionary,$noChapter, $i, $total, '-'),
+                                                        'next'      =>  $this->UrlCreator($novel,$idDictionary,$noChapter, $i, $total, '+')
+                                                    ]
+                                                ])
+                );
+            }
+            return Storage::url($cacheName);
+        } else {
+            throw new \Exception("No dictionary", 1);
+        }
+    }
+    public function delCache($idNovel, $idDictionary, $noChapter = false){
+        if(!$noChapter){
+            $cacheName = self::CACHEFOLDER.$idNovel.'/'.$idDictionary.'/';
+            return Storage::deleteDirectory($cacheName);
+        }
+        $cacheName = self::CACHEFOLDER.$idNovel.'/'.$idDictionary.'/';
+        return Storage::deleteDirectory($cacheName);
+        // Create something that will get all the files and manually check each instance to see if needs to delete
+        $cacheName = self::CACHEFOLDER.$idNovel.'/*/'.$noChapter.'-.html';
+
+    }
 }

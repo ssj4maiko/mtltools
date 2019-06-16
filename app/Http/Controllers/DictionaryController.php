@@ -9,6 +9,7 @@ use App\Dictionary;
 use App\DictionaryEntry;
 use App\Http\Controllers\DictionaryCategoryController;
 use App\Http\Controllers\DictionaryEntryController;
+use App\Http\Controllers\ChapterController;
 
 use Illuminate\Support\Facades\Storage;
 
@@ -99,6 +100,8 @@ class DictionaryController extends Controller
     }
     public function delCache($idNovel, $idDictionary){
         $cacheName = self::CACHEFOLDER.$idNovel.'-'.$idDictionary.'.json';
+        $CHAC = new ChapterController();
+        $CHAC->delCache($idNovel, $idDictionary);
         return Storage::delete($cacheName);
     }
 

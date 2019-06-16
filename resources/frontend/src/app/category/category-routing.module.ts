@@ -25,7 +25,7 @@ const routes: Routes = [
 	},
 	{
 		 path: ':idCategory'
-		,loadChildren: () => EntryModule
+        , loadChildren: '../entry#EntryModule'
 		,data: { title: 'View Category' }
 	},
 	{

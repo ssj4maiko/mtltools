@@ -6,7 +6,7 @@ import { NovelModule } from './novel';
 const routes: Routes = [
 	{
 		 path: 'novel'
-		,loadChildren: () => NovelModule
+		,loadChildren: './novel#NovelModule'
 	},
 	{
 		 path: '**'

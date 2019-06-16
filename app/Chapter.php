@@ -27,5 +27,16 @@ class Chapter extends Model
 	public static function prepare($data){
 
 		return $data;
-	}
+    }
+    public function translateText($dictionary){
+        $text = $this->textRevised ? $this->textRevised : $this->textOriginal;
+
+        foreach ($dictionary->dictionary_entry as $entry) {
+            $text = str_replace($entry->entryOriginal, '[['.$entry->entryTranslation.']]', $text);
+        }
+        $text = str_replace(']][[', ' ', $text);
+        $text = str_replace(']]', '', $text);
+        $text = str_replace('[[', '', $text);
+        return $text;
+    }
 }
