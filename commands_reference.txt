@@ -14,6 +14,7 @@ php artisan make:model Drivers/Syosetu
 
 php artisan make:controller NovelController
 php artisan make:controller ChapterController
+php artisan make:controller front/NovelController
 
 
 sudo chown -R meganium *

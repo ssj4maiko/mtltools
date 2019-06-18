@@ -11,10 +11,17 @@ use App\Http\Controllers\DictionaryCategoryController;
 use App\Http\Controllers\DictionaryEntryController;
 use App\Http\Controllers\ChapterController;
 
+use Illuminate\Contracts\Routing\UrlGenerator;
+
 use Illuminate\Support\Facades\Storage;
 
 class DictionaryController extends Controller
 {
+    private $URL = null;
+    public function __construct(UrlGenerator $url){
+        if($url)
+            $this->URL = $url;
+    }
 	public function getAll($idNovel){
         return Dictionary::where(['idNovel' => $idNovel])
                          ->with('countCategories')
@@ -100,7 +107,7 @@ class DictionaryController extends Controller
     }
     public function delCache($idNovel, $idDictionary){
         $cacheName = self::CACHEFOLDER.$idNovel.'-'.$idDictionary.'.json';
-        $CHAC = new ChapterController();
+        $CHAC = new ChapterController($this->URL);
         $CHAC->delCache($idNovel, $idDictionary);
         return Storage::delete($cacheName);
     }

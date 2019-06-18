@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 @Component({
 	selector: 'app-root',
@@ -10,7 +11,8 @@ import { Router } from '@angular/router';
 	]
 })
 export class AppComponent {
-	title = 'frontend';
+    title = 'frontend';
+    base = environment.currentUrl;
 	constructor(
 		private router: Router
 	){

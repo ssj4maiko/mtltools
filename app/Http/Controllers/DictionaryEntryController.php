@@ -10,8 +10,15 @@ use App\DictionaryCategory;
 use App\DictionaryEntry;
 use App\Http\Controllers\DictionaryController;
 
+use Illuminate\Contracts\Routing\UrlGenerator;
+
 class DictionaryEntryController extends Controller
 {
+    private $URL = null;
+    public function __construct(UrlGenerator $url){
+        if($url)
+            $this->URL = $url;
+    }
 	public function getAll($idCategory){
 		return DictionaryEntry::where(['idCategory' => $idCategory])
 						 ->get();
@@ -26,15 +33,18 @@ class DictionaryEntryController extends Controller
         $data = $Entry->prepare($data,$idCategory);
         $data = $Entry->getInsert();
 
-        $changes = $Entry->massInsert()
-                || $Entry->massUpdate()
-                || $Entry->massDelete();
+        $changes = [];
+        $changes[] = $Entry->massInsert();
+        $changes[] = $Entry->massUpdate();
+        $changes[] = $Entry->massDelete();
+
+        $changes = $changes[0] || $changes[1] || $changes[3];
 
         $return = ['changes' => $changes];
         if($changes && $updateCache){
             $DIC = Dictionary::updateRevision(null,1);
             $return['dateRevision'] = $DIC->dateRevision;
-            $DICC = new DictionaryController();
+            $DICC = new DictionaryController($this->URL);
             $DICC->delCache($DIC->idNovel, $DIC->id);
         }
 
