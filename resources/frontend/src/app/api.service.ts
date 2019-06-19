@@ -55,7 +55,7 @@ export class ApiService {
 			return null;
 	}
 	getNovels(): Observable<{}>{
-		const url = `${apiUrl}novel/`;
+		const url = `${apiUrl}novel`;
 
 		return this.cacheService.get(
 			url,

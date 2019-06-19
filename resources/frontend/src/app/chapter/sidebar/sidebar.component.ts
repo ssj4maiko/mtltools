@@ -144,6 +144,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
         this.Sidebar2Chapter.emit([]);
     }
     saveModifications(){
+        alert('You modifications will be saved, but consider reloading the page if you wish to save more entries or creating more categories.');
         this.api.saveFullDictionary(this.idNovel, this.idDictionary, this.categories)
             .subscribe(res => {
                 if (res.changes) {
@@ -161,6 +162,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
     openOutside(translate){
         let no = this.route.snapshot.params['noChapter'];
         let url = `${environment.backendServer}/static/${this.idNovel}/${this.idDictionary}/${no}/`;
+        if(translate)
+            url = 'https://translate.google.com/translate?sl=auto&tl=en&u='+url;
         window.open(url);
     }
 }

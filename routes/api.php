@@ -14,7 +14,7 @@ use App\Http\Controllers\NovelController;
 */
 
 Route::middleware(['cors'])->group(function(){
-	Route::get('novel', 'NovelController@getAll');
+	Route::get('novel/', 'NovelController@getAll');
 	Route::get('novel/{idNovel}', 'NovelController@get');
 	Route::post('novel/', 'NovelController@insert');
 	Route::put('novel/{idNovel}', 'NovelController@update');

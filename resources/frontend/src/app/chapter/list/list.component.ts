@@ -54,15 +54,20 @@ export class ListComponent implements OnInit {
 	}
 
 	downloadChapter() {
+        alert('Needs to be fixed, use Update Chapters for now');
+        /*
 		this.api.getAutoChapter(this.idNovel)
             .subscribe(res => {
                 this.chapterList(true);
 			}, err => {
 				console.log(err);
-			});
+            });
+            */
 	}
 
 	updateChapters() {
+        alert('Press it only one time, it is working, but there will be no visible response until it\'s finished.\n'+
+          'Consider Pressing F12 and switching to the Network tab, so you can see when it\'s finished');
         this.api.autoUpdateChapters(this.idNovel)
 			.subscribe(res => {
 				console.log(res);
