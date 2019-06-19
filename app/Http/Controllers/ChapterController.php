@@ -196,7 +196,7 @@ class ChapterController extends Controller
         return $this->URL->to('/static/'.implode('/',$array));
     }
     public function createCache($idNovel, $idDictionary, $noChapter){
-        $DICC = new DictionaryController();
+        $DICC = new DictionaryController($this->URL);
 
         $cacheName = self::CACHEFOLDER.$idNovel.'/'.$idDictionary.'/'.$noChapter.'-{part}.html';
 
