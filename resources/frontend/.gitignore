@@ -45,3 +45,5 @@ Thumbs.db
 
 # shortcuts
 ownership.sh
+public/*.ini
+error_log

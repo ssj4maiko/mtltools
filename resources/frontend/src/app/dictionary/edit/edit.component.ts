@@ -32,7 +32,7 @@ export class EditComponent implements OnInit {
 		this.form = [
 			new FormField("id","id","hidden"),
 			new FormField("idNovel","idNovel","hidden"),
-			new FormField("language","Language","select",options)
+			new FormField("language","Language","text")
 		];
 	}
 

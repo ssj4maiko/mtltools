@@ -38,7 +38,7 @@ class DictionaryEntryController extends Controller
         $changes[] = $Entry->massUpdate();
         $changes[] = $Entry->massDelete();
 
-        $changes = $changes[0] || $changes[1] || $changes[3];
+        $changes = $changes[0] || $changes[1] || $changes[2];
 
         $return = ['changes' => $changes];
         if($changes && $updateCache){
