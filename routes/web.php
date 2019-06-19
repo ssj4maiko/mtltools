@@ -10,9 +10,8 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::any('/novel/{query}','IndexController@home')
+    ->where('query', '.*');
 
 Route::get('static/{idNovel}/{idDictionary}/{noChapter}/{part?}', 'front\NovelController@getChapter');
 Route::get('/', 'IndexController@home');
-Route::any('{query}',
-    function() { return redirect('/'); })
-    ->where('query', '.*');
