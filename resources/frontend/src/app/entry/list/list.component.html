@@ -77,6 +77,7 @@
 		<table class='table is-striped is-hoverable is-fullwidth'>
 			<thead>
 				<tr>
+					<th>Category</th>
 					<th>Original</th>
 					<th>Translated</th>
 					<th>Description</th>
@@ -86,15 +87,10 @@
 			</thead>
 			<tbody class="tableContent">
 				<tr formArrayName="entries" *ngFor="let entry of entryForm.get('entries')['controls']; let i = index">
-					<!--td [routerLink]="['/novel/dictionary', idNovel, idDictionary, idCategory, entry.id]">{{ entry.entryOriginal }}</td>
-					<td [routerLink]="['/novel/dictionary', idNovel, idDictionary, idCategory, entry.id]">{{ entry.entryTranslation }}</td>
-					<td [routerLink]="['/novel/dictionary', idNovel, idDictionary, idCategory, entry.id]">{{ entry.description }}</td-->
-					<!--td>
-						<a [routerLink]="['/novel/dictionary', idNovel, idDictionary, idCategory, entry.id, 'edit']">UPD</a>
-						/
-						<a [routerLink]="['/novel/dictionary', idNovel, idDictionary, idCategory, entry.id, '/del']">DEL</a>
-					</td-->
-					<ng-container [formGroupName]="i">
+                    <ng-container [formGroupName]="i">
+                        <td>
+                            <input formControlName="idCategory" type="number" />
+                        </td>
 						<td>
 							<input formControlName="id" type="hidden" />
                             <input formControlName="update" type="hidden" />

@@ -144,7 +144,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
         this.Sidebar2Chapter.emit([]);
     }
     saveModifications(){
-        alert('You modifications will be saved, but consider reloading the page if you wish to save more entries or creating more categories.');
         this.api.saveFullDictionary(this.idNovel, this.idDictionary, this.categories)
             .subscribe(res => {
                 if (res.changes) {

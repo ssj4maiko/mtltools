@@ -133,6 +133,7 @@ export class ListComponent implements OnInit, OnDestroy {
     createItem(): FormGroup {
         let tmpField = this.formBuilder.group({
             id: '',
+            idCategory: '',
             entryOriginal: '',
             entryTranslation: '',
             description: '',
@@ -179,6 +180,7 @@ export class ListComponent implements OnInit, OnDestroy {
                     entity.controls.reset.setValue(false);  // set it back to false
                     entity.controls.update.setValue(false);
                     entity.controls.delete.setValue(false);
+                    entity.controls.idCategory.setValue(val.id ? DEFAULT.idCategory : '');
                     entity.controls.entryOriginal.setValue(val.id ? DEFAULT.entryOriginal : '');
                     entity.controls.entryTranslation.setValue(val.id ? DEFAULT.entryTranslation : '');
                     entity.controls.description.setValue(val.id ? DEFAULT.description : '');
@@ -189,7 +191,9 @@ export class ListComponent implements OnInit, OnDestroy {
                  * - Check if there is a need to update or not anymore
                  */
                 if (val.id) {
-                    let update = val.entryOriginal != DEFAULT.entryOriginal
+                    let update =
+                           val.idCategory != DEFAULT.idCategory
+                        || val.entryOriginal != DEFAULT.entryOriginal
                         || val.entryTranslation != DEFAULT.entryTranslation
                         || val.description != DEFAULT.description
                         || val.delete != lagDelete;
@@ -230,6 +234,7 @@ export class ListComponent implements OnInit, OnDestroy {
         entries.forEach(e => {
             tmpGroup = this.formBuilder.group({
                 id: e.id,
+                idCategory: e.idCategory,
                 entryOriginal: e.entryOriginal,
                 entryTranslation: e.entryTranslation,
                 description: e.description,
@@ -304,6 +309,7 @@ export class ListComponent implements OnInit, OnDestroy {
         let i;
         for(i = this.entryArray.value.length-1;i > -1;--i){
             if( this.entryArray.value[i].id != ''
+            || this.entryArray.value[i].idCategory != ''
             || this.entryArray.value[i].entryOriginal != ''
             || this.entryArray.value[i].entryTranslation != ''
             || this.entryArray.value[i].description != ''){
@@ -315,6 +321,7 @@ export class ListComponent implements OnInit, OnDestroy {
         this.tmpResult.forEach(e => {
             let tmpGroup = this.formBuilder.group({
                 id: '',
+                idCategory: this.idCategory,
                 entryOriginal: e[0],
                 entryTranslation: e[1],
                 description: e[2],

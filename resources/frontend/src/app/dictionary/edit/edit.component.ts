@@ -12,7 +12,7 @@ import { FormField, Option } from '../../_models/formField';
 	styleUrls: ['../../_views/form/form.component.scss']
 })
 export class EditComponent implements OnInit {
-
+    dictionary: Dictionary;
 	formTitle: string;
 	formGroup: FormGroup;
 	form: FormField[];
@@ -51,18 +51,24 @@ export class EditComponent implements OnInit {
 	}
 
 	getDictionary() {
-		this.api.getDictionary(this.idNovel,this.idDictionary)
-			.subscribe(data => {
-
-				data = this.api.Dictionary(this.idNovel,this.idDictionary);
-
-				this.formGroup.setValue({
-					 id				: data.id
-					,idNovel		: data.idNovel
-					,language		: data.language
-				});
-			});
-	}
+        this.dictionary = this.api.Dictionary(this.idNovel, this.idDictionary);
+        if(!this.dictionary){
+            this.api.getDictionary(this.idNovel,this.idDictionary)
+                    .subscribe(_ => {
+                        this.dictionary = this.api.Dictionary(this.idNovel, this.idDictionary);
+                        this.setFormValues();
+                    });
+        } else {
+            this.setFormValues();
+        }
+    }
+    setFormValues() {
+        this.formGroup.setValue({
+            id: this.dictionary.id
+            , idNovel: this.dictionary.idNovel
+            , language: this.dictionary.language
+        });
+    }
 
 	submitForm(form:NgForm){
 		console.log(form);

@@ -345,8 +345,12 @@ export class ApiService {
 				 tap((dictionary: Dictionary) => {
 				 	console.log(`Updated Dictionary id=${dictionary.id}`);
 			 		if(!this._dictionaries[ dictionary.idNovel ])
-			 			this._dictionaries[ dictionary.idNovel ] = {};
-				 	this._dictionaries[ dictionary.idNovel ][ dictionary.id ] = dictionary;
+                         this._dictionaries[ dictionary.idNovel ] = {};
+                     console.log(this._dictionaries[dictionary.idNovel][dictionary.id]);
+                    for (let i in dictionary){
+                        console.log(i);
+                        this._dictionaries[ dictionary.idNovel ][ dictionary.id ][i] = dictionary[i];
+                    }
 				 })
 				,catchError(this.handleError<Dictionary>('updateDictionary'))
 			);

@@ -5,6 +5,7 @@ import { FormControl, FormGroupDirective, FormBuilder, FormGroup, NgForm, Valida
 
 import { Dictionary } from '../../_models/dictionary';
 import { FormField, Option } from '../../_models/formField';
+import { DictionaryCategory } from 'src/app/_models/dictionarycategory';
 
 @Component({
 	selector: 'app-category-edit',
@@ -13,7 +14,7 @@ import { FormField, Option } from '../../_models/formField';
 })
 
 export class EditComponent implements OnInit {
-
+    category: DictionaryCategory;
 	formTitle: string;
 	formGroup: FormGroup;
 	form: FormField[];
@@ -50,18 +51,24 @@ export class EditComponent implements OnInit {
 
 
 	getCategory() {
-        this.api.getCategory(this.idNovel,this.idDictionary,this.idCategory)
+        this.category = this.api.Category(this.idDictionary, this.idCategory);
+        if(!this.category){
+            this.api.getCategory(this.idNovel,this.idDictionary,this.idCategory)
 			.subscribe(data => {
-
-				data = this.api.Category(this.idDictionary,this.idCategory);
-
-				this.formGroup.setValue({
-					 id				: data.id
-					,idDictionary	: data.idDictionary
-					,name			: data.name
-				});
+                this.category = this.api.Category(this.idDictionary,this.idCategory);
+                this.setFormValues();
 			});
-	}
+        } else {
+            this.setFormValues();
+        }
+    }
+    setFormValues() {
+        this.formGroup.setValue({
+            id: this.category.id
+            , idDictionary: this.category.idDictionary
+            , name: this.category.name
+        });
+    }
 
 	submitForm(form:NgForm){
 		console.log(form);
