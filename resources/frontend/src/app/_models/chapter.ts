@@ -4,7 +4,7 @@ export class Chapter {
 	title: string;
 	hasText: boolean;
 	textOriginal: string;
-	textRevised: string;
+	textRevision: string;
 	textCustom: string;
 	dateOriginalPost: Date;
 	dateOriginalRevision: Date;

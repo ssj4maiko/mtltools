@@ -31,7 +31,7 @@ class CreateAllTables extends Migration
             $table->unsignedSmallInteger('no');
             $table->string('title',100);
             $table->mediumText('textOriginal')->nullable();
-            $table->mediumText('textRevised')->nullable();
+            $table->mediumText('dateRevision')->nullable();
             $table->mediumText('textCustom')->nullable();
             $table->dateTimeTz('dateOriginalPost')->nullable();
             $table->dateTimeTz('dateOriginalRevision')->nullable();

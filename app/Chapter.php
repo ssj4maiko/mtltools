@@ -19,7 +19,7 @@ class Chapter extends Model
 		,'no'
 		,'title'
 		,'textOriginal'
-		,'textRevised'
+		,'dateRevision'
 		,'textCustom'
 		,'dateOriginalPost'
 		,'dateOriginalRevision'
@@ -29,7 +29,7 @@ class Chapter extends Model
 		return $data;
     }
     public function translateText($dictionary){
-        $text = $this->textRevised ? $this->textRevised : $this->textOriginal;
+        $text = $this->textRevision ? $this->textRevision : $this->textOriginal;
 
         foreach ($dictionary->dictionary_entry as $entry) {
             $text = str_replace($entry->entryOriginal, '[['.$entry->entryTranslation.']]', $text);

@@ -346,7 +346,7 @@ export class ApiService {
 				 	console.log(`Updated Dictionary id=${dictionary.id}`);
 			 		if(!this._dictionaries[ dictionary.idNovel ])
                          this._dictionaries[ dictionary.idNovel ] = {};
-                     console.log(this._dictionaries[dictionary.idNovel][dictionary.id]);
+                    console.log(this._dictionaries[dictionary.idNovel][dictionary.id]);
                     for (let i in dictionary){
                         console.log(i);
                         this._dictionaries[ dictionary.idNovel ][ dictionary.id ][i] = dictionary[i];
@@ -464,8 +464,9 @@ export class ApiService {
 				return this._categories[idDictionary][id];
 		return null;
     }
-	getCategories(idNovel, idDictionary): Observable<{}>{
-		const url = `${apiUrl}category/${idDictionary}`;
+	getCategories(idNovel, idDictionary, force?:boolean): Observable<{}>{
+        const url = `${apiUrl}category/${idDictionary}`;
+        if (force) { this.cacheService.delete(url); }
 
 		return this.cacheService.get(
 			url,
@@ -584,48 +585,25 @@ export class ApiService {
 				return this._entries[idCategory][id];
 		return null;
 	}
-    getEntries(idDictionary:number, idCategory, force?:boolean): Observable<{}>{
+    getEntries(idDictionary: number, idCategory, force?: boolean): Observable<{}>{
         const url = `${apiUrl}entry/${idCategory}`;
-        if(force){ this.cacheService.delete(url); }
+        return this.http.get<DictionaryEntry[]>(url)
+                .pipe(
+                        tap(entries => {
+                        console.log('Fetched Entries');
+                        if(entries && entries[0]){
+                            this._entries[ idCategory ] = {};
 
-		return this.cacheService.get(
-			url,
-            this.http.get<DictionaryEntry[]>(url)
-					.pipe(
-						 tap(entries => {
-						 	console.log('Fetched Entries');
-						 	if(entries && entries[0]){
-						 		this._entries[ idCategory ] = {};
+                            for(let i in entries){
+                                this._entries[ idCategory ][ entries[i].id ] = entries[i];
+                            }
+                            }
+                            if (force)
+                            this.updateCounterEntry(entries.length,idDictionary,idCategory);
 
-								for(let i in entries){
-									this._entries[ idCategory ][ entries[i].id ] = entries[i];
-								}
-                             }
-                             if (force)
-                                this.updateCounterEntry(entries.length,idDictionary,idCategory);
-
-						 })
-						,catchError(this.handleError('getCategory',[]))
-			)
-		)
-	}
-
-	getEntry(idCategory:number, id: number): Observable<DictionaryEntry>{
-		const url = `${apiUrl}entry/${idCategory}/${id}`;
-		return this.cacheService.get(
-			url,
-			this.http.get<DictionaryEntry>(url)
-					.pipe(
-						 tap(entry => {
-						 	console.log(`Fetched Category id=${id}`);
-						 	console.log(entry);
-					 		if(!this._entries[ entry.idCategory ])
-					 			this._entries[ entry.idCategory ] = {};
-						 	this._entries[ entry.idCategory ][ entry.id ] = entry;
-						 })
-						,catchError(this.handleError<DictionaryEntry>(`getCategory id=${id}`))
-					)
-		);
+                        })
+                    ,catchError(this.handleError('getCategory',[]))
+        );
 	}
 
     addEntries(idDictionary:number, idCategory:number, entries): Observable<any> {

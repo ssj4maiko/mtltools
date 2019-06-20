@@ -75,7 +75,7 @@ export class DetailComponent implements OnInit {
     }
     renderDataView(){
         this.renderedTitle = this.chapter.title;
-        this.renderedText = !!this.chapter.textRevised ? this.chapter.textRevised : this.chapter.textOriginal;
+        this.renderedText = !!this.chapter.textRevision ? this.chapter.textRevision : this.chapter.textOriginal;
     }
 	ngOnInit() {
         console.log('onInit');

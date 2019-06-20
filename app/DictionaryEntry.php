@@ -11,7 +11,7 @@ class DictionaryEntry extends Model
 	protected $primaryKey = 'id';
 	public $timestamps = false;
 	//const CREATED_AT = 'dateCreated';
-	//const UPDATED_AT = 'dateRevised';
+	//const UPDATED_AT = 'dateRevision';
 
 	protected $fillable = [
 		'id',
@@ -69,6 +69,7 @@ class DictionaryEntry extends Model
                 }
                 elseif(isset($v['update']) && $v['update']){
                     $tmp = DictionaryEntry::find($v['id']);
+                    $tmp->idCategory = $v['idCategory'];
                     $tmp->entryOriginal = $v['entryOriginal'];
                     $tmp->entryTranslation = $v['entryTranslation'];
                     $tmp->description = $v['description'];
@@ -80,7 +81,7 @@ class DictionaryEntry extends Model
                 if($v['entryOriginal']
                 || $v['entryTranslation']){
                     $insert = [
-                        'idCategory'        =>  $idCategory,
+                        'idCategory'        =>  $v['idCategory'],
                         'entryOriginal'     =>  !empty($v['entryOriginal']) ? $v['entryOriginal'] : $v['entryTranslation'],
                         'entryTranslation'  =>  !empty($v['entryTranslation']) ? $v['entryTranslation'] : $v['entryOriginal'],
                         'description'       =>  $v['description'],

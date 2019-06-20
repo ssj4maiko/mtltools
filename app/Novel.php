@@ -10,7 +10,7 @@ class Novel extends Model
 	protected $primaryKey = 'id';
 	public $timestamps = false;
 	//const CREATED_AT = 'dateCreated';
-	//const UPDATED_AT = 'dateRevised';
+	//const UPDATED_AT = 'dateRevision';
 
 	protected $fillable = [
 		 'code'

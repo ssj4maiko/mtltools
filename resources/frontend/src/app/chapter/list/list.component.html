@@ -24,7 +24,7 @@
 				<th>Title</th>
 				<th>Date Created</th>
 				<th>Date Updated</th>
-				<th>Loaded</th>
+				<th>Dictionary<br />Google Translator</th>
 				<!--th>Actions</th-->
 			</tr>
 		</thead>
@@ -35,7 +35,10 @@
 					<td [routerLink]="['/novel/', chapter.idNovel, chapter.no]">{{ chapter.title }}</td>
 					<td [routerLink]="['/novel/', chapter.idNovel, chapter.no]">{{ chapter.dateOriginalPost }}</td>
 					<td [routerLink]="['/novel/', chapter.idNovel, chapter.no]">{{ chapter.dateOriginalRevision }}</td>
-					<td><ng-container *ngIf="chapter.hasText == 1; then success else danger"></ng-container></td>
+                    <!--td><ng-container *ngIf="chapter.hasText == 1; then success else danger"></ng-container></td-->
+                    <td>
+                        <a *ngFor="let dictionary of dictionaries" (click)="openGT(chapter,dictionary);">{{dictionary.language}}</a>
+                    </td>
 					<!--td>
 						<a [routerLink]="['/novel/', chapter.idNovel, chapter.no, 'edit']">UPD</a>
 						/

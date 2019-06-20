@@ -13,7 +13,7 @@ class DictionaryCategory extends Model
 	public $timestamps = false;
 	public static $defaultForeignKey = 'idCategory';
 	//const CREATED_AT = 'dateCreated';
-	//const UPDATED_AT = 'dateRevised';
+	//const UPDATED_AT = 'dateRevision';
 
 	protected $fillable = [
 		 'id'

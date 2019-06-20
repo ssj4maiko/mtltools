@@ -43,4 +43,14 @@ export class ListComponent implements OnInit {
             }
         );
     }
+    updateChapters(id: number) {
+        alert('Press it only one time, it is working, but there will be no visible response until it\'s finished.\n' +
+            'Consider Pressing F12 and switching to the Network tab, so you can see when it\'s finished');
+        this.api.autoUpdateChapters(id)
+            .subscribe(res => {
+                console.log('Novel updated');
+            }, err => {
+                console.log(err);
+            });
+    }
 }

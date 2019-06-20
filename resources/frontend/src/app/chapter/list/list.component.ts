@@ -4,6 +4,8 @@ import { ApiService } from '../../api.service';
 
 import { Chapter } from '../../_models/chapter';
 import { Novel } from '../../_models/novel';
+import { environment } from 'src/environments/environment';
+import { Dictionary } from 'src/app/_models/dictionary';
 
 @Component({
 	selector: 'app-chapter-list',
@@ -13,6 +15,7 @@ import { Novel } from '../../_models/novel';
 export class ListComponent implements OnInit {
 
 	chapters: Chapter[] = [];
+	dictionaries: Dictionary[] = [];
 	novel: Novel;
 	idNovel: number;
 
@@ -25,6 +28,8 @@ export class ListComponent implements OnInit {
 	ngOnInit() {
 		this.idNovel = this.route.snapshot.params['idNovel'];
 		this.novel = this.api.Novel(this.idNovel);
+        this.dictionaries = Object.values(this.api.Dictionaries(this.idNovel));
+        this.chapters = Object.values(this.api.Chapters(this.idNovel));
 
 		if(!this.novel){
 			this.api.getNovel(this.idNovel)
@@ -42,16 +47,39 @@ export class ListComponent implements OnInit {
 		}
 	}
     private chapterList(force?: boolean){
-		this.api.getChapters(this.idNovel,force)
+        if(!this.chapters.length){
+
+            this.api.getChapters(this.idNovel,force)
 			.subscribe(res => {
-				let chapters = this.api.Chapters(this.idNovel);
+                let chapters = this.api.Chapters(this.idNovel);
 				if(chapters)
-					this.chapters = Object.values(chapters);
-				console.log(this.chapters);
+                this.chapters = Object.values(chapters);
+
+                this.dictionaryList();
 			}, err => {
-				console.log(err);
+                console.log(err);
 			});
-	}
+        } else {
+            this.dictionaryList();
+        }
+    }
+    private dictionaryList() {
+        this.api.getDictionaries(this.idNovel)
+            .subscribe(res => {
+                let dictionaries = this.api.Dictionaries(this.idNovel);
+                if (dictionaries)
+                    this.dictionaries = Object.values(dictionaries);
+                console.log(this.dictionaries);
+            }, err => {
+                console.log(err);
+            });
+    }
+
+    openGT(chapter: Chapter, dictionary: Dictionary){
+        let url = `${environment.backendServer}/static/${this.idNovel}/${dictionary.id}/${chapter.no}/1`;
+            url = 'https://translate.google.com/translate?sl=auto&tl=en&u=' + url;
+        window.open(url);
+    }
 
 	downloadChapter() {
         alert('Needs to be fixed, use Update Chapters for now');

@@ -25,7 +25,7 @@ export class ListComponent implements OnInit, OnDestroy {
 	entries: DictionaryEntry[] = [];
 	novel: Novel;
 	dictionary: Dictionary;
-	category: DictionaryCategory;
+	categories: DictionaryCategory[] = [];
 	idCategory: number;
 	idDictionary: number;
     idNovel: number;
@@ -50,8 +50,8 @@ export class ListComponent implements OnInit, OnDestroy {
 		this.idDictionary = this.route.snapshot.params['idDictionary'];
 		this.idCategory = this.route.snapshot.params['idCategory'];
 		this.novel = this.api.Novel(this.idNovel);
-		this.dictionary = this.api.Dictionary(this.idNovel,this.idDictionary);
-		this.category = this.api.Category(this.idDictionary,this.idCategory);
+        this.dictionary = this.api.Dictionary(this.idNovel,this.idDictionary);
+        this.categories = Object.values(this.api.Categories(this.idDictionary));
 
         this.entryForm = this.formBuilder.group({
             idCategory	: '',
@@ -79,7 +79,7 @@ export class ListComponent implements OnInit, OnDestroy {
         delete this.entries;
         delete this.novel;
         delete this.dictionary;
-        delete this.category;
+        delete this.categories;
         delete this.entries2Save;
         delete this.entryForm;
         delete this.entryArray;
@@ -105,10 +105,10 @@ export class ListComponent implements OnInit, OnDestroy {
 		}
 	}
 	private categoryList(){
-		if(!this.category) {
+		if(!this.categories.length) {
 			this.api.getCategories(this.idNovel, this.idDictionary)
 				.subscribe(res => {
-					this.category = this.api.Category(this.idDictionary,this.idCategory);
+					this.categories = Object.values(this.api.Categories(this.idDictionary));
 					this.entryList();
 				}, err => {
 					console.log(err);
@@ -133,7 +133,7 @@ export class ListComponent implements OnInit, OnDestroy {
     createItem(): FormGroup {
         let tmpField = this.formBuilder.group({
             id: '',
-            idCategory: '',
+            idCategory: this.idCategory,
             entryOriginal: '',
             entryTranslation: '',
             description: '',
@@ -255,8 +255,7 @@ export class ListComponent implements OnInit, OnDestroy {
         this.api.addEntries(this.idDictionary, this.idCategory,this.entryForm.value)
             .subscribe(res => {
                 if (res.changes){
-                    console.log(res);
-                    this.api.getEntries(this.idDictionary,this.idCategory)
+                    this.api.getEntries(this.idDictionary,this.idCategory,true)
                         .subscribe(res => {
                             this.router.navigate(['/novel/dictionary/', this.idNovel,this.idDictionary]);
                         }, (err) => {

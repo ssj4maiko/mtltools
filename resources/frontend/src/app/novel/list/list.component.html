@@ -37,7 +37,7 @@
 					<td><ng-container *ngIf="novel.flagR18 == 1; then success else danger"></ng-container></td>
 					<td>{{ novel.addedBy }}</td>
 					<td [routerLink]="['/novel/dictionary', novel.id]"><a>Check</a></td>
-					<td (click)="autoUpdate(novel.id)"><a>Update</a></td>
+					<td (click)="updateChapters(novel.id)"><a>Update</a></td>
 					<td>
 						<a [routerLink]="['/novel/edit', novel.id]">UPD</a>
 						/

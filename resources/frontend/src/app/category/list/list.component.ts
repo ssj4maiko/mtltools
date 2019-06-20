@@ -59,7 +59,7 @@ export class ListComponent implements OnInit {
 		}
 	}
 	private categoryList(){
-		this.api.getCategories(this.idNovel,this.idDictionary)
+		this.api.getCategories(this.idNovel,this.idDictionary,true)
 			.subscribe(res => {
 				this.categories = Object.values(this.api.Categories(this.idDictionary));
 			}, err => {

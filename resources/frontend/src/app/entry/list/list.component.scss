@@ -6,3 +6,12 @@
     display:none;
 }
 
+.tableContent .changed{
+    background-color: green;
+}
+.tableContent .new{
+    background-color: blue;
+}
+.tableContent .deleted{
+    background-color: red;
+}
