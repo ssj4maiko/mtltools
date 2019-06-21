@@ -193,7 +193,7 @@ class ChapterController extends Controller
             case '+':
                 ++$part;
                 if($part >= $total){
-                    $part = 1;
+                    $part = 0;
                     ++$noChapter;
 
                     // If it's syosetu, there could still be more chapters, but if it's manually uploaded, then there shouldn't be any
