@@ -12,7 +12,7 @@ class Syosetu extends Model
 	private $url = 'https://ncode.syosetu.com/{{code}}/{{chapter}}';
 	private $currentCode = null;
 	private $currentChapter = '';
-	private function prepareUrl(){
+	public function prepareUrl(){
 		return str_replace('{{code}}', $this->currentCode,
 				str_replace('{{chapter}}', $this->currentChapter, $this->url)
 			);

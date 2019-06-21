@@ -255,7 +255,7 @@ export class ListComponent implements OnInit, OnDestroy {
         this.api.addEntries(this.idDictionary, this.idCategory,this.entryForm.value)
             .subscribe(res => {
                 if (res.changes){
-                    this.api.getEntries(this.idDictionary,this.idCategory,true)
+                    this.api.getEntries(this.idDictionary,this.idCategory)
                         .subscribe(res => {
                             this.router.navigate(['/novel/dictionary/', this.idNovel,this.idDictionary]);
                         }, (err) => {

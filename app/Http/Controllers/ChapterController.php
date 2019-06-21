@@ -155,14 +155,26 @@ class ChapterController extends Controller
     private const CACHEFOLDER = 'public/chapters/';
     private const AVERAGE_CHAR_COUNT = 25000;
     private $forceCache = false;
+    public function Lock($key){
+        return Storage::put(self::CACHEFOLDER.'/lock/'.$key.'.lock',1);
+    }
+    public function checkLock($key){
+        return Storage::exists(self::CACHEFOLDER.'/lock/'.$key.'.lock');
+    }
+    public function Unlock($key){
+        return Storage::delete(self::CACHEFOLDER.'/lock/'.$key.'.lock');
+    }
     public function getCache($idNovel, $idDictionary, $noChapter, $part){
         $cacheName = self::CACHEFOLDER.$idNovel.'/'.$idDictionary.'/'.$noChapter.'-'.$part.'.html';
         if(Storage::exists($cacheName)){
             return Storage::get($cacheName);
         } else {
             $this->forceCache = true;
-            $url = $this->createCache($idNovel, $idDictionary, $noChapter);
-            return Storage::get($cacheName);
+            $unexpectContent = $this->createCache($idNovel, $idDictionary, $noChapter);
+            if(!$unexpectContent)
+                return Storage::get($cacheName);
+            else
+                return $unexpectContent;
         }
     }
     private function UrlCreator($novel, $idDictionary, $noChapter, $part, $total, $direction = '='){
@@ -171,7 +183,7 @@ class ChapterController extends Controller
             case '-':
                 --$part;
                 if($part < 0){
-                    $part = 1;
+                    $part = 0;
                     --$noChapter;
                     if($noChapter==0){
                         return null;
@@ -200,48 +212,78 @@ class ChapterController extends Controller
 
         $cacheName = self::CACHEFOLDER.$idNovel.'/'.$idDictionary.'/'.$noChapter.'-{part}.html';
 
+        $NOVC = new NovelController();
+        $novel = $NOVC->get($idNovel);
         $cache = $DICC->getCache($idNovel, $idDictionary);
         if($cache){
 
-            $NOVC = new NovelController();
-            $novel = $NOVC->get($idNovel);
-            $cacheDictionary = json_decode($cache);
             $chapter = $this->get($idNovel, $noChapter);
-            $translatedText = $chapter->translateText($cacheDictionary[0]);
 
-            $strStart = $strEnd = 0;
-            $textLength = strlen($translatedText);
-            $chunks = [];
-            while($textLength > $strStart) {
-                $strEnd+=self::AVERAGE_CHAR_COUNT;
-                if($strEnd < $textLength){
-                    $strEnd = strpos($translatedText, "\n", $strEnd);
-                    $chunks[] = substr($translatedText, $strStart, $strEnd);
+            if($chapter){
+                // To avoid  multiple translations at the same time, marking it here so that others wait.
+                $key = intval($idNovel.$idDictionary.$noChapter);
+                if(!$this->checkLock($key)){
+                    // There is no processing this yet
+                    $this->Lock($key);
+                    $cacheDictionary = json_decode($cache);
+
+                    $translatedText = $chapter->translateText($cacheDictionary[0]);
+
+                    $strStart = $strEnd = 0;
+                    $textLength = strlen($translatedText);
+                    $chunks = [];
+                    while($textLength > $strStart) {
+                        $strEnd+=self::AVERAGE_CHAR_COUNT;
+                        if($strEnd < $textLength){
+                            $strEnd = strpos($translatedText, "\n", $strEnd);
+                            $chunks[] = substr($translatedText, $strStart, $strEnd);
+                        } else {
+                            $chunks[] = substr($translatedText, $strStart);
+                        }
+                        $strStart = $strEnd+1;
+                    };
+
+                    $total = count($chunks);
+                    for($i = 0; $i < $total; ++$i){
+                        Storage::put(str_replace('{part}',$i+1,$cacheName), view('cache/chapter',[
+                                'text'      => $chunks[$i],
+                                'novel'     => $novel,
+                                'chapter'   => $chapter,
+                                'total'     => $total,
+                                'part'      => $i+1,
+                                'control'   =>  [
+                                    'previous'  =>  $this->UrlCreator($novel,$idDictionary,$noChapter, $i, $total, '-'),
+                                    'next'      =>  $this->UrlCreator($novel,$idDictionary,$noChapter, $i, $total, '+')
+                                ]
+                            ])
+                        );
+                        $this->Unlock($key);
+                    }
                 } else {
-                    $chunks[] = substr($translatedText, $strStart);
+                    throw new Exception("Chapter is not ready yet", 404);
                 }
-                $strStart = $strEnd+1;
-            };
-
-            $total = count($chunks);
-            for($i = 0; $i < $total; ++$i){
-                Storage::put(str_replace('{part}',$i+1,$cacheName), view('cache/chapter',[
-                                                    'text'      => $chunks[$i],
-                                                    'novel'     => $novel,
-                                                    'chapter'   => $chapter,
-                                                    'total'     => $total,
-                                                    'part'      => $i+1,
-                                                    'control'   =>  [
-                                                        'previous'  =>  $this->UrlCreator($novel,$idDictionary,$noChapter, $i, $total, '-'),
-                                                        'next'      =>  $this->UrlCreator($novel,$idDictionary,$noChapter, $i, $total, '+')
-                                                    ]
-                                                ])
-                );
+            } else {
+                if($novel->flagSyosetu){
+                    $syosetu = new Syosetu($novel->code, $novel->numberChapters+1);
+                    $url = $syosetu->prepareUrl();
+                }
+                return view('cache/wait',[
+                    'novel'     => $novel,
+                    'total'     => $novel->numberChapters,
+                    'no'        => $noChapter,
+                    'url'       => $url,
+                    'control'   =>  [
+                        'previous'  =>  $this->UrlCreator($novel,$idDictionary,$noChapter, 0, 1, '-')
+                    ]
+                ]);
+                //throw new \Exception("No chapter", 1);
             }
-            return Storage::url($cacheName);
+            //return Storage::url($cacheName);
         } else {
             throw new \Exception("No dictionary", 1);
         }
+        // To say there is nothing important to return;
+        return null;
     }
     public function delCache($idNovel, $idDictionary, $noChapter = false){
         if(!$noChapter){
