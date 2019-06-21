@@ -1,0 +1,20 @@
+.controlButtons{
+    margin-top: 1px;
+    a{
+        width:100%;
+        text-align: center;
+    }
+}
+.title, .novel-content{
+    color: white;
+}
+.sidebar {
+    z-index: 20;
+    position:fixed;
+    width:500px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    overflow-y: auto;
+    background-color:rgba($color: #3f3f3f, $alpha: 0.8);
+}

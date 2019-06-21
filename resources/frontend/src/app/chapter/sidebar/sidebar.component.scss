@@ -1,0 +1,84 @@
+.dictionaryList {
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction: column;
+
+    .dictionary-selector{
+        align-self: flex-start;
+        width:100%;
+
+        &>*{
+            width: 33.3%;
+            height:100%;
+        }
+    }
+    li:last-child {
+        align-self: flex-end;
+    }
+    .categories {
+        color:white;
+        width:100%;
+
+        & > h1 {
+            height:30px;
+            width:100%;
+            background: linear-gradient(to bottom, #e570e7 0%,#c85ec7 47%,#a849a3 100%);
+        }
+
+        & > h1.changed {
+            background: linear-gradient(to bottom, #009013 0%,#00b469 47%,#107020 100%);
+        }
+
+        & > h1.new {
+            background: linear-gradient(to bottom, #393cff 0%,#1f00cc 47%,#1400cc 100%);
+        }
+        .category-name {
+            background-color:transparent;
+            border:0px solid white;
+            color:white;
+            margin-left:15px;
+        }
+    }
+    .entries {
+        padding: left 10;
+        overflow-y:auto;
+
+
+        & > div:nth-child(odd){
+            background-color:gray;
+        }
+        & > div.changed {
+            background-color:green;
+        }
+        & > div.new {
+            background-color:blue;
+        }
+
+        input {
+            background-color: transparent;
+            border:0px solid white;
+            color:white;
+        }
+        .entry-original{
+            width:30%;
+        }
+        .entry-translation{
+            width:30%;
+        }
+        .entry-description{
+            width:40%;
+        }
+    }
+    .hidden {
+        display:none;
+    }
+    .dictionary-buttons {
+        width:100%;
+
+        &>*{
+            width: 50%;
+            height:100%;
+        }
+    }
+}

@@ -1,0 +1,17 @@
+.actionButtons a, .actionButtons .button {
+	text-align: center;
+	width:100%;
+}
+.hidden {
+    display:none;
+}
+
+.tableContent .changed{
+    background-color: green;
+}
+.tableContent .new{
+    background-color: blue;
+}
+.tableContent .deleted{
+    background-color: red;
+}
