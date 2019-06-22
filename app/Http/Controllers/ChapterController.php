@@ -245,6 +245,7 @@ class ChapterController extends Controller
 
                     $total = count($chunks);
                     for($i = 0; $i < $total; ++$i){
+
                         Storage::put(str_replace('{part}',$i+1,$cacheName), view('cache/chapter',[
                                 'text'      => $chunks[$i],
                                 'novel'     => $novel,
@@ -260,22 +261,27 @@ class ChapterController extends Controller
                         $this->Unlock($key);
                     }
                 } else {
-                    throw new Exception("Chapter is not ready yet", 404);
+                    throw new \Exception("Chapter is not ready yet", 404);
                 }
             } else {
                 if($novel->flagSyosetu){
                     $syosetu = new Syosetu($novel->code, $novel->numberChapters+1);
                     $url = $syosetu->prepareUrl();
                 }
-                return view('cache/wait',[
-                    'novel'     => $novel,
-                    'total'     => $novel->numberChapters,
-                    'no'        => $noChapter,
-                    'url'       => $url,
-                    'control'   =>  [
-                        'previous'  =>  $this->UrlCreator($novel,$idDictionary,$noChapter, 0, 1, '-')
-                    ]
-                ]);
+                return response(
+                    view('cache/wait',[
+                        'novel'     => $novel,
+                        'total'     => $novel->numberChapters,
+                        'no'        => $noChapter,
+                        'url'       => $url,
+                        'control'   =>  [
+                            'update'  =>  '/api/chapter/autoUpdate/'.$novel->id,
+                            'current'  =>  $this->UrlCreator($novel,$idDictionary,$noChapter, 0, 1, '='),
+                            'previous'  =>  $this->UrlCreator($novel,$idDictionary,$noChapter, 0, 1, '-')
+                        ]
+                    ])
+                    ,404
+                );
                 //throw new \Exception("No chapter", 1);
             }
             //return Storage::url($cacheName);

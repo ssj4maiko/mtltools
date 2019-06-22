@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>Loading new chapter - ({{$no}}/{{$novel->numberChapters}}) {{$novel->nameCustom}} </title>
+	<title>Chapter no found - ({{$no}}/{{$novel->numberChapters}}) {{$novel->nameCustom}} </title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     {{ Html::style('styles.css') }}
 </head>
@@ -78,6 +78,17 @@
 
         function success(){
             window.clearInterval(windowInterval);
+            document.getElementById('fanfarre').play();
+
+            oReq = new XMLHttpRequest();
+            oReq.open("GET", "{{$control['update']}}");
+            oReq.addEventListener("load", function(){
+                window.location.reload('https://translate.google.com/translate?sl=auto&tl=en&u={{$control['current']}}');
+            });
+            oReq.send();
+
+            document.getElementById('fanfarre').play();
+
             document.getElementById('situation').textContent = 'The chapter was found!';
             document.getElementById('text1').textContent = 'Please, wait a few seconds as we prepare everything for you.';
             document.getElementById('text2').textContent = '';
@@ -86,14 +97,16 @@
             function reloadPage(){
                 oReq = new XMLHttpRequest();
                 oReq.open("GET", window.location.href);
-                oReq.addEventListener("error", function(){
-                    window.setTimeout(reloadPage,1000);
-                });
                 oReq.addEventListener("load", function(){
-                    window.location.reload('https://translate.google.com/translate?sl=auto&tl=en&u='+window.location.href);
+                    if(this.status != 404){
+                        window.location.reload('https://translate.google.com/translate?sl=auto&tl=en&u={{$control['current']}}');
+                    } else {
+                        window.setTimeout(reloadPage,1000);
+                    }
                 });
                 oReq.send();
             }
+            reloadPage();
         }
 
         function error(){
@@ -117,7 +130,8 @@
         },60000);
         document.getElementById('warning').addEventListener('click', function(){
             document.getElementById('fanfarre').play();
-        })
+        });
+        document.getElementById('text1').addEventListener('click',success);
     </script>
 </body>
 </html>
