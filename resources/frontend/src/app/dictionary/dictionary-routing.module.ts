@@ -7,6 +7,7 @@ import { CategoryModule } from '../category';
 import { ListComponent } from './list/list.component';
 import { AddComponent } from './add/add.component';
 import { EditComponent } from './edit/edit.component';
+import { DiffComponent } from './diff/diff.component';
 
 
 const routes: Routes = [
@@ -24,6 +25,11 @@ const routes: Routes = [
 		 path: ':idDictionary/edit'
 		,component: EditComponent
 		,data: { title: 'Edit Dictionary' }
+	},
+	{
+		 path: ':idDictionary/diff'
+        , component: DiffComponent
+		,data: { title: 'Diff Dictionary' }
 	},
 	{
 		 path: ':idDictionary'

@@ -372,7 +372,7 @@ export class ApiService {
     dictionaryCreateCache(idNovel: number, idDictionary: number): Observable<any> {
         const url = `${apiUrl}dictionary/createCache/${idNovel}/${idDictionary}`;
 
-        return this.http.get<Dictionary>(url, httpOptions)
+        return this.http.get<any>(url, httpOptions)
             .pipe(
                 tap(_ => {
                     console.log(`Cached Dictionary id=${idDictionary}`);
@@ -382,6 +382,7 @@ export class ApiService {
             );
     }
     dictionaryCache(idNovel: number, idDictionary: number): Observable<{}> {
+        console.log(idNovel, idDictionary, this._dictionaries);
         const url = `${apiUrl}dictionary/cache/${idNovel}/${idDictionary}?${this._dictionaries[idNovel][idDictionary].dateRevision}`;
 
         return this.cacheService.get(
@@ -411,7 +412,9 @@ export class ApiService {
                                     }
                                     this._categories[category.idDictionary][category.id].count_entries = [];
                                     this._categories[category.idDictionary][category.id].count_entries[0] = {};
-                                    this._categories[category.idDictionary][category.id].count_entries[0].count = Object.keys(this._entries[category.id]).length;
+                                    this._categories[category.idDictionary][category.id].count_entries[0].count = this._entries[category.id] ?
+                                                                                                                    Object.keys(this._entries[category.id]).length
+                                                                                                                    : 0;
                                 });
                             }
                         }

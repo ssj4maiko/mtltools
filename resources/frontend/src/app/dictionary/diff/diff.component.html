@@ -1,0 +1,115 @@
+
+<ng-template #actionButtons>
+    <div class="columns actionButtons">
+        <div class="column">
+            <a class="button is-info" (click)="saveList()">Save List</a>
+        </div>
+    </div>
+</ng-template>
+
+<ng-container *ngTemplateOutlet="actionButtons"></ng-container>
+
+<div>
+    <table class='table is-stripede is-fullwidth tableContent'>
+        <thead>
+            <tr>
+                <th colspan="4">
+                    <select [(ngModel)]="idDictionarySelected" (change)="loadSelectedDictionary();">
+                        <option value="" selected='selected'>Select a Dictionary</option>
+                        <option *ngFor="let dictionary of dictionaries" value="{{ dictionary.id }}">{{ dictionary.language }}</option>
+                    </select>
+                </th>
+            </tr>
+            <tr>
+                <th>Original</th>
+                <th>Translated</th>
+                <th>Description</th>
+                <th>Category</th>
+                <th>|</th>
+                <th>Category</th>
+                <th>Original</th>
+                <th>Translated</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody class="tableContent">
+            <ng-container *ngFor="let entry2select of entry2SelectHashKeys; let i = index">
+                <tr [ngClass]="{
+                            'new': entry2SelectHash[entry2select].entry && entries[ entry2SelectHash[entry2select].entry ].id == 0,
+                            'deleted': entry2SelectHash[entry2select].entry && entries[ entry2SelectHash[entry2select].entry ].delete == true,
+                            'changed': entry2SelectHash[entry2select].entry && entries[ entry2SelectHash[entry2select].entry ].update == true }" >
+                    <ng-container *ngIf="entry2SelectHash[entry2select] && entry2SelectHash[entry2select].selected; else selectedEmpty">
+                        <td>
+                            {{ categoriesSelectedHash [entriesSelected[ entry2SelectHash[entry2select].selected ].idCategory].name }}
+                        </td>
+                        <td>
+                            {{ entriesSelected[ entry2SelectHash[entry2select].selected ].entryTranslation }}
+                        </td>
+                        <td>
+                            {{ entriesSelected[ entry2SelectHash[entry2select].selected ].entryOriginal }}
+                        </td>
+                        <td>
+                            {{ entriesSelected[ entry2SelectHash[entry2select].selected ].description }}
+                        </td>
+                    </ng-container>
+
+                    <ng-template #selectedEmpty>
+                        <td>
+                            -
+                        </td>
+                        <td>
+                            -
+                        </td>
+                        <td>
+                            -
+                        </td>
+                        <td>
+                            -
+                        </td>
+                    </ng-template>
+
+                    <td>|</td>
+
+                    <ng-container *ngIf="entry2SelectHash[entry2select] && entry2SelectHash[entry2select].entry != null; else nonAnEntry">
+                        <td>
+                            <select [(ngModel)]="entries[ entry2SelectHash[entry2select].entry ].idCategory"
+                                    (ngModelChange)="changeEntry(entries[ entry2SelectHash[entry2select].entry ])">
+                                <option *ngFor="let category of categories" value="{{category.id}}">{{ category.name }}</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" [(ngModel)]="entries[ entry2SelectHash[entry2select].entry ].entryTranslation"
+                                    (ngModelChange)="changeEntry(entries[ entry2SelectHash[entry2select].entry ])" />
+                        </td>
+                        <td>
+                            <input type="text" [(ngModel)]="entries[ entry2SelectHash[entry2select].entry ].entryOriginal"
+                                    (ngModelChange)="changeEntry(entries[ entry2SelectHash[entry2select].entry ])" />
+                        </td>
+                        <td>
+                            <input type="text" [(ngModel)]="entries[ entry2SelectHash[entry2select].entry ].description"
+                                    (ngModelChange)="changeEntry(entries[ entry2SelectHash[entry2select].entry ])" />
+                        </td>
+                    </ng-container>
+
+                    <ng-template #nonAnEntry>
+                        <td>
+                            <select (change)="addEntry($event,i);">
+                                <option value="">Select a category to copy</option>
+                                <option *ngFor="let category of categories" value="{{category.id}}">{{ category.name }}</option>
+                            </select>
+                        </td>
+                        <td>
+                            -
+                        </td>
+                        <td>
+                            -
+                        </td>
+                        <td>
+                            -
+                        </td>
+                    </ng-template>
+                </tr>
+            </ng-container>
+        </tbody>
+    </table>
+</div>

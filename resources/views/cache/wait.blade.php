@@ -121,6 +121,7 @@
         function repeatCheck(){
             oReq.open("GET", "{{$url}}");
             oReq.setRequestHeader('If-Match', 'novel_contents');
+            oReq.setRequestHeader('Access-Control-Allow-Origin', '*');
             oReq.send();
         }
 
@@ -131,7 +132,6 @@
         document.getElementById('warning').addEventListener('click', function(){
             document.getElementById('fanfarre').play();
         });
-        document.getElementById('text1').addEventListener('click',success);
     </script>
 </body>
 </html>
