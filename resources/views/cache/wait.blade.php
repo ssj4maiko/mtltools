@@ -4,6 +4,7 @@
 	<meta charset="utf-8">
 	<title>Chapter no found - ({{$no}}/{{$novel->numberChapters}}) {{$novel->nameCustom}} </title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <base href='/' >
     {{ Html::style('styles.css') }}
 </head>
 <body>
@@ -57,7 +58,7 @@
             <h1 id="situation">The current chapter has not been loaded yet.</h1>
             <p id="text1">It seems that the chapter has not been loaded yet.</p>
             <p id="text2">Keep this window/tab open and we will check once it's ready.</p>
-            <p id="text3">We will <a id='warning' href="#">warn</a> you when it's done. You can test to adjust the volume. :)</p>
+            <p id="text3">We will <a id='warning' href="{{$control['current']}}#">warn</a> you when it's done. You can test to adjust the volume. :)</p>
             <audio src="{{ asset('assets/hyperdimension_ff_fanfare.mp3') }}" id="fanfarre">
                 Your browser doen't support Audio. You should be ashamed, it's current year and yet you are like this, with an old browser.
             </audio>
@@ -77,6 +78,9 @@
             windowInterval = null;
 
         function success(){
+		if(this.status = '404')
+			return error();
+
             window.clearInterval(windowInterval);
             document.getElementById('fanfarre').play();
 
@@ -119,7 +123,7 @@
         oReq.addEventListener("load", success);
 
         function repeatCheck(){
-            oReq.open("GET", "{{$url}}");
+            oReq.open("GET", "'http://cors.io/?{{$url}}");
             oReq.setRequestHeader('If-Match', 'novel_contents');
             oReq.setRequestHeader('Access-Control-Allow-Origin', '*');
             oReq.send();
