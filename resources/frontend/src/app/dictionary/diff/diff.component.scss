@@ -1,0 +1,17 @@
+.actionButtons a {
+	text-align: center;
+	width:100%;
+}
+.tableContent{
+    & > tbody {
+        & > tr:nth-child(odd){
+            background-color:#eee;
+        }
+        & > tr.changed {
+            background-color:#aFa;
+        }
+        & > tr.new {
+            background-color:#aaF;
+        }
+    }
+}

@@ -32,6 +32,8 @@ ng g component novel/detail
 ng g component novel/add
 ng g component novel/edit
 
+ng g component dictionary/diff
+
 ng g module chapter --routing
 
 ng g component chapter/list

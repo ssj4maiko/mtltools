@@ -13,15 +13,19 @@
 			<tr>
 				<th>Language</th>
 				<th style="width: 200px;"># of Categories</th>
-				<th style="width: 150px;">Actions</th>
+				<th style="width: 200px;">Actions</th>
 			</tr>
 		</thead>
 		<tbody>
 			<ng-container *ngFor="let dictionary of dictionaries" >
 				<tr [routerLink]="['/novel/dictionary/', dictionary.idNovel, dictionary.id]">
                     <td>{{ dictionary.language }}</td>
-                    <th>{{ dictionary.count_categories[0].count }}</th>
+                    <td>{{ dictionary.count_categories[0].count }}</td>
 					<td>
+                        <a [routerLink]="['/novel/dictionary/', dictionary.idNovel, dictionary.id, 'diff']">
+                            Diff
+                        </a>
+                        /
                         <a [routerLink]="['/novel/dictionary/', dictionary.idNovel, dictionary.id, 'edit']" class="icon has-text-success">
                                <i class="fas fa-info-circle"></i>
                         </a>
