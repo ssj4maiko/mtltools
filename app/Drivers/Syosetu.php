@@ -58,8 +58,9 @@ class Syosetu extends Model
 		return $this->currentTitle;
 	}
 
-	private function HTMLgetContent($html){
-		$classContent = ['novel_p','novel_honbun','表示調整','novel_a'];
+	private function HTMLgetContent($html)
+	{
+		$classContent = ['"novel_p"', '"novel_honbun"', '"novel_a"'];
 		$contents = [];
 		foreach($classContent as $class){
 			$posStart = strpos($html, $class);
