@@ -14,18 +14,18 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 
 @NgModule({
-	declarations: [
-		ListComponent,
-		AddComponent,
-		EditComponent,
-	],
-	imports: [
-		CommonModule,
-		NovelRoutingModule,
-		RouterModule,
-		FormsModule,
-		ReactiveFormsModule,
-		FontAwesomeModule,	// Necessary for SVG
-	]
+  declarations: [
+    ListComponent,
+    AddComponent,
+    EditComponent,
+  ],
+  imports: [
+    CommonModule,
+    NovelRoutingModule,
+    RouterModule,
+    FormsModule,
+    ReactiveFormsModule,
+    FontAwesomeModule,	// Necessary for SVG
+  ]
 })
 export class NovelModule { }

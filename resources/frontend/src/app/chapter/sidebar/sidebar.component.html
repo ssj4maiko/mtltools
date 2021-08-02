@@ -1,37 +1,59 @@
-<ul class="dictionaryList">
-    <li class="dictionary-selector" *ngIf="dictionaries.length > 0">
-        <select class='select' [(ngModel)]="dictionarySelector" (change)="dictionarySelected($event.target.value)">
-            <option value='' selected='selected'>Choose a language</option>
-            <option *ngFor="let option of dictionaries" value="{{option.id}}">{{ option.language }}</option>
-        </select>
-        <input type="button" class="button is-small is-info" value="Refresh Translation" (click)="refreshTranslation()" />
-        <input type="button" class="button is-small is-warning" value="Refresh to Original" (click)="refreshOriginal()" />
-    </li>
-    <ng-container *ngFor="let category of categories; let i = index">
-        <li class='categories'>
-            <h1 (click)="selectOpenCategory = i"  [ngClass]="{'changed': category.update == true, 'new': category.id == 0 }">
-                <input class="category-name" type="text" [(ngModel)]="category.name" placeholder="Category Name" (ngModelChange)="changeCategory(category)" />
-            </h1>
+<div class="dictionaryList" *ngIf="dictionaries.length > 0">
+    <ul>
+        <li class="dictionary-selector" *ngIf="dictionaries.length > 0">
+            <select class='select' [(ngModel)]="dictionarySelector" (change)="dictionarySelected($event.target.value)">
+                <option value='' selected='selected'>Choose a language</option>
+                <option *ngFor="let option of dictionaries" value="{{option.id}}">{{ option.language }}</option>
+            </select>
+            <input type="button" class="button is-small is-info" value="Refresh Translation" (click)="refreshTranslation()" />
+            <input type="button" class="button is-small is-warning" value="Refresh to Original" (click)="refreshOriginal()" />
         </li>
-        <li class="entries" [ngClass]="{'hidden': (selectOpenCategory != i)}">
-            <div *ngFor="let entry of category.entries" [ngClass]="{'changed': entry.update == true, 'new': entry.id == 0 }">
-                <input class="entry-original" type="text" [(ngModel)]="entry.entryOriginal" placeholder="Original" (ngModelChange)="changeEntry(entry)" />
-                <input class="entry-translation" type="text" [(ngModel)]="entry.entryTranslation" placeholder="Translation" (ngModelChange)="changeEntry(entry)" />
-                <input class="entry-description" type="text" [(ngModel)]="entry.description" placeholder="Description" (ngModelChange)="changeEntry(entry)" />
-                <!--input  type="hidden" [(ngModel)]="entry.update" /-->
-                <input type="hidden" [(ngModel)]="entry.idCategory" />
-            </div>
-            <input type="button" (click)="addEntry(category.entries, category.id)" value='+ Add new Entry' />
+    </ul>
+    <div class="interactiveBox">
+        <ul class='categories'>
+            <ng-container *ngFor="let category of categories; let i = index">
+                <li>
+                    <h1 (click)="selectOpenCategory = i"  [ngClass]="{'changed': category.update == true, 'new': category.id == null }">
+                        <input class="category-name" type="text" [(ngModel)]="category.name"
+                                placeholder="Category Name" (ngModelChange)="changeCategory(category,i)"
+                                [ngClass]="{'category-selected': (selectOpenCategory == i)}" />
+                    </h1>
+                </li>
+            </ng-container>
+            <li>
+                <h1 class="categoryButtonRow">
+                    <input type="button" (click)="addCategory()" value='+ Add new Category' class="button is-small is-primary" />
+                </h1>
+            </li>
+        </ul>
+        <ul class="entries">
+            <ng-container *ngFor="let category of categories; let i = index">
+                <li [ngClass]="{'hidden': (selectOpenCategory != i)}">
+                    <div *ngFor="let entry of category.entries; let j = index" [ngClass]="{'changed': entry.update == true, 'deleted': entry.delete == true, 'new': entry.id == null }">
+                        <input class="entry-original" type="text" [(ngModel)]="entry.entryOriginal" placeholder="Original" (ngModelChange)="changeEntry(entry, i, j)" />
+                        <input class="entry-translation" type="text" [(ngModel)]="entry.entryTranslation" placeholder="Translation" (ngModelChange)="changeEntry(entry, i, j)" />
+                        <input class="entry-description" type="text" [(ngModel)]="entry.description" placeholder="Description" (ngModelChange)="changeEntry(entry, i, j)" />
+                        <label class="deleteButton">
+                            <i class="fas fa-trash"></i>
+                            <input type="checkbox" class="hidden" [(ngModel)]="entry.delete" title="Delete" (change)="changeEntry(entry, i, j)" />
+                        </label>
+                        <label class="resetButton">
+                            <i class="fas fa-sync-alt"></i>
+                            <input type="checkbox" class="hidden" [(ngModel)]="entry.reset" title="Reset" (change)="changeEntry(entry, i, j)" />
+                        </label>
+                        <!--input  type="hidden" [(ngModel)]="entry.update" /-->
+                        <input type="hidden" [(ngModel)]="entry.idCategory" />
+                    </div>
+                    <input type="button" (click)="addEntry(category, category.id)" value='+ Add new Entry' />
+                </li>
+            </ng-container>
+        </ul>
+    </div>
+    <ul>
+        <li class="dictionary-buttons">
+            <input type="button" (click)="saveModifications()" value='Save Modifications'  class="button is-small is-danger" />
+            <input type="button" (click)="openOutside(true)" value='Google Translate' class="button is-small is-info" />
+            <input type="button" (click)="openOutside(false)" value='Open Keyword Translated Raw'  class="button is-small is-warning" />
         </li>
-    </ng-container>
-    <li class="categories">
-    </li>
-    <li class="dictionary-buttons">
-        <input type="button" (click)="addCategory()" value='+ Add new Category' class="button is-small is-primary" />
-        <input type="button" (click)="saveModifications()" value='Save Modifications'  class="button is-small is-danger" />
-    </li>
-    <li class="dictionary-buttons">
-        <input type="button" (click)="openOutside(true)" value='Google Translate' class="button is-small is-info" />
-        <input type="button" (click)="openOutside(false)" value='Open Keyword Translated Raw'  class="button is-small is-warning" />
-    </li>
-</ul>
+    </ul>
+</div>

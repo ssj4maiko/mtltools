@@ -2,25 +2,30 @@
 
 namespace App\Drivers;
 
-use App\Chapter;
+use App\Models\Chapter;
 
 use Illuminate\Database\Eloquent\Model;
 use GuzzleHttp\Client;
 
-class Syosetu extends Model
+class Syosetu extends Model implements DriverInterface
 {
-	private $url = 'https://ncode.syosetu.com/{{code}}/{{chapter}}';
+	private $url = 'https://{{R18}}.syosetu.com/{{code}}/{{chapter}}';
 	private $currentCode = null;
 	private $currentChapter = '';
-	public function prepareUrl(){
-		return str_replace('{{code}}', $this->currentCode,
+	private $R18 = false;
+	private $pointer = 'dateOriginalPost';
+	public function prepareUrl() : string{
+		return str_replace('{{R18}}', ($this->R18 ? 'novel18' : 'ncode'), 
+			str_replace('{{code}}', $this->currentCode,
 				str_replace('{{chapter}}', $this->currentChapter, $this->url)
-			);
+			)
+		);
 	}
 
-	public function __construct($code, $chapter = ''){
+	public function __construct($code, $R18, $chapter = ''){
 		$this->setCode($code);
 		$this->setChapter($chapter);
+		$this->setR18($R18);
 	}
 
 	public function setCode($code){
@@ -28,6 +33,9 @@ class Syosetu extends Model
 	}
 	public function setChapter($chapter){
 		$this->currentChapter = $chapter;
+	}
+	public function setR18($R18){
+		$this->R18 = $R18;
 	}
 
 	private function callUrl(){
@@ -60,7 +68,7 @@ class Syosetu extends Model
 
 	private function HTMLgetContent($html)
 	{
-		$classContent = ['"novel_p"', '"novel_honbun"', '"novel_a"'];
+		$classContent = ['"novel_p"','"novel_honbun"','"novel_a"'];
 		$contents = [];
 		foreach($classContent as $class){
 			$posStart = strpos($html, $class);
@@ -88,8 +96,8 @@ class Syosetu extends Model
 		}
 		return null;
 	}
-	public function importContent($no){
-		$this->setChapter($no);
+	public function importContent(Chapter $chapter){
+		$this->setChapter($chapter->no);
 		$content = $this->callUrl();
 		$this->setChapter('');
 
@@ -99,6 +107,9 @@ class Syosetu extends Model
 		return null;
 	}
 
+	public function getPointer(): string{
+		return $this->pointer;
+	}
 	private function parseIndex($html, $idNovel){
 		$Found = true;
 		$posStart = 0;
@@ -106,7 +117,6 @@ class Syosetu extends Model
 		$listOfChapters = [];
 
 		for($index=1; $Found; ++$index){
-
 			$needle = $this->currentCode.'/'.$index;
 			$posStart = strpos($html, $needle, $posStart);
 
@@ -133,8 +143,16 @@ class Syosetu extends Model
 					if($posStart2 > 0){
 						$dateOriginalRevision = str_replace('/', '-', substr($dates, $posStart2 + 6 + 1, 16)).':00';
 					}
+				/**
+				 * Gotta use the same pointer as configured at the top, this is because this is the only "absolute" in Syosetu.
+				 * I previously used the chapter number (no), however, if the author releases a new chapter in between old chapters, all numbers are pushed up.
+				 * Same when a chapter is deleted. As such, the original post date is the only absolute variable.
+				 * */ 
 
-				$listOfChapters[$index] = [
+				if(!isset($listOfChapters[$dateOriginalPost])){
+					$listOfChapters[$dateOriginalPost] = [];
+				}
+				$listOfChapters[$dateOriginalPost][] = [
 					'idNovel'				=>	$idNovel,
 					'no'					=>	$index,
 					'title'					=>	$title,

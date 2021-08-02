@@ -1,0 +1,3 @@
+ng g module something --routing
+ng g component something/anything
+ng g service api/base

@@ -1,7 +1,7 @@
 <ng-template #actionButtons>
 	<div class="columns actionButtons">
         <div class="column">
-            <a [routerLink]="['/novel/dictionary', idNovel]" class="button is-primary">Dictionary</a>
+            <a [routerLink]="['/novel/', idNovel,'dictionary']" class="button is-primary">Dictionary</a>
         </div>
 		<div class="column" *ngIf="novel && !novel.flagSyosetu">
 			<a routerLink="['/novel/',idNovel,'add']" class="button is-info">Import Chapter</a>

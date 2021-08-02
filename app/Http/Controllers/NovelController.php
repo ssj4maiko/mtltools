@@ -4,36 +4,39 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\DictionaryController;
 use App\Http\Controllers\DictionaryCategoryController;
-
+use App\Services\NovelService;
 use Illuminate\Http\Request;
-use App\Novel;
+use App\Models\Novel;
 
 class NovelController extends Controller
 {
-	public function getAll(){
-	    return Novel::all();
-	}
-	public function get($id) {
-		return Novel::find($id);
-	}
-	public function insert(Request $request, DictionaryController $DC, DictionaryCategoryController $DCC) {
-		$data = Novel::prepare($request->json()->all());
-		$Novel = Novel::create($data);
+	private $novelService;
 
-		$DC->insert($request, $DCC, $Novel->id, true);
-
-		return $Novel;
+	public function __construct(NovelService $novelService)
+	{
+		$this->novelService = $novelService;
 	}
-	public function update(Request $request, $id) {
-	    $novel = Novel::findOrFail($id);
-		$data = Novel::prepare($request->json()->all());
-	    $novel->update($data);
-
-	    return $novel;
+	public function getAll(Request $request){
+	    return $this->novelService->getAll($request->all());
 	}
-	public function delete($id) {
-	    Novel::find($id)->delete();
+	public function get(int $id)
+	{
+		return $this->novelService->get($id);
+	}
+	public function getByDictionary($idDictionary)
+	{
+		return $this->novelService->getByDictionary($idDictionary);
+	}
 
-	    return 204;
+	public function insert(Request $request) {
+		return $this->novelService->insert($request->json()->all());
+	}
+	public function update(Request $request, $id)
+	{
+		return $this->novelService->update($request->json()->all(),$id);
+	}
+	public function delete($id)
+	{
+		return $this->novelService->delete($id);
 	}
 }

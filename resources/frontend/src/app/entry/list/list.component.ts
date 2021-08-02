@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
-import { ApiService } from '../../api.service';
+import { ApiService } from '../../api';
 
 import { ModalService } from '../../_services/modal/modal.service';
 import { Papa } from 'ngx-papaparse';
@@ -11,261 +11,80 @@ import { DictionaryEntry } from '../../_models/dictionaryentry';
 import { DictionaryCategory } from '../../_models/dictionarycategory';
 import { Dictionary } from '../../_models/dictionary';
 import { Novel } from '../../_models/novel';
+import { FormService } from '../form.service';
 
 @Component({
     selector: 'app-list',
     host: {
         '(blur)': 'onBlur($event)'
     },
-	templateUrl: './list.component.html',
-	styleUrls: ['./list.component.scss']
+  templateUrl: './list.component.html',
+  styleUrls: ['./list.component.scss']
 })
-export class ListComponent implements OnInit, OnDestroy {
+export class ListComponent extends FormService implements OnInit, OnDestroy {
 
-	entries: DictionaryEntry[] = [];
-	novel: Novel;
-	dictionary: Dictionary;
-	categories: DictionaryCategory[] = [];
-	idCategory: number;
-	idDictionary: number;
-    idNovel: number;
+    constructor(
+          private router: Router
+        , private route: ActivatedRoute
+        , public api: ApiService
+        , public formBuilder: FormBuilder
+        , private modalService: ModalService
+        , private papa: Papa
+    ) {
+        super(formBuilder);
+    }
 
-    entries2Save: DictionaryEntry[];
+    dictionary: Dictionary;
+    categories: DictionaryCategory[] = [];
 
+    private file: any;
+    tmpResult: [] = [];
 
-	entryForm: FormGroup;
-    entryArray: FormArray;
+    ngOnInit() {
+        this.idDictionary = this.route.snapshot.params.idDictionary;
+        this.idCategory = this.route.snapshot.params.idCategory;
 
-	constructor(
-		 private router: Router
-		,private route: ActivatedRoute
-		,private api: ApiService
-        ,private formBuilder: FormBuilder
-        ,private modalService: ModalService
-        ,private papa: Papa
-		) { }
+        Promise.all([
+            this.api.Dictionary.get({id: this.idDictionary}),
+            this.api.Category.getAll({idDictionary: this.idDictionary}),
+            this.api.Entry.getAll({ idDictionary: this.idDictionary, idCategory: this.idCategory}),
+        ]).then((values: [Dictionary, DictionaryCategory[], DictionaryEntry[]]) => {
+            this.api.Category.get({ idDictionary: this.idDictionary, id: this.idCategory })
+                .then((category) => {
+                    this.dictionary = values[0];
+                    this.categories = Object.values(values[1]);
+                    this.entries = Object.values(values[2]);
 
-	ngOnInit() {
-		this.idNovel = this.route.snapshot.params['idNovel'];
-		this.idDictionary = this.route.snapshot.params['idDictionary'];
-		this.idCategory = this.route.snapshot.params['idCategory'];
-		this.novel = this.api.Novel(this.idNovel);
-        this.dictionary = this.api.Dictionary(this.idNovel,this.idDictionary);
-        this.categories = Object.values(this.api.Categories(this.idDictionary));
+                    this.createForm(this.idDictionary, this.idCategory, this.entries);
 
-        this.entryForm = this.formBuilder.group({
-            idCategory	: '',
-            entries		: this.formBuilder.array([this.createItem()])
+                    // this.setValues(this.idDictionary, this.idCategory, values[2]);
+                    // this.fillForm();
+                });
         });
-
-		if(!this.novel){
-			this.api.getNovel(this.idNovel)
-					.subscribe(res => {
-						this.novel = this.api.Novel(this.idNovel);
-						this.dictionaryList();
-					}, err => {
-						console.log(err);
-					}
-				);
-		}
-		else {
-			this.dictionaryList();
-		}
 
     }
     ngOnDestroy(): void {
-        //Called once, before the instance is destroyed.
-        //Add 'implements OnDestroy' to the class.
+        // Called once, before the instance is destroyed.
+        // Add 'implements OnDestroy' to the class.
         delete this.entries;
-        delete this.novel;
         delete this.dictionary;
         delete this.categories;
-        delete this.entries2Save;
-        delete this.entryForm;
+        delete this.formGroup;
         delete this.entryArray;
         delete this.idCategory;
         delete this.idDictionary;
-        delete this.idNovel;
         console.log('DESTROY!');
-    }
-    /**
-     * LOAD THE BASICS FOR NAVIGATION
-     */
-	private dictionaryList(){
-		if(!this.dictionary) {
-			this.api.getDictionaries(this.idNovel)
-				.subscribe(res => {
-					this.dictionary = this.api.Dictionary(this.idNovel,this.idDictionary);
-					this.categoryList();
-				}, err => {
-					console.log(err);
-				});
-		} else {
-			this.categoryList();
-		}
-	}
-	private categoryList(){
-		if(!this.categories.length) {
-			this.api.getCategories(this.idNovel, this.idDictionary)
-				.subscribe(res => {
-					this.categories = Object.values(this.api.Categories(this.idDictionary));
-					this.entryList();
-				}, err => {
-					console.log(err);
-				});
-		} else {
-			this.entryList();
-		}
-	}
-	private entryList(){
-        this.api.getEntries(this.idDictionary, this.idCategory)
-			.subscribe(res => {
-                this.entries = Object.values(this.api.Entries(this.idCategory));
-                this.fillForm();
-			}, err => {
-				console.log(err);
-			});
-	}
-
-    /**
-     * Form Building
-     */
-    createItem(): FormGroup {
-        let tmpField = this.formBuilder.group({
-            id: '',
-            idCategory: this.idCategory,
-            entryOriginal: '',
-            entryTranslation: '',
-            description: '',
-            update: '',
-            delete: '',
-            reset: '',
-        });
-        //Sets up the triggers for Insert verification.
-        if (this.entryArray)
-            this.onChanges(tmpField, this.entryArray.length);
-        return tmpField;
-    }
-    addItem(): void {
-        this.entryArray = this.entryForm.get('entries') as FormArray;
-        let tmpField = this.createItem();
-        //this.onChanges(tmpField);
-        this.entryArray.push(tmpField);
-    }
-    /**
-     * Form Behavior
-     */
-    onChanges(entity: FormGroup, idx: number): void {
-        let lagDelete = false,
-            lagCounter = 6,      // Number of fields per reset
-            lag = 0,
-            DEFAULT: DictionaryEntry;
-        entity.valueChanges.subscribe(val => {
-            if (lag === 0) {
-                console.log(val);
-                // In case there was default data, load it one time.
-                if (!DEFAULT) {
-                    DEFAULT = this.api.Entry(this.idCategory, val.id);
-                    console.log(DEFAULT);
-                }
-
-                /**
-                 * In case the reset button was pressed, activate lag,
-                 * because the 6 changes will trigger this function 6 times,
-                 * make it do nothing until it's done.
-                 */
-                if (val.reset) {
-                    console.log('reset');
-                    lag = lagCounter;
-                    entity.controls.reset.setValue(false);  // set it back to false
-                    entity.controls.update.setValue(false);
-                    entity.controls.delete.setValue(false);
-                    entity.controls.idCategory.setValue(val.id ? DEFAULT.idCategory : '');
-                    entity.controls.entryOriginal.setValue(val.id ? DEFAULT.entryOriginal : '');
-                    entity.controls.entryTranslation.setValue(val.id ? DEFAULT.entryTranslation : '');
-                    entity.controls.description.setValue(val.id ? DEFAULT.description : '');
-                }
-                /**
-                 * If there is an ID, it's related to data that already existed, so:
-                 * - Don't delete instantly
-                 * - Check if there is a need to update or not anymore
-                 */
-                if (val.id) {
-                    let update =
-                           val.idCategory != DEFAULT.idCategory
-                        || val.entryOriginal != DEFAULT.entryOriginal
-                        || val.entryTranslation != DEFAULT.entryTranslation
-                        || val.description != DEFAULT.description
-                        || val.delete != lagDelete;
-                    if (update != val.update) {
-                        lag = 1;
-                        entity.controls.update.setValue(update);
-                    }
-                    if (val.delete) {
-                        lagDelete = val.delete;
-                    }
-                }
-                //  Otherwise it's an insert, there is no update, and it can be removed instantly
-                else {
-                    if (val.delete) {
-                        this.entryArray.removeAt(idx);
-                    }
-                }
-            } else {
-                console.log('counter', lag);
-                --lag;
-            }
-        });
-    }
-    /**
-     * Form Edit
-     */
-    private fillForm(): void{
-        this.entryForm.patchValue({
-            idCategory: this.idCategory
-        })
-        this.entryForm.setControl('entries', this.setExistingEntries(this.entries));
-        // Add an extra entry
-        this.addItem();
-    }
-    private setExistingEntries(entries: DictionaryEntry[]): FormArray {
-        const formArray = new FormArray([]);
-        let tmpGroup = null;
-        entries.forEach(e => {
-            tmpGroup = this.formBuilder.group({
-                id: e.id,
-                idCategory: e.idCategory,
-                entryOriginal: e.entryOriginal,
-                entryTranslation: e.entryTranslation,
-                description: e.description,
-                update: false,
-                delete: false,
-                reset: false
-            });
-            //Sets up the triggers for change verification on update values.
-            this.onChanges(tmpGroup, formArray.length);
-            formArray.push(tmpGroup);
-        });
-        this.entryArray = formArray;
-        return formArray;
     }
 
     submitForm(): void {
-        console.log(this.entryForm.value);
-        this.api.addEntries(this.idDictionary, this.idCategory,this.entryForm.value)
-            .subscribe(res => {
-                if (res.changes){
-                    this.api.getEntries(this.idDictionary,this.idCategory)
-                        .subscribe(res => {
-                            this.router.navigate(['/novel/dictionary/', this.idNovel,this.idDictionary]);
-                        }, (err) => {
-                            console.log("Didn't move because: ",err);
-                        });
+        const entries = this.getValues();
+        this.api.Entry.saveByCategory({idDictionary: this.idDictionary, idCategory: this.idCategory, entries : entries.entries})
+            .then((status) => {
+                if (status) {
+                    this.router.navigate(['/dictionary/', this.idDictionary]);
                 } else {
-                    this.router.navigate(['/novel/dictionary/', this.idNovel,this.idDictionary]);
+                    console.log('THERE WAS AN ERROR!');
                 }
-            }, (err) => {
-                console.log(err);
             });
     }
 
@@ -276,49 +95,48 @@ export class ListComponent implements OnInit, OnDestroy {
      *  IMPORT
      *
      */
+    /*
     openModal(id: string) {
         this.modalService.open(id);
     }
     closeModal(id: string) {
         this.modalService.close(id);
     }
-    private file:any;
-    tmpResult: [] = [];
-    uploadFile($event){
+    uploadFile($event) {
         this.file = $event.target.files[0];
 
-        let fileReader = new FileReader();
+        const fileReader = new FileReader();
         fileReader.onload = (e) => {
 
-            this.papa.parse(<string>fileReader.result, {
+            this.papa.parse( fileReader.result as string, {
                 complete: (result) => {
                     this.tmpResult = result.data;
                     this.openModal('confirm-import');
                 }
             });
-        }
+        };
         fileReader.readAsText(this.file);
     }
-    cancelImport(){
+    cancelImport() {
         this.tmpResult = [];
         this.closeModal('confirm-import');
     }
-    commitImport(){
+    commitImport() {
         // Check what's the last written field
         let i;
-        for(i = this.entryArray.value.length-1;i > -1;--i){
-            if( this.entryArray.value[i].id != ''
+        for (i = this.entryArray.value.length - 1; i > -1; --i) {
+            if ( this.entryArray.value[i].id != ''
             || this.entryArray.value[i].idCategory != ''
             || this.entryArray.value[i].entryOriginal != ''
             || this.entryArray.value[i].entryTranslation != ''
-            || this.entryArray.value[i].description != ''){
+            || this.entryArray.value[i].description != '') {
                 ++i;
                 break;
             }
         }
 
         this.tmpResult.forEach(e => {
-            let tmpGroup = this.formBuilder.group({
+            const tmpGroup = this.formBuilder.group({
                 id: '',
                 idCategory: this.idCategory,
                 entryOriginal: e[0],
@@ -331,12 +149,10 @@ export class ListComponent implements OnInit, OnDestroy {
 
             // Starting from the last written field, check if it exists
             // If it does, overwrite it, since it's empty anyway
-            if (this.entryArray.controls[i]){
+            if (this.entryArray.controls[i]) {
                 this.onChanges(tmpGroup, i);
                 this.entryArray.controls[i] = tmpGroup;
-            }
-            // Otherwise, start pushing new items
-            else {
+            } else {
                 this.onChanges(tmpGroup, this.entryArray.length);
                 this.entryArray.push(tmpGroup);
             }
@@ -344,7 +160,7 @@ export class ListComponent implements OnInit, OnDestroy {
         });
 
         // If, after the import, there are no empty fields remaining, create one at the end.
-        if (!this.entryArray.controls[i]){
+        if (!this.entryArray.controls[i]) {
             this.addItem();
         }
 
@@ -352,4 +168,5 @@ export class ListComponent implements OnInit, OnDestroy {
         this.closeModal('confirm-import');
         this.closeModal('import-list');
     }
+    */
 }

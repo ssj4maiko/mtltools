@@ -8,13 +8,24 @@
 .title, .novel-content{
     color: white;
 }
-.sidebar {
-    z-index: 20;
-    position:fixed;
-    width:500px;
-    right: 0px;
-    top: 0px;
-    bottom: 0px;
-    overflow-y: auto;
-    background-color:rgba($color: #3f3f3f, $alpha: 0.8);
+.flexContent{
+    display: flexbox;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    .content {
+        width: calc(100% - 500px);
+        height:100%;
+    }
+    .sidebar {
+        z-index: 20;
+        width:500px;
+        position:fixed;
+        height:100%;
+        right: 0px;
+        top: 0px;
+        bottom: 0px;
+        overflow-y: auto;
+        background: #5e009f;
+    }
 }

@@ -1,5 +1,9 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\IndexController;
+use App\Http\Controllers\front\NovelController as FrontNovelController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -10,8 +14,12 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::any('/novel/{query}','IndexController@home')
+Route::any('/novel/{query}',[IndexController::class, 'home'])
+    ->where('query', '.*');
+Route::any('/dictionary/{query}', [IndexController::class, 'home'])
+    ->where('query', '.*');
+Route::any('/dashboard/{query}', [IndexController::class, 'home'])
     ->where('query', '.*');
 
-Route::get('static/{idNovel}/{idDictionary}/{noChapter}/{part?}', 'front\NovelController@getChapter');
-Route::get('/', 'IndexController@home');
+Route::get('static/{idNovel}/{idDictionary}/{noChapter}/{part?}', [FrontNovelController::class, 'getChapter']);
+Route::get('/', [IndexController::class, 'home']);

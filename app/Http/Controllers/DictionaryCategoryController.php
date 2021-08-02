@@ -4,58 +4,38 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Novel;
-use App\Dictionary;
-use App\DictionaryCategory;
+use App\Models\Novel;
+use App\Models\Dictionary;
+use App\Models\DictionaryCategory;
+use App\Services\DictionaryCategoryService;
 
 class DictionaryCategoryController extends Controller
 {
+	private $dictionaryCategoryService = null;
+	private $dictionaryMassService = null;
+	public function __construct(DictionaryCategoryService $dictionaryCategoryService)
+	{
+		$this->dictionaryCategoryService = $dictionaryCategoryService;
+	}
 	public function getAll($idDictionary){
-		return DictionaryCategory::where(['idDictionary' => $idDictionary])
-                         ->with('countEntries')
-						 ->get();
+		return $this->dictionaryCategoryService->getAll($idDictionary);
 	}
-	public function get($idDictionary,$id) {
-		return DictionaryCategory::where(['id' => $id])
-                                 ->with('countEntries')
-                                 ->first();
+	public function get($idDictionary,$id)
+	{
+		return $this->dictionaryCategoryService->get($idDictionary, $id);
     }
-
-	public function insert(Request $request, $idDictionary, $defaultParameters = false) {
-		if(!$defaultParameters)
-			$data = DictionaryCategory::prepare($request->json()->all());
-		else
-			$data['name'] = 'default';
-        $data['idDictionary'] = $idDictionary;
-        $category = DictionaryCategory::create($data);
-		return $this->get($idDictionary,$category->id);
+	public function insert(Request $request, $idDictionary, $defaultParameters = false)
+	{
+		$category = $this->dictionaryCategoryService->insert($request->json()->all(), $idDictionary);
+		return $this->dictionaryCategoryService->get($idDictionary, $category->id);
     }
-    public function internalInsert($idNovel, $idDictionary, $data){
-		$data = DictionaryCategory::prepare($data);
-        $data['idDictionary'] = $idDictionary;
-        $category = DictionaryCategory::create($data);
-
-        return $category->id;
-    }
-
-	public function update(Request $request, $idDictionary, $id) {
-		$category = DictionaryCategory::findOrFail($id);
-		$data = DictionaryCategory::prepare($request->json()->all());
-		$category->update($data);
-
-		return $this->get($idDictionary,$category->id);
+	public function update(Request $request, $idDictionary, $id)
+	{
+		$category = $this->dictionaryCategoryService->update($request->json()->all(),$idDictionary, $id);
+		return $this->dictionaryCategoryService->get($idDictionary, $category->id);
 	}
-
-	public function internalUpdate($idNovel, $idDictionary, $id, $data) {
-		$category = DictionaryCategory::findOrFail($id);
-		$data = DictionaryCategory::prepare($data);
-		return $category->update($data);
-	}
-	public function delete($idDictionary, $id) {
-		DictionaryCategory::where(['id' => $id])
-			   ->get()
-			   ->delete();
-
-		return 204;
+	public function delete($idDictionary, $id)
+	{
+		return $this->dictionaryCategoryService->delete($idDictionary, $id);
 	}
 }

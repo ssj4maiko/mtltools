@@ -1,0 +1,18 @@
+<div>
+	<table class='table is-striped is-hoverable is-fullwidth'>
+		<thead>
+			<tr>
+				<th>Language</th>
+				<th style="width: 200px;"># of Categories</th>
+			</tr>
+		</thead>
+		<tbody>
+			<ng-container *ngFor="let dictionary of dictionaries" >
+				<tr [routerLink]="['/dictionary/', dictionary.id]">
+                    <td>{{ dictionary.name }}</td>
+                    <td>{{ dictionary.countCategories() }}</td>
+				</tr>
+			</ng-container>
+		</tbody>
+	</table>
+</div>

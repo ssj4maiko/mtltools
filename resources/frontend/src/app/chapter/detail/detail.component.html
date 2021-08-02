@@ -1,28 +1,32 @@
-<div class="sidebar">
-    <app-chapter-sidebar (Sidebar2Chapter)="translateText($event)"></app-chapter-sidebar>
+<div class='flexContent'>
+	<div class='content'>
+		<ng-template #controlButtons>
+			<div class="columns controlButtons">
+				<div class="column">
+					<a class="button is-large is-primary" *ngIf="chapterPrevious" [routerLink]="['/novel/', idNovel, chapterPrevious.no]"> Previous </a>
+				</div>
+				<div class="column">
+					<a class="button is-large is-primary" [routerLink]="['/novel/', idNovel]"> Table of Contents </a>
+				</div>
+				<div class="column">
+					<a class="button is-large is-primary" *ngIf="chapterNext" [routerLink]="['/novel/', idNovel, chapterNext.no]"> Next </a>
+				</div>
+			</div>
+		</ng-template>
+
+		<ng-container *ngTemplateOutlet="controlButtons"></ng-container>
+		<ng-container *ngIf="chapter">
+			<h1 class='title'>{{ this.renderedTitle }}</h1>
+			<hr />
+			<div class="novel-content" innerHTML="{{ this.renderedText }}">
+
+			</div>
+		</ng-container>
+		<ng-container *ngTemplateOutlet="controlButtons"></ng-container>
+	</div>
+
+	<div class="show-sidebar" (click)="toogleSidebar()">AHHHHHHH</div>
+	<div class="sidebar" [hidden]="!showSidebar">
+		<app-chapter-sidebar (Sidebar2Chapter)="translateText($event)"></app-chapter-sidebar>
+	</div>
 </div>
-
-<ng-template #controlButtons>
-	<div class="columns controlButtons">
-		<div class="column">
-			<a class="button is-large is-primary" *ngIf="chapterPrevious" [routerLink]="['/novel/', idNovel, chapterPrevious.no]"> Previous </a>
-		</div>
-		<div class="column">
-			<a class="button is-large is-primary" [routerLink]="['/novel/', idNovel]"> Table of Contents </a>
-		</div>
-		<div class="column">
-			<a class="button is-large is-primary" *ngIf="chapterNext" [routerLink]="['/novel/', idNovel, chapterNext.no]"> Next </a>
-		</div>
-	</div>
-</ng-template>
-
-<ng-container *ngTemplateOutlet="controlButtons"></ng-container>
-<ng-container *ngIf="chapter">
-	<h1 class='title'>{{ this.renderedTitle }}</h1>
-	<hr />
-	<div class="novel-content" innerHTML="{{ this.renderedText }}">
-
-	</div>
-</ng-container>
-<ng-container *ngTemplateOutlet="controlButtons"></ng-container>
-

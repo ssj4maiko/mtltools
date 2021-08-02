@@ -1,52 +1,59 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-	<meta charset="utf-8">
-	<title>({{$chapter->no}}-{{$part}}/{{$novel->numberChapters}}) {{$novel->nameCustom}} </title>
-	<base href="/">
+    <meta charset="utf-8">
+    <title>({{$chapter->no}} {{$novel->nameCustom}} </title>
+    <base href="/">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-    {{ Html::style('styles.css') }}
+    <link href="{{ asset('css/styles.css') }}" rel="stylesheet">
 </head>
+
 <body>
     <style type="text/css" rel="stylesheet">
-    body {
-        background-color: black;
-        color:white;
-    }
-    .content {
-        width:100%;
-        white-space: pre-wrap;
-        word-wrap: break-word;
-    }
-    .content > p {
-        padding:0;
-        margin:0;
-    }
-    .controls {
-        white-space:normal;
-        height:30px;
-    }
-    .controls a {
-        color:red;
-        width:48%;
-        text-align:center;
-        font-size: 15px;
-        border: 2px solid red;
-        margin-left:2px;
-        padding:5px;
-        border-radius: 10px;
-    }
-    .controls a.previous{
-        float:left;
-    }
-    .controls a.next{
-        float:right;
-    }
+        body {
+            background-color: black;
+            color: white;
+        }
+
+        .content {
+            width: 100%;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .content>p {
+            padding: 0;
+            margin: 0;
+        }
+
+        .controls {
+            white-space: normal;
+            height: 30px;
+        }
+
+        .controls a {
+            color: red;
+            width: 48%;
+            text-align: center;
+            font-size: 15px;
+            border: 2px solid red;
+            margin-left: 2px;
+            padding: 5px;
+            border-radius: 10px;
+        }
+
+        .controls a.previous {
+            float: left;
+        }
+
+        .controls a.next {
+            float: right;
+        }
     </style>
     <div class="container">
         <h1 id='title' class='h1'>
-            {{$novel->nameOriginal}} - {{$novel->nameCustom}}<br />
-            ({{$chapter->no}}-{{$part}} / {{$novel->numberChapters}})
+            ({{$chapter->no}}/ {{$novel->numberChapters}}) - {{$novel->nameOriginal}} - {{$novel->nameCustom}}
         </h1>
         <pre class="content">
             <p class='controls'>
@@ -70,4 +77,5 @@
         </pre>
     </div>
 </body>
+
 </html>

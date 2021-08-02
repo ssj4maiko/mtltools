@@ -11,45 +11,45 @@ import { DiffComponent } from './diff/diff.component';
 
 
 const routes: Routes = [
-	{
-		 path: 'list'
-		,component: ListComponent
-		,data: { title: 'List Dictionaries' }
-	},
-	{
-		 path: 'add'
-		,component: AddComponent
-		,data: { title: 'Add Dictionaries' }
-	},
-	{
-		 path: ':idDictionary/edit'
-		,component: EditComponent
-		,data: { title: 'Edit Dictionary' }
-	},
-	{
-		 path: ':idDictionary/diff'
+  {
+     path: ''
+    , component: ListComponent
+    , data: { title: 'List Dictionaries' }
+  },
+  {
+     path: 'add'
+    , component: AddComponent
+    , data: { title: 'Add Dictionaries', breadcrumb: 'Add Dictionary' }
+  },
+  {
+    path: 'edit/:idDictionary'
+    , component: EditComponent
+    , data: { title: 'Edit Dictionary', breadcrumb: 'Edit Dictionary' }
+  },
+  {
+    path: 'diff/:idDictionary'
         , component: DiffComponent
-		,data: { title: 'Diff Dictionary' }
-	},
-	{
-		 path: ':idDictionary'
+    , data: { title: 'Diff Dictionary', breadcrumb: 'Diff' }
+  },
+  {
+     path: ':idDictionary'
         , loadChildren: '../category#CategoryModule'
-		,data: { title: 'View chapters' }
-	},
-	{
-		 path: '**'
-		,redirectTo: 'list'
-	}
+    , data: { title: 'View categories', breadcrumb: 'View Categories' }
+  },
+  {
+     path: '**'
+    , redirectTo: ''
+  }
 ];
 
 
 @NgModule({
-	imports: [
-		CommonModule,
-		RouterModule.forChild(
-			routes
-		)
-	],
-	exports: [RouterModule]
+  imports: [
+    CommonModule,
+    RouterModule.forChild(
+      routes
+    )
+  ],
+  exports: [RouterModule]
 })
 export class DictionaryRoutingModule { }

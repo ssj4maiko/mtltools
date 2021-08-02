@@ -8,30 +8,30 @@ import { AddComponent } from './add/add.component';
 import { EditComponent } from './edit/edit.component';
 
 const routes: Routes = [
-	{
-		 path: ''
-		,component: ListComponent
-		,data: { title: 'List Categories' }
-	},
-	{
-		 path: 'add'
-		,component: AddComponent
-		,data: { title: 'Add Categories' }
-	},
-	{
-		 path: ':idCategory/edit'
-		,component: EditComponent
-		,data: { title: 'Edit Category' }
-	},
-	{
-		 path: ':idCategory'
+  {
+     path: ''
+    , component: ListComponent
+    , data: { title: 'List Categories' }
+  },
+  {
+     path: 'add'
+    , component: AddComponent
+    , data: { title: 'Add Categories', breadcrumb: 'Add Category' }
+  },
+  {
+    path: 'edit/:idCategory'
+    , component: EditComponent
+    , data: { title: 'Edit Category', breadcrumb: 'Edit Category' }
+  },
+  {
+     path: ':idCategory'
         , loadChildren: '../entry#EntryModule'
-		,data: { title: 'View Category' }
-	},
-	{
-		 path: '**'
-		,redirectTo: ''
-	}
+    , data: { title: 'View Category', breadcrumb: 'Entries' }
+  },
+  {
+     path: '**'
+    , redirectTo: ''
+  }
 ];
 
 

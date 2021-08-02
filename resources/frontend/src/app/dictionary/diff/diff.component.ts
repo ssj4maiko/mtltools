@@ -6,9 +6,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DictionaryEntry } from 'src/app/_models/dictionaryentry';
 
 @Component({
-	selector: 'app-diff',
-	templateUrl: './diff.component.html',
-	styleUrls: ['./diff.component.scss']
+  selector: 'app-diff',
+  templateUrl: './diff.component.html',
+  styleUrls: ['./diff.component.scss']
 })
 export class DiffComponent implements OnInit, OnDestroy {
 
@@ -33,20 +33,21 @@ export class DiffComponent implements OnInit, OnDestroy {
     constructor(
           private api: ApiService
         , private route: ActivatedRoute
-		, private router: Router
+        , private router: Router
     ) { }
 
     ngOnInit() {
-        this.idNovel = this.route.snapshot.params['idNovel'];
-        this.idDictionary = this.route.snapshot.params['idDictionary'];
-        this.dictionaries = Object.values(this.api.Dictionaries(this.idNovel));
+        this.idNovel = this.route.snapshot.params.idNovel;
+        this.idDictionary = this.route.snapshot.params.idDictionary;
+        this.dictionaries = Object.values(this.api.Dictionaries());
 
         if (this.dictionaries.length == 0) {
-            this.api.getDictionaries(this.idNovel)
+            this.api.getDictionaries()
                 .subscribe(res => {
-                    let dictionaries = this.api.Dictionaries(this.idNovel);
-                    if (dictionaries)
+                    const dictionaries = this.api.Dictionaries();
+                    if (dictionaries) {
                         this.dictionaries = Object.values(dictionaries);
+                    }
                     this.getCache();
 
                 }, err => {
@@ -87,8 +88,8 @@ export class DiffComponent implements OnInit, OnDestroy {
             console.log(entry);
         }
     }
-    addEntry($event, i){
-        let idCategory = $event.target.value,
+    addEntry($event, i) {
+        const idCategory = $event.target.value,
             selectedValues = this.entry2SelectHash[this.entry2SelectHashKeys[i]],
             selectedEntry = this.entriesSelected[selectedValues.selected],
             newEntry = new DictionaryEntry();
@@ -102,8 +103,8 @@ export class DiffComponent implements OnInit, OnDestroy {
         selectedValues.entry = this.entries.length;
         this.entries.push(newEntry);
     }
-    saveList(){
-        let tmpEntries = {},
+    saveList() {
+        const tmpEntries = {},
             send = [];
 
         this.categories.forEach(category => {
@@ -117,12 +118,12 @@ export class DiffComponent implements OnInit, OnDestroy {
             sen.entries = tmpEntries[sen.id];
         });
 
-        this.api.saveFullDictionary(this.idNovel, this.idDictionary, send)
+        this.api.saveFullDictionary(this.idDictionary, send)
             .subscribe(res => {
                 if (res.changes) {
-                    this.dictionaries = Object.values(this.api.Dictionaries(this.idNovel));
+                    this.dictionaries = Object.values(this.api.Dictionaries());
                     this.categories = [];
-                    this.router.navigate(['/novel/dictionary/', this.idNovel]);
+                    this.router.navigate(['/novel/dictionary/', ]);
                 }
                 console.log(res);
             }, err => {
@@ -131,7 +132,7 @@ export class DiffComponent implements OnInit, OnDestroy {
     }
     private getCache() {
         if (this.categories.length == 0) {
-            this.api.dictionaryCache(this.idNovel, this.idDictionary)
+            this.api.dictionaryCache(this.idDictionary)
                 .subscribe(res => {
                     this.categories = [];
                     this.entries = [];
@@ -139,21 +140,21 @@ export class DiffComponent implements OnInit, OnDestroy {
                     this.categories = Object.values(this.api.Categories(this.idDictionary));
                     this.categories.forEach(category => {
                         this.categoriesHash[category.id] = {
-                            'name': category.name
-                        }
-                        let entries = this.api.Entries(category.id);
-                        for(let i in entries){
+                            name: category.name
+                        };
+                        const entries = this.api.Entries(category.id);
+                        for (const i in entries) {
                             this.entry2SelectHash[entries[i].entryOriginal] = {
                                 entry : this.entries.length,
                                 selected : null
-                            }
+                            };
                             this.entries.push(entries[i]);
                             this.entriesOriginalValues[entries[i].id] = {
-                                  'entryOriginal': '' + entries[i].entryOriginal
-                                , 'entryTranslation': '' + entries[i].entryTranslation
-                                , 'description': '' + entries[i].description
-                                , 'idCategory': '' + entries[i].idCategory
-                            }
+                                  entryOriginal: '' + entries[i].entryOriginal
+                                , entryTranslation: '' + entries[i].entryTranslation
+                                , description: '' + entries[i].description
+                                , idCategory: '' + entries[i].idCategory
+                            };
                         }
                     });
                     this.entry2SelectHashKeys = Object.keys(this.entry2SelectHash);
@@ -163,7 +164,7 @@ export class DiffComponent implements OnInit, OnDestroy {
         }
     }
     getSelectedCache() {
-        this.api.dictionaryCache(this.idNovel, this.idDictionarySelected)
+        this.api.dictionaryCache(this.idDictionarySelected)
             .subscribe(res => {
                 this.categoriesSelected = [];
                 this.entriesSelected = [];
@@ -171,16 +172,16 @@ export class DiffComponent implements OnInit, OnDestroy {
                 this.categoriesSelected = Object.values(this.api.Categories(this.idDictionarySelected));
                 this.categoriesSelected.forEach(category => {
                     this.categoriesSelectedHash[category.id] = {
-                        'name': category.name
-                    }
-                    let entries = this.api.Entries(category.id);
-                    for (let i in entries) {
+                        name: category.name
+                    };
+                    const entries = this.api.Entries(category.id);
+                    for (const i in entries) {
 
                         if (!this.entry2SelectHash[entries[i].entryOriginal]) {
                             this.entry2SelectHash[entries[i].entryOriginal] = {
                                 entry: null,
                                 selected: this.entriesSelected.length
-                            }
+                            };
                         } else {
                             this.entry2SelectHash[entries[i].entryOriginal].selected = this.entriesSelected.length;
                         }

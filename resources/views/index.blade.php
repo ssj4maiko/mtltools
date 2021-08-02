@@ -7,8 +7,8 @@
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="icon" type="image/x-icon" href="favicon.ico">
-<link rel="stylesheet" href="styles.099bb396ca973b21cee9.css"></head>
+<link rel="stylesheet" href="styles.79e7f29a40034cd7ad67.css"></head>
 <body>
 	<app-root></app-root>
-<script src="runtime-es2015.3b0a9c929027490a9023.js" type="module"></script><script src="polyfills-es2015.8912e06297e1a1bcd6ef.js" type="module"></script><script src="runtime-es5.869001f4d78e7e916e1f.js" nomodule></script><script src="polyfills-es5.a32376be6cad9d2ba2e9.js" nomodule></script><script src="main-es2015.5f631475eb338991f0dd.js" type="module"></script><script src="main-es5.d05be2ac5d9aa56c0254.js" nomodule></script></body>
+<script src="runtime-es2020.bce394b9da2498cc64a4.js" type="module"></script><script src="runtime-es5.bce394b9da2498cc64a4.js" nomodule defer></script><script src="polyfills-es5.c3de28121354f2e446cf.js" nomodule defer></script><script src="polyfills-es2020.22aa54e14cebc92ebd14.js" type="module"></script><script src="main-es2020.dce93cd75de158585249.js" type="module"></script><script src="main-es5.dce93cd75de158585249.js" nomodule defer></script></body>
 </html>

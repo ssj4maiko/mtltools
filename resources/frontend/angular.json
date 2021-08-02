@@ -26,8 +26,8 @@
               "src/assets/css/bulma.css",
               "src/styles.scss"
             ],
-            "scripts": [],
-            "es5BrowserSupport": true
+            /*"es5BrowserSupport": true,*/
+            "scripts": []
           },
           "configurations": {
             "production": {

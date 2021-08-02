@@ -4,8 +4,8 @@
 
 export const environment = {
     production: false,
-    currentUrl: 'http://192.168.1.9:4200',
-    backendServer: 'http://192.168.1.9:4000',
+    currentUrl: 'http://mtltools.docker:8000',
+    backendServer: 'http://mtltools.docker:8000',
 };
 
 /*

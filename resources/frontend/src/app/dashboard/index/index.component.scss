@@ -1,0 +1,13 @@
+.subarea {
+	width:50%;
+	float:left;
+	padding: 3px;
+
+	& > h1 {
+		text-align:center;
+		background-color: #540054;
+		color: #fff;
+		padding: 10px 0;
+		border-radius: 10px;
+	}
+}

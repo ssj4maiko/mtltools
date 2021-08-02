@@ -1,0 +1,22 @@
+<div>
+	<table class='table is-striped is-hoverable is-fullwidth'>
+		<thead>
+			<tr>
+				<th>Code</th>
+				<th>Name</th>
+				<th>Chapters</th>
+				<th>Update Chapters</th>
+			</tr>
+		</thead>
+		<tbody>
+			<ng-container *ngFor="let novel of novels" >
+				<tr title="{{ novel.nameOriginal }}" *ngIf="novel.show">
+					<td [routerLink]="['/novel/', novel.id]">{{ novel.code }}</td>
+					<td [routerLink]="['/novel/', novel.id]">{{ novel.nameCustom }}</td>
+					<td>{{ novel.numberChapters }}</td>
+					<td (click)="updateChapters(novel.id)"><a>Update</a></td>
+				</tr>
+			</ng-container>
+		</tbody>
+	</table>
+</div>

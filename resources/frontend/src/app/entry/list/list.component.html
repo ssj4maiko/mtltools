@@ -69,11 +69,12 @@
 	</div>
 </ng-template>
 
-<ng-container *ngTemplateOutlet="actionButtons"></ng-container>
+<ng-container *ngTemplateOutlet="footerButtons"></ng-container>
 
 <div>
-	<form [formGroup]="entryForm" (submit)="submitForm()" id="entryForm">
-		<input type="hidden" formControlName="idCategory" />
+	<form (submit)="submitForm()" id="formGroup">
+		<input type="hidden" name="idDictionary" [(ngModel)]="idDictionary" />
+		<input type="hidden" name="idCategory" [(ngModel)]="idCategory" />
 		<table class='table is-stripede is-fullwidth'>
 			<thead>
 				<tr>
@@ -85,40 +86,62 @@
 					<th>Delete</th>
 				</tr>
 			</thead>
-			<tbody class="tableContent" formArrayName="entries" >
-                <ng-container *ngFor="let entry of entryForm.get('entries')['controls']; let i = index">
-                    <tr [formGroupName]="i"
-                        [ngClass]="{
-                                'new': entry.controls.id.value == 0,
-                                'deleted': entry.controls.delete.value == true,
-                                'changed': entry.controls.update.value == true }"
+			<tbody class="tableContent">
+                <ng-container *ngFor="let entry of formEntries; let i = index">
+                    <tr [ngClass]="{
+                            'new': entry.id == null,
+                            'deleted': entry.delete == true,
+                            'changed': entry.update == true }"
                         >
                         <td>
-                            <select formControlName="idCategory">
+                            <select (change)="onChange(entry,i);"
+                                    name="formEntries[{{i}}].idCategory" 
+                                    [(ngModel)]="entry.idCategory">
                                 <option *ngFor="let category of categories" value="{{category.id}}">{{category.name}}</option>
                             </select>
                         </td>
 						<td>
-							<input formControlName="id" type="hidden" />
-                            <input formControlName="update" type="hidden" />
-							<input formControlName="entryOriginal" class="input" type="text" />
+							<input (change)="onChange(entry,i);"
+                                    name="formEntries[{{i}}].id" 
+                                    [(ngModel)]="entry.id"
+                                    type="hidden" />
+                            <input (change)="onChange(entry,i);"
+                                    name="formEntries[{{i}}].update" 
+                                    [(ngModel)]="entry.update"
+                                    type="hidden" />
+							<input (change)="onChange(entry,i);"
+                                    name="formEntries[{{i}}].entryOriginal" 
+                                    [(ngModel)]="entry.entryOriginal"
+                                    class="input" type="text" />
 						</td>
 						<td>
-							<input formControlName="entryTranslation" class="input" type="text" />
+							<input (change)="onChange(entry,i);"
+                                    name="formEntries[{{i}}].entryTranslation" 
+                                    [(ngModel)]="entry.entryTranslation"
+                                    class="input" type="text" />
 						</td>
 						<td>
-							<textarea formControlName="description" class="textarea" rows="1"></textarea>
+							<textarea (change)="onChange(entry,i);"
+                                    name="formEntries[{{i}}].description" 
+                                    [(ngModel)]="entry.description"
+                                    class="textarea" rows="1"></textarea>
                         </td>
                         <td>
                             <label class="icon  is-large">
                                 <i class="fas fa-exclamation-triangle"></i>
-                                <input formControlName="reset" class='hidden' type="checkbox" />
+                                <input (change)="onChange(entry,i);"
+                                        name="formEntries[{{i}}].reset" 
+                                        [(ngModel)]="entry.reset"
+                                        class='hidden' type="checkbox" value='1' />
                             </label>
                         </td>
 						<td>
                             <label class="icon is-large">
                                 <i class="fas fa-times"></i>
-                                <input formControlName="delete" class='hidden' type="checkbox" />
+                                <input (change)="onChange(entry,i);"
+                                        name="formEntries[{{i}}].delete" 
+                                        [(ngModel)]="entry.delete"
+                                        class='hidden' type="checkbox" value='1' />
                             </label>
 						</td>
                     </tr>

@@ -1,0 +1,37 @@
+ahoyapi: v2
+commands:
+  artisan:
+    cmd: "docker-compose exec -u $UID mtltools-php php artisan $@"
+    usage: "Run Artisan commands"
+
+  tinker:
+    cmd: "docker-compose exec mtltools-php php artisan tinker $@"
+    usage: "Run Tinker"
+
+  bashp:
+    cmd: "docker-compose exec mtltools-php bash"
+    usage: "Open container's Bash terminal"
+
+  start:
+    cmd: "docker-compose up --build -d"
+    usage: "Build and start service"
+
+  stop:
+    cmd: "docker-compose stop"
+    usage: "Stops service"
+
+  destroy:
+    cmd: "docker-compose down"
+    usage: "Destroys service (including DB)"
+
+  bashn:
+    cmd: "docker-compose exec mtltools-node bash"
+    usage: "Open container's Bash terminal"
+
+  ng:
+    cmd: "docker-compose exec mtltools-node ng $@"
+    usage: "Angular Services: ahoy ng..."
+
+  build-front:
+    cmd: "docker-compose exec mtltools-node cd resources/frontend && sh build2php.sh"
+    usage: "Compiles front-end"

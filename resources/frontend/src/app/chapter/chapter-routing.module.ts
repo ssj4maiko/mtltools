@@ -5,21 +5,26 @@ import { ListComponent } from './list/list.component';
 import { DetailComponent } from './detail/detail.component';
 
 const routes: Routes = [
-	{
-		 path: 'list'
-		,component: ListComponent
-		,data: { title: 'List Chapter' }
-	},
-	{
-		 path: ':noChapter'
-		,component: DetailComponent
-		//,loadChildren: () => ChapterModule
-		,data: { title: 'View chapter' }
-	},
-	{
-		 path: '**'
-		,redirectTo: 'list'
-	}
+  {
+     path: ''
+    , component: ListComponent
+    , data: { title: 'List Chapters' }
+  },
+  {
+    path: 'dictionary'
+    , loadChildren: '../dictionary#DictionaryModule'
+    , data: { title: 'View dictionary', breadcrumb: 'Dictionaries' }
+  },
+  {
+     path: ':noChapter'
+    , component: DetailComponent
+    // ,loadChildren: () => ChapterModule
+    , data: { title: 'View chapter', breadcrumb: 'View Chapter' }
+  },
+  {
+     path: '**'
+    , redirectTo: ''
+  }
 ];
 
 @NgModule({

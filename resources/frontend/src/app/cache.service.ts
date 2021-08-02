@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Rx';
+import { throwError } from 'rxjs';
 
 interface CacheContent {
   expiry: number;
@@ -47,7 +48,7 @@ export class CacheService {
       console.log(`%c Calling api for ${key}`, 'color: purple');
       return fallback.do((value) => { this.set(key, value, maxAge); });
     } else {
-      return Observable.throw('Requested key is not available in Cache');
+      return throwError('Requested key is not available in Cache');
     }
 
   }
@@ -57,7 +58,7 @@ export class CacheService {
    * Notifies all observers of the new value
    */
   set(key: string, value: any, maxAge: number = this.DEFAULT_MAX_AGE): void {
-    this.cache.set(key, { value: value, expiry: Date.now() + maxAge });
+    this.cache.set(key, { value, expiry: Date.now() + maxAge });
     this.notifyInFlightObservers(key, value);
   }
 

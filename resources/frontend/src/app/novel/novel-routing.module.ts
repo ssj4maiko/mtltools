@@ -10,45 +10,41 @@ import { AddComponent } from './add/add.component';
 import { EditComponent } from './edit/edit.component';
 
 const routes: Routes = [
-	{
-		 path: 'list'
-		,component: ListComponent
-		,data: { title: 'List Novels' }
-	},
-	{
-		 path: 'add'
-		,component: AddComponent
-		,data: { title: 'Add New Novel' }
-	},
-	{
-		 path: 'edit/:idNovel'
-		,component: EditComponent
-		,data: { title: 'Edit Novel' }
-	},
-	{
-		 path: 'dictionary/:idNovel'
-		,loadChildren: '../dictionary#DictionaryModule'
-		,data: { title: 'View dictionary' }
-	},
-	{
-		 path: ':idNovel'
-		,loadChildren: '../chapter#ChapterModule'
-		,data: { title: 'View chapters' }
-	},
-	{
-		 path: '**'
-		,redirectTo: 'list'
-	}
+  {
+     path: ''
+    , component: ListComponent
+    , data: { title: 'List Novels', breadcrumb: 'Novels' }
+  },
+  {
+     path: 'add'
+    , component: AddComponent
+    , data: { title: 'Add New Novel', breadcrumb: 'Add Novel' }
+  },
+  {
+     path: 'edit/:idNovel'
+    , component: EditComponent
+    , data: { title: 'Edit Novel', breadcrumb: 'Edit Novel' }
+  },
+  {
+     path: ':idNovel'
+    , loadChildren: '../chapter#ChapterModule'
+    , data: { title: 'View chapters', breadcrumb: 'Chapters' }
+  },
+  {
+     path: '**'
+    , redirectTo: ''
+  }
 ];
 
 @NgModule({
   declarations: [],
   imports: [
     CommonModule
-    ,RouterModule.forChild(
-    	routes
-		//,{ enableTracing: true  }
+    , RouterModule.forChild(
+      routes
+    // ,{ enableTracing: true  }
     )
-  ]
+  ]// ,
+  // exports : [ListComponent]
 })
 export class NovelRoutingModule { }

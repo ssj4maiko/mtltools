@@ -1,10 +1,10 @@
 <ng-template #actionButtons>
 	<div class="columns actionButtons">
 		<div class="column">
-			<a (click)="createCache();" class="button is-primary">Update Dictionary Cache</a>
+			<a (click)="rebuildCache();" class="button is-primary">Update Dictionary Cache</a>
 		</div>
 		<div class="column">
-			<a [routerLink]="['/novel/dictionary', idNovel, idDictionary, 'add']" class="button is-info">Add Category</a>
+			<a (click)="LINK(null,'add');" class="button is-info">Add Category</a>
 		</div>
 	</div>
 </ng-template>
@@ -21,15 +21,15 @@
 			</tr>
 		</thead>
 		<tbody class="clickable-table">
-			<tr *ngFor="let category of categories"  [routerLink]="['/novel/dictionary', idNovel, idDictionary, category.id]">
-				<td>{{ category.name }}</td>
-				<td>{{ category.count_entries[0] ? category.count_entries[0].count : "-" }}</td>
+			<tr *ngFor="let category of categories">
+				<td (click)="LINK(category.id);">{{ category.name }}</td>
+				<td (click)="LINK(category.id);">{{ category.count_entries[0] ? category.count_entries[0].count : "-" }}</td>
 				<td>
-                    <a [routerLink]="['/novel/dictionary', idNovel, idDictionary, category.id, 'edit']" class="icon has-text-success">
+                    <a  (click)="LINK(category.id,'edit');" class="icon has-text-success">
                         <i class="fas fa-info-circle"></i>
                     </a>
                     /
-                    <a [routerLink]="['/novel/dictionary', idNovel, idDictionary, category.id, '/del']" class="icon has-text-danger">
+                    <a [routerLink]="[]" (click)="delete(category.id);"  class="icon has-text-danger">
                         <i class="fas fa-ban"></i>
                     </a>
 				</td>

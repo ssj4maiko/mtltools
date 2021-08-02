@@ -10,12 +10,12 @@ import { DiffComponent } from './diff/diff.component';
 import { FormsModule, ReactiveFormsModule  } from '@angular/forms';
 
 @NgModule({
-	declarations: [ListComponent, AddComponent, EditComponent, DiffComponent],
-	imports: [
-		CommonModule,
-		DictionaryRoutingModule,
-		FormsModule,
-		ReactiveFormsModule,
-	]
+  declarations: [ListComponent, AddComponent, EditComponent, DiffComponent, ],
+  imports: [
+    CommonModule,
+    DictionaryRoutingModule,
+    FormsModule,
+    ReactiveFormsModule,
+  ]
 })
 export class DictionaryModule { }

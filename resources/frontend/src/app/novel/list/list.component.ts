@@ -1,56 +1,74 @@
 import { Component, OnInit } from '@angular/core';
-import { ApiService } from '../../api.service';
-import { CacheService } from '../../cache.service';
-
-import { Observable } from 'rxjs/Observable';
+// import { ApiService } from '../../api.service';
+import { ApiService } from '../../api';
 import { Novel } from '../../_models/novel';
 
 @Component({
-	selector: 'app-novel-list',
-	templateUrl: './list.component.html',
-	styleUrls: ['./list.component.scss']
+  selector: 'app-novel-list',
+  templateUrl: './list.component.html',
+  styleUrls: ['./list.component.scss']
 })
 export class ListComponent implements OnInit {
 
-	novels: Novel[] = [];
+  novels: Novel[] = [];
 
-	constructor(
-		private api: ApiService,
-		private cacheService: CacheService
-	) {}
+  constructor(
+      private api: ApiService,
+      // private cacheService: CacheService
+  ) {}
 
-	ngOnInit() {
-		// Get list of novels
-		this.api.getNovels()
-            .subscribe(_ => {
-                // Always take from the updated api.Novels()
-                this.novels = Object.values(this.api.Novels());
-                console.log(this.novels);
-            }, err => {
-				console.log(err);
-            }
-        );
-	}
+  ngOnInit() {
+    this.loadList();
+  }
 
-    autoUpdate(id:number){
-        this.api.updateIndexNovel(id)
-            .subscribe(_ => {
-                // Always take from the updated api.Novels()
-                this.novels = Object.values(this.api.Novels());
-                console.log(this.novels);
-            }, err => {
-                console.log(err);
-            }
-        );
+  loadList() {
+    // Get list of novels
+    this.api.Novel.getAll()
+      .then((novels) => {
+        // this.novels = [novels];
+        this.novels = Object.values(novels);
+        console.log(this.novels);
+      }, (error) => {
+        console.log(error);
+      });
+  }
+
+  updateChapters(idNovel: number) {
+    this.api.Chapter.autoUpdate({ idNovel })
+        .then(res => {
+            console.log('Novel updated', res);
+            /**
+             * Auto update on the list too
+             */
+            this.api.Novel.get({id: idNovel})
+                          .then((novel) => {
+                              let updated = false;
+                              for (const i in this.novels) {
+                                if (this.novels[i].id === novel.id) {
+                                    this.novels[i] = novel;
+                                    updated = true;
+                                    break;
+                                }
+                              }
+                              if (!updated) {
+                                console.log('The novel was not found on the list? Impossible...');
+                              }
+
+                          });
+        }, err => {
+            console.log(err);
+        });
+  }
+  delete(idNovel: number) {
+    if (confirm('Are you sure?')) {
+      this.api.Novel.delete({id: idNovel})
+        .then((_) => {
+          console.log(_);
+          // this.novels = [novels];
+          this.loadList();
+        }, (error) => {
+          console.log(error);
+        });
     }
-    updateChapters(id: number) {
-        alert('Press it only one time, it is working, but there will be no visible response until it\'s finished.\n' +
-            'Consider Pressing F12 and switching to the Network tab, so you can see when it\'s finished');
-        this.api.autoUpdateChapters(id)
-            .subscribe(res => {
-                console.log('Novel updated');
-            }, err => {
-                console.log(err);
-            });
-    }
+  }
 }
