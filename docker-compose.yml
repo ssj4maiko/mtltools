@@ -1,92 +1,44 @@
 version: '3.7'
 
 services:
-  mtltools-db:
-    image: mariadb:10.4
-    restart: "always"
-    ports:
-      - 33059:3306
-    volumes:
-      - /var/lib/mysql
-    networks:
-      - mtltools
-    environment:
-      MYSQL_USER: mtltools
-      MYSQL_PASSWORD: mtltoolspass
-      MYSQL_DATABASE: mtltools
-      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
-
-  mtltools-php:
-    build:
-      context: ./docker/php
-    restart: "always"
-    env_file: .env
-    networks:
-      - mtltools
-    volumes:
-      - ./:/var/www/html
-    labels:
-      - "traefik.enable=false"
-    environment:
-      APP_ENV: "local"
-      APP_KEY: "base64:N87m1o13AKiBk10EkPQy9fzrorrpGzN2U7dj1UmwtJ8="
-      APP_DEBUG: "true"
-      APP_LOG_LEVEL: "debug"
-      APP_URL: "http://mtltools.docker:8000"
-
-      DB_CONNECTION: "mysql"
-      DB_HOST: "mtltools-db"
-      DB_DATABASE: "mtltools"
-      DB_USERNAME: "mtltools"
-      DB_PASSWORD: "mtltoolspass"
-
-      BROADCAST_DRIVER: "pusher"
-      #CACHE_DRIVER: "redis"
-      SESSION_DRIVER: "file"
-      #QUEUE_DRIVER: "redis"
-
-      #REDIS_HOST: "mtltools-redis"
-      #REDIS_PORT: "6379"
-
-      #MAIL_DRIVER: "log"
-      
-      XDEBUG_CONFIG: "remote_host=host.docker.internal remote_enable=1 remote_port=9003 remote_autostart=1 var_display_max_data=1024 var_display_max_depth=5"
-      PHP_IDE_CONFIG: "serverName=MTLTools"
-
-
-  mtltools-node:
-    build:
-      context: ./docker/node
-    restart: "always"
-    working_dir: /home/node/app
-    ports:
-      - 8001:4200
-    networks:
-      - mtltools
-    environment:
-      DOCKER_ENV: "true"
-      NODE_ENV: "local"
-      APP_PORT: "8000"
-      APP_URL: "http://mtldocker.docker"
-      TZ: "UTC"
-
-    volumes:
-      - ./resources/frontend:/home/node/app
-    #command:
-    #  - ng serve --host 0.0.0.0
-
-  mtltools-nginx:
+  nginx:
     image: nginx
-    restart: "always"
+    restart: "unless-stopped"
+    networks:
+      - mtltools
+    depends_on:
+      - php-api
+      - node-app
+    volumes:
+      - ./:/var/www/api
+      - ./resources/frontend:/home/node/app
+      - ./.docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 888:80
+
+  php-api:
+    build:
+      context: ./.docker/php
+    restart: "unless-stopped"
+    working_dir: /var/www/api
+    env_file: .env
+    entrypoint: composer install
     networks:
       - mtltools
     volumes:
-      - ./:/var/www/html
+      - ./:/var/www/api
+
+  node-app:
+    build:
+      context: ./.docker/node
+    restart: "unless-stopped"
+    working_dir: /home/node/app
+    entrypoint: bash -c "npm install && npm start"
+    networks:
+      - mtltools
+    volumes:
       - ./resources/frontend:/home/node/app
-      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
-    ports:
-      - 8000:80
-      - 8002:79
+
 
 networks:
   mtltools:

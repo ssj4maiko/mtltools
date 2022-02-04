@@ -17,7 +17,6 @@ RUN docker-php-ext-install xsl
 RUN docker-php-ext-install zip
 
 RUN curl -L -o /usr/local/bin/composer https://getcomposer.org/composer.phar && chmod +x /usr/local/bin/composer
-RUN curl -L -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && chmod +x /usr/local/bin/wp
 
 # Dev stuff
 ARG development
