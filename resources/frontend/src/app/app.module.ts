@@ -19,6 +19,7 @@ library.add(fas);
   declarations: [
     AppComponent,
     HeaderComponent,
+    //Papa,    // Necessary for CSV
   ],
   imports: [
     BrowserModule,
@@ -27,8 +28,11 @@ library.add(fas);
     FormsModule,		// Necessary for Dynamic Forms
     ReactiveFormsModule, // Necessary for Dynamic Forms
         FontAwesomeModule,	// Necessary for SVG
-        Papa,    // Necessary for CSV
+        //Papa,    // Necessary for CSV
     ],
+  exports: [
+    Papa,    // Necessary for CSV
+  ],
   providers: [
         ModalComponent,
     ],

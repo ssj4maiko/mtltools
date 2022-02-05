@@ -1,4 +1,4 @@
-FROM node
+FROM node:17
 
 WORKDIR /home/node/app
 
@@ -6,12 +6,12 @@ WORKDIR /home/node/app
 #RUN apt-get update
 #RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
 #RUN source ~/.bashrc
-RUN npm i @angular/cli @angular-devkit/build-angular \
-	&& cd /home/node/app \
-	&& npm i
+#RUN npm i @angular/cli @angular-devkit/build-angular \
+#	&& cd /home/node/app \
+#	&& npm i
 
 #COPY --chown=node:node . .
 
 EXPOSE 4200
 
-CMD [ "ng", "serve", "--host=0.0.0.0", "--port=4200", "--disableHostCheck=true"]
+#CMD [ "ng", "serve", "--host=0.0.0.0", "--port=4200", "--disableHostCheck=true"]

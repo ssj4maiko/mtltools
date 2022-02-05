@@ -1,4 +1,4 @@
-import { Injectable, ɵCompiler_compileModuleSync__POST_R3__ } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { DictionaryCategory } from '../_models';
 import { Dictionary } from '../_models/dictionary';

@@ -5,7 +5,8 @@ services:
     image: nginx
     restart: "unless-stopped"
     networks:
-      - mtltools
+      mtltools:
+        ipv4_address: 192.168.66.66
     depends_on:
       - php-api
       - node-app
@@ -14,32 +15,47 @@ services:
       - ./resources/frontend:/home/node/app
       - ./.docker/nginx/nginx.conf:/etc/nginx/nginx.conf
     ports:
-      - 888:80
+      - 800:80
 
   php-api:
     build:
       context: ./.docker/php
     restart: "unless-stopped"
     working_dir: /var/www/api
+    user: ${CURRENT_UID}
     env_file: .env
-    entrypoint: composer install
     networks:
-      - mtltools
+      mtltools:
+        ipv4_address: 192.168.66.67
     volumes:
       - ./:/var/www/api
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "api.mtltools.docker:192.168.66.66"
+      - "mtltools.docker:192.168.66.66"
 
   node-app:
     build:
       context: ./.docker/node
     restart: "unless-stopped"
     working_dir: /home/node/app
-    entrypoint: bash -c "npm install && npm start"
+    entrypoint: bash -c "npm install && npm run startDev"
     networks:
-      - mtltools
+      mtltools:
+        ipv4_address: 192.168.66.68
     volumes:
       - ./resources/frontend:/home/node/app
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "api.mtltools.docker:192.168.66.66"
+      - "mtltools.docker:192.168.66.66"
 
 
 networks:
   mtltools:
-    name: mtltools
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.66.0/24
+          gateway: 192.168.66.1
