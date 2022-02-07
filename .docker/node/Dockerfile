@@ -6,7 +6,7 @@ WORKDIR /home/node/app
 #RUN apt-get update
 #RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
 #RUN source ~/.bashrc
-#RUN npm i @angular/cli @angular-devkit/build-angular \
+RUN npm i -g @angular/cli @angular-devkit/build-angular
 #	&& cd /home/node/app \
 #	&& npm i
 

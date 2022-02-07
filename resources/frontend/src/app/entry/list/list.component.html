@@ -1,7 +1,7 @@
 <!--
     This view contains: 2 modals, 2 buttom-rows and 1 list/form down below.
 -->
-<jw-modal id="import-list">
+<!--jw-modal id="import-list">
     <h1 class='h1'>Importing a file</h1>
     <p ><b>File type</b>: CSV</p>
     <p ><b>Columns</b>: "Original";"Translated";"Description"</p>
@@ -21,8 +21,8 @@
             <button (click)="closeModal('import-list');" class="button is-danger">Close</button>
         </div>
     </div>
-</jw-modal>
-<jw-modal id="confirm-import">
+</jw-modal-->
+<!--jw-modal id="confirm-import">
     <h1>Is this what you were looking for?</h1>
     <table class="table" *ngIf="tmpResult.length">
         <thead>
@@ -48,12 +48,12 @@
             <button (click)="cancelImport();" class="button is-danger">No</button>
         </div>
     </div>
-</jw-modal >
+</jw-modal-->
 
 <ng-template #actionButtons>
 	<div class="columns actionButtons">
 		<div class="column">
-			<a (click)="openModal('import-list');" class="button is-info">Import List</a>
+			<!--a (click)="openModal('import-list');" class="button is-info">Import List</a-->
 		</div>
 	</div>
 </ng-template>

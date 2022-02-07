@@ -9,9 +9,9 @@
 		<div class="column" *ngIf="novel && novel.driver != 'manual'">
 			<a (click)="updateChapters()" class="button is-info">Update Chapters</a>
 		</div>
-		<div class="column" *ngIf="novel && novel.flagSyosetu">
+		<!--div class="column" *ngIf="novel && novel.driver == 'syosetu'">
 			<a (click)="downloadChapter()" class="button is-info">Add Next Chapter</a>
-		</div>
+		</div-->
 	</div>
 </ng-template>
 

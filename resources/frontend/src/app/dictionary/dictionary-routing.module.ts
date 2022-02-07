@@ -33,7 +33,7 @@ const routes: Routes = [
   },
   {
      path: ':idDictionary'
-        , loadChildren: '../category#CategoryModule'
+        , loadChildren: () => import('../category').then(m => m.CategoryModule)
     , data: { title: 'View categories', breadcrumb: 'View Categories' }
   },
   {

@@ -12,7 +12,7 @@ const routes: Routes = [
   },
   {
     path: 'dictionary'
-    , loadChildren: '../dictionary#DictionaryModule'
+    , loadChildren: () => import('../dictionary').then(m => m.DictionaryModule)
     , data: { title: 'View dictionary', breadcrumb: 'Dictionaries' }
   },
   {

@@ -8,17 +8,17 @@ import { DashboardModule } from './dashboard';
 const routes: Routes = [
   {
      path: 'dashboard'
-    , loadChildren: './dashboard#DashboardModule'
+    , loadChildren: () => import('./dashboard').then(m => m.DashboardModule)
     , data: { title: 'Dashboard', breadcrumb: 'Dashboard' }
   },
   {
      path: 'novel'
-    , loadChildren: './novel#NovelModule'
+    , loadChildren: () => import('./novel').then(m => m.NovelModule)
     , data: { title: 'List Novels', breadcrumb: 'Novels' }
   },
   {
     path: 'dictionary'
-    , loadChildren: './dictionary#DictionaryModule'
+    , loadChildren: () => import('./dictionary').then(m => m.DictionaryModule)
     , data: { title: 'List Dictionaries', breadcrumb: 'Dictionaries' }
   },
   {

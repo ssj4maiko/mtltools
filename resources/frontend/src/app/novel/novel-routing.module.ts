@@ -27,7 +27,7 @@ const routes: Routes = [
   },
   {
      path: ':idNovel'
-    , loadChildren: '../chapter#ChapterModule'
+    , loadChildren: () => import('../chapter').then(m => m.ChapterModule)
     , data: { title: 'View chapters', breadcrumb: 'Chapters' }
   },
   {

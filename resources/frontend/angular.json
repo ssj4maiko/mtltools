@@ -26,7 +26,6 @@
               "src/assets/css/bulma.css",
               "src/styles.scss"
             ],
-            /*"es5BrowserSupport": true,*/
             "scripts": [],
             "aot": false,
             "vendorChunk": true,

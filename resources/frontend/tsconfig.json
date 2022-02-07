@@ -1,5 +1,6 @@
 {
   "compileOnSave": false,
+  "compilationMode": "full",
   "compilerOptions": {
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
@@ -9,6 +10,7 @@
     "moduleResolution": "node",
     "experimentalDecorators": true,
     "importHelpers": true,
+    "strict": false,
     "target": "es2020",
     "typeRoots": [
       "node_modules/@types"
@@ -17,5 +19,15 @@
       "es2020",
       "dom"
     ],
-  }
+  },
+  "forceConsistentCasingInFileNames": false,
+  "strict": false,
+  "noImplicitReturns": false,
+  "noFallthroughCasesInSwitch": false,
+  "angularCompilerOptions": {
+    "strictInjectionParameters": false,
+    "strictInputAccessModifiers": false,
+    "strictTemplates": false,
+    "strictInputTypes": false,
+   }
 }

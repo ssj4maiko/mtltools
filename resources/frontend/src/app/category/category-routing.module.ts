@@ -25,7 +25,7 @@ const routes: Routes = [
   },
   {
      path: ':idCategory'
-        , loadChildren: '../entry#EntryModule'
+        , loadChildren: () => import('../entry').then(m => m.EntryModule)
     , data: { title: 'View Category', breadcrumb: 'Entries' }
   },
   {

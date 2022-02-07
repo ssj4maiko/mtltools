@@ -31,7 +31,7 @@ library.add(fas);
         //Papa,    // Necessary for CSV
     ],
   exports: [
-    Papa,    // Necessary for CSV
+    //Papa,    // Necessary for CSV
   ],
   providers: [
         ModalComponent,
