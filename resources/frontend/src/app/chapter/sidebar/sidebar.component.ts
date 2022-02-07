@@ -91,20 +91,13 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy {
     this.Sidebar2Chapter.emit([]);
   }
   saveModifications() {
-    /*
-      this.api.saveFullDictionary(this.idDictionary, this.categories)
-        .subscribe(res => {
-          if (res.changes) {
-            this.dictionaries = Object.values(this.api.Dictionaries());
-            this.categories = [];
-            this.getCache();
-          }
-          console.log(res);
-        }, err => {
-          console.log(err);
-        });
-      console.log(this.categories);
-    */
+    this.api.Dictionary.fullSave(this.idDictionary, this.categories)
+      .then(res => {
+        this.categories = [];
+        this.getCache();
+        this.refreshTranslation();
+        console.log(res);
+      });
   }
 
   openOutside(translate) {

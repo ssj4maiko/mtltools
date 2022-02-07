@@ -33,7 +33,7 @@
 					<td [routerLink]="['/novel/', novel.id]">{{ novel.code }}</td>
 					<td [routerLink]="['/novel/', novel.id]">{{ novel.nameCustom }}</td>
 					<td [routerLink]="['/novel/', novel.id]">{{ novel.nameOriginal }}</td>
-					<td [routerLink]="['/novel/', novel.id]">{{ novel.nameOriginal }}</td>
+					<td [routerLink]="['/novel/', novel.id]">{{ novel.numberChapters }}</td>
 					<td>{{ novel.driver }}</td>
 					<td><ng-container *ngIf="novel.completed == 1; then success else danger"></ng-container></td>
 					<td><ng-container *ngIf="novel.flagR18 == 1; then success else danger"></ng-container></td>

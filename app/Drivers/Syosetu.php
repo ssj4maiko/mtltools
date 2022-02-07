@@ -17,7 +17,7 @@ class Syosetu extends Model implements DriverInterface
 	public function prepareUrl() : string{
 		return str_replace('{{R18}}', ($this->R18 ? 'novel18' : 'ncode'), 
 			str_replace('{{code}}', $this->currentCode,
-				str_replace('{{chapter}}', $this->currentChapter, $this->url)
+				str_replace('{{chapter}}', $this->currentChapter > 0 ? $this->currentChapter : '', $this->url)
 			)
 		);
 	}
@@ -39,8 +39,16 @@ class Syosetu extends Model implements DriverInterface
 	}
 
 	private function callUrl(){
-		$client = new Client();
-		$response = $client->request('GET',$this->prepareUrl());
+		$extra = [];
+		if($this->R18){
+			$extra['cookies'] = \GuzzleHttp\Cookie\CookieJar::fromArray(['over18' => 'yes'], '.syosetu.com'); //
+		}
+		$clientExtras = [];
+		if(isset($extra['cookies'])){
+			$clientExtras['cookies'] = true;
+		}
+		$client = new Client($clientExtras);
+		$response = $client->request('GET',$this->prepareUrl(), $extra);
 
 		if($response->getStatusCode() == 200){
 			return $response->getBody()->getContents();

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from '.';
-import { CacheDictionary, Dictionary } from '../_models/dictionary';
+import { CacheDictionary, Dictionary, DictionaryCategory, returnFullSave } from '../_models';
 import { AjaxService } from './ajax.service';
 
 @Injectable({
@@ -163,7 +163,6 @@ export class DictionariesService extends AjaxService {
   }
   rebuildCache(idDictionary: number): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
-      console.log();
       this._put('cache/dictionary/' + idDictionary)
         .subscribe((cache: CacheDictionary) => {
           this.hasCache[idDictionary] = true;
@@ -176,8 +175,21 @@ export class DictionariesService extends AjaxService {
     if (cache.dictionary_category) {
       this.api.Category.set(cache.dictionary_category, cache.id, true);
     }
-    if (cache.dictionary_entry) {
+    if (cache.dictionary_entry.length >= 0) {
       this.api.Entry.set(cache.id, null, cache.dictionary_entry, true);
     }
+  }
+  fullSave(idDictionary: number, categories: DictionaryCategory[]): Promise<boolean> {
+    return new Promise<boolean>((resolve, reject) => {
+      this._put('dictionary/fullSave/' + idDictionary, categories)
+        .subscribe((returnFS: returnFullSave) => {
+          if (returnFS.changes) {
+            this.hasCache[idDictionary] = false;
+            console.log('full Save Dictionary.Service', this.items[idDictionary]);
+            this.items[idDictionary].dateRevision = returnFS.dateRevision;
+          }
+          resolve(true);
+        });
+    });
   }
 }

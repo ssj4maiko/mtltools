@@ -92,14 +92,13 @@ class MassDictionaryService
 
 		return $data;
 	}
-	public function updateAllEntries($data, $idDictionary, $idCategory)
+	public function updateAllEntries(array $data, $idDictionary, $idCategory)
 	{
-		$this->prepare($data,$idDictionary, $idCategory);
+		$this->prepare($data, $idDictionary, $idCategory);
 		$changes = [];
 		$changes[] = $this->massInsert();
 		$changes[] = $this->massUpdate();
 		$changes[] = $this->massDelete();
-
 		$changes = $changes[0] || $changes[1] || $changes[2];
 
 		if ($changes) {
@@ -107,14 +106,15 @@ class MassDictionaryService
 			$return['dateRevision'] = $Dictionary->dateRevision;
 			$CacheDictionary = new CacheDictionary($Dictionary->id);
 			$CacheDictionary->del();
+		} else {
 		}
 
 		return array_keys($this->affectedCategories);
 	}
 	private $clearCache = false;
-	public function fullSave($categories, $idDictionary){
+	public function fullSave(array $categories, string $idDictionary){
 		foreach ($categories as $idx => $category) {
-			if ($category['id'] == 0) {
+			if (!isset($category['id'])) {
 				$this->clearCache = true;
 				$categories[$idx]['id'] = $this->internalCategoryInsert($idDictionary, [
 					'name' => $category['name']
@@ -129,8 +129,8 @@ class MassDictionaryService
 				]);
 			}
 			if (isset($category['entries'])) {
-				$changes = $this->updateAllEntries(new DictionaryEntry(), $category, $idCategory, false);
-				if ($changes['changes'])
+				$changes = $this->updateAllEntries($category['entries'], $idDictionary, $idCategory, false);
+				if (!empty($changes))
 					$this->clearCache = true;
 			}
 		}
@@ -141,7 +141,7 @@ class MassDictionaryService
 			$DIC = Dictionary::updateRevision($idDictionary, null);
 			$return['dateRevision'] = $DIC->dateRevision;
 			$CD = new CacheDictionary($idDictionary);
-			$CD->delCache($DIC->id);
+			$CD->del();
 		}
 
 		return $return;

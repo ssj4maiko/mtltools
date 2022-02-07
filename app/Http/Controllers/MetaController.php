@@ -13,9 +13,10 @@ class MetaController extends Controller
 	public function getMeta(Request $request){
         $requests = $request->json()->get('meta');
         $vessel = [];
-        foreach($requests as $request){
-            $vessel[ $request ] = $this->metaService->$request();
-        }
+        if($requests)
+            foreach($requests as $request){
+                $vessel[ $request ] = $this->metaService->$request();
+            }
 		return $vessel;
 	}
 }

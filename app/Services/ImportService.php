@@ -68,6 +68,7 @@ class ImportService
 
 		/** @var Chapter[][] $ImportedChapters */
 		$ImportedChapters = $driver->importIndex($idNovel);
+		
 		// We save the number of chapters only at the end of the process
 		$novel->numberChapters = count($ImportedChapters);
 		

@@ -40,7 +40,7 @@ class Novel extends Model
 	public function startDriver($no = 0) : DriverInterface{
 		switch($this->driver){
 			case 'syosetu':
-				return new Syosetu($this->code, $no);
+				return new Syosetu($this->code, $this->flagR18, $no);
 		}
 		return null;
 	}

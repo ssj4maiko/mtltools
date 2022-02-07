@@ -20,6 +20,9 @@ export class CategoriesService extends AjaxService {
     }
     for (const item of items) {
       this.items[idDictionary][item.id] = item;
+      if (!this.items[idDictionary][item.id].entries) {
+        this.items[idDictionary][item.id].entries = [];
+      }
     }
     if (force) {
       this.hasAll[idDictionary] = true;

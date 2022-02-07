@@ -45,4 +45,8 @@ class DictionaryController extends Controller
     {
         return $this->dictionaryService->delete($id);
     }
+    public function fullSave(Request $request, $id)
+    {
+        return $this->MassDictionaryService->fullSave($request->json()->all(),$id);
+    }
 }

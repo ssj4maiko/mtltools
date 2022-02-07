@@ -89,7 +89,7 @@ export class EntriesService extends AjaxService {
       } else {
         this._get(this.route + [params.idDictionary, params.idCategory].join('/'))
           .subscribe((items: DictionaryEntry[]) => {
-            if (items.length > 0) {
+            if (items.length >= 0) {
               this.set(params.idDictionary, params.idCategory, items);
               this.setHasAll(params.idDictionary, params.idCategory);
               resolve(items);
