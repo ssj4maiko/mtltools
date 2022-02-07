@@ -41,9 +41,9 @@
 					<td [routerLink]="['/novel/dictionary', novel.id]"><a>Check</a></td>
 					<td (click)="updateChapters(novel.id)"><a>Update</a></td>
 					<td>
-						<a [routerLink]="['/novel/edit', novel.id]">UPD</a>
+						<a [routerLink]="['/novel/edit', novel.id]"><i class="fas fa-edit"></i></a>
 						/
-						<a (click)="delete(novel.id);">DEL</a>
+						<a (click)="delete(novel.id);"><i class="fas fa-trash"></i></a>
 					</td>
 					<ng-template #success>
 						<a class='button is-success'>
