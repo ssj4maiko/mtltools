@@ -5,7 +5,10 @@
 				<th>Code</th>
 				<th>Name</th>
 				<th>Chapters</th>
+				<th>Finished</th>
+				<th>R18</th>
 				<th>Update Chapters</th>
+				<th>Edit</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -14,9 +17,32 @@
 					<td [routerLink]="['/novel/', novel.id]">{{ novel.code }}</td>
 					<td [routerLink]="['/novel/', novel.id]">{{ novel.nameCustom }}</td>
 					<td>{{ novel.numberChapters }}</td>
+					<td>
+						<ng-container *ngIf="novel.completed == 1; then success else danger"></ng-container>
+					</td>
+					<td>
+						<ng-container *ngIf="novel.flagR18 == 1; then success else danger"></ng-container>
+					</td>
 					<td (click)="updateChapters(novel.id)"><a>Update</a></td>
+					<td>
+						<a [routerLink]="['/novel/edit', novel.id]"><i class="fas fa-edit"></i></a>
+					</td>
 				</tr>
 			</ng-container>
+			<ng-template #success>
+				<a class='button is-success'>
+					<span class="icon is-small">
+						<i class="fas fa-check"></i>
+					</span>
+				</a>
+			</ng-template>
+			<ng-template #danger>
+				<a class='button is-danger'>
+					<span class="icon is-small">
+						<i class="fas fa-times"></i>
+					</span>
+				</a>
+			</ng-template>
 		</tbody>
 	</table>
 </div>

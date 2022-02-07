@@ -3,10 +3,10 @@
         <div class="column">
             <a [routerLink]="['/novel/', idNovel,'dictionary']" class="button is-primary">Dictionary</a>
         </div>
-		<div class="column" *ngIf="novel && !novel.flagSyosetu">
+		<div class="column" *ngIf="novel && novel.driver == 'manual'">
 			<a routerLink="['/novel/',idNovel,'add']" class="button is-info">Import Chapter</a>
 		</div>
-		<div class="column" *ngIf="novel && novel.flagSyosetu">
+		<div class="column" *ngIf="novel && novel.driver != 'manual'">
 			<a (click)="updateChapters()" class="button is-info">Update Chapters</a>
 		</div>
 		<div class="column" *ngIf="novel && novel.flagSyosetu">

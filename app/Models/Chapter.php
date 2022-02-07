@@ -21,6 +21,7 @@ class Chapter extends Model
 	protected $fillable = [
 		 'idNovel'
 		,'no'
+		,'noCode'
 		,'title'
 		,'textOriginal'
 		,'dateRevision'

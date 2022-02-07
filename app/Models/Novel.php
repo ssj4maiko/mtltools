@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Drivers\DriverInterface;
 use App\Drivers\Syosetu;
+use App\Drivers\Kakuyomu;
 use Illuminate\Database\Eloquent\Model;
 
 class Novel extends Model
@@ -31,8 +32,8 @@ class Novel extends Model
 	private static $drivers = [
 		'manual'		=>	'Manual',
 		'syosetu'		=>	'Syosetu ni Narou / 小説家になろう',
-		'alphapolis'	=>	'Alphapolis / アルファポリス',
-		'kakuyomu'		=>	'Kakuyomu / カクヨム'
+		'kakuyomu'		=>	'Kakuyomu / カクヨム',
+		//'alphapolis'	=>	'Alphapolis / アルファポリス',
 	];
 	public static function getDrivers(){
 		return self::$drivers;
@@ -41,6 +42,8 @@ class Novel extends Model
 		switch($this->driver){
 			case 'syosetu':
 				return new Syosetu($this->code, $this->flagR18, $no);
+			case 'kakuyomu':
+				return new Kakuyomu($this->code, $this->flagR18, $no);
 		}
 		return null;
 	}
@@ -57,6 +60,9 @@ class Novel extends Model
 
 		if(isset($data['show']) || is_null($data['show']))
 			$data['show'] = $data['show'] ? 1 : 0;
+			
+		if(isset($data['completed']) || is_null($data['completed']))
+			$data['completed'] = $data['completed'] ? 1 : 0;
 
 		if(isset($data['dictionaries'])){
 			if(!(isset($data['dictionaries']['-']) || isset($data['dictionaries']['+']))){

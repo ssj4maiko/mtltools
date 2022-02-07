@@ -15,7 +15,7 @@ class CreateAllTables extends Migration
     {
         Schema::create('novels', function (Blueprint $table) {
             $table->smallIncrements('id');
-            $table->char('code',7);
+            $table->string('code',7);
             $table->string('nameOriginal',100);
             $table->string('nameCustom',255)->nullable();
             $table->unsignedSmallInteger('numberChapters')->default(0);

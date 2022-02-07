@@ -24,8 +24,10 @@
 
         .categories {
             color:white;
+            background: rgba(255,255,255,0.5);
             width:30%;
             float:left;
+            line-height: 1.4;
 
             h1 {
                 height:30px;
@@ -48,12 +50,13 @@
                 background-color:transparent;
                 border:0px solid white;
                 color:white;
-                margin-left:15px;
+                //margin-left:15px;
+                outline-width: 0px;
             }
             .category-selected {
-                border-width: 0px 0px 0px 5px;
+                border-width: 2px 0px 2px 5px;
                 border-style: solid;
-                border-color: yellow;
+                border-color: red;
             }
         }
         .entries {
@@ -62,6 +65,10 @@
             padding: left 10;
             overflow-y:auto;
             float:left;
+            .hint {
+                background: black;
+                color:white;
+            }
             li {
                 div:after {
                     clear:both;

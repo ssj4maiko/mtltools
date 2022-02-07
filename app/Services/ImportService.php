@@ -17,28 +17,28 @@ class ImportService
 		$this->novelService = app(NovelService::class);
 		return $this->novelService->get($idNovel);
 	}
-	public function importNext(int $idNovel)
+	public function importNext(int $idNovel): void
 	{
 		/** @var Novel $novel */
-		$novel = $this->getNovel($idNovel);
-		if (!$novel->driver) {
-			return null;
-		}
+		//$novel = $this->getNovel($idNovel);
+		//if (!$novel->driver) {
+		//	return null;
+		//}
 		/** @var \App\Drivers\DriverInterface $driver */
-		$driver = $novel->startDriver($novel->numberChapters + 1);
-
-		$chapter = $driver->importChapter();
-		$chapter->idNovel = $idNovel;
-		$chapter->save();
-		$chapter->empty = 0;
-
-		$novel->numberChapters++;
-		$novel->save();
-
-		// For some reason the chapter number resets to 0? So let's fix this for the Front.
-		$chapter->no = $novel->numberChapters;
-
-		return ['chapter' => $chapter, 'novel' => $novel];
+		//$driver = $novel->startDriver($novel->numberChapters + 1);
+		//
+		//$chapter = $driver->importChapter();
+		//$chapter->idNovel = $idNovel;
+		//$chapter->save();
+		//$chapter->empty = 0;
+		//
+		//$novel->numberChapters++;
+		//$novel->save();
+		//
+		//// For some reason the chapter number resets to 0? So let's fix this for the Front.
+		//$chapter->no = $novel->numberChapters;
+		//
+		//return ['chapter' => $chapter, 'novel' => $novel];
 	}
 
 
@@ -85,55 +85,21 @@ class ImportService
 			// UPDATE
 			$counter = $KnownChapter->$pointer;
 			$foundChapter = null;
-			$pass = isset($ImportedChapters[$counter]);
-			if(!$pass){
-				/**
-				 * The chapter was deleted, and reposted, thus earning a new post date
-				 */
-				foreach($ImportedChapters as $idx1 => $importedChaptersSub){
-					foreach($importedChaptersSub as $idx2 => $importedChapter){
-						if($importedChapter['no'] == $KnownChapter->no){
-							$foundChapter = $importedChapter;
-							$pass = true;
-							unset($ImportedChapters[$idx1][$idx2]);
-							if(count($ImportedChapters[$idx1]) == 0){
-								unset($ImportedChapters[$idx1]);
-							}
-							break;
-						}
-					}
-				}
-			}
-			if($pass && !$foundChapter){
-				// If there is only one chapter at this specific time, just get it
-				if(count($ImportedChapters[$counter]) == 1){
-					$foundChapter = $ImportedChapters[$counter][0];
-					unset($ImportedChapters[$counter]);
-				}
-				// If there are more, check with no
-				else {
-					for($i=0; $i < count($ImportedChapters[$counter]); ++$i) {
-						if ($ImportedChapters[$counter][$i]['no'] == $KnownChapter->no) {
-							$foundChapter = array_splice($ImportedChapters[$counter],$i,1)[0];
-						}
-					}
-				}
-			}
-			if ($foundChapter) {
+
+			if (isset($ImportedChapters[$counter])) {
 				$update = false;
 				if (!$KnownChapter->hasText) {
 					// There is no text, go get it
 					$update = 1;
 					$KnownChapter->textOriginal = $driver->importContent($KnownChapter);
 				} elseif (
-					(empty($KnownChapter->dateOriginalRevision) && $foundChapter['dateOriginalRevision'])
-					||
-					($foundChapter['dateOriginalRevision'] > $KnownChapter->dateOriginalRevision)
+					$foundChapter['dateOriginalRevision'] > $KnownChapter->dateOriginalRevision
 				) {
 					// There is a revision
 					$update = 2;
 					$KnownChapter->textRevision = $driver->importContent($KnownChapter);
 				}
+
 				if ($update) {
 					$KnownChapter->no = $foundChapter['no'];
 					$KnownChapter->title = $foundChapter['title'];
@@ -142,7 +108,7 @@ class ImportService
 					$KnownChapter->save();
 				}
 			} else {
-				dd('An already known chapter was not found on the server... Weird...', $counter, $importedChapter, $KnownChapter);
+				dd('An already known chapter was not found on the server... Weird...', $counter, $KnownChapter, $ImportedChapters);
 			}
 		}
 		// Because I have been deleting already imported chapters, only new ones remain here
@@ -152,6 +118,7 @@ class ImportService
 					$chapter = new Chapter();
 					$chapter->idNovel = $importedChapter['idNovel'];
 					$chapter->no = $importedChapter['no'];
+					$chapter->noCode = $importedChapter['noCode'];
 					$chapter->title = $importedChapter['title'];
 					$chapter->dateOriginalPost = $importedChapter['dateOriginalPost'];
 					$chapter->dateOriginalRevision = $importedChapter['dateOriginalRevision'];

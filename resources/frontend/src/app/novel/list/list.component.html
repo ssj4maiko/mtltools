@@ -45,22 +45,22 @@
 						/
 						<a (click)="delete(novel.id);"><i class="fas fa-trash"></i></a>
 					</td>
-					<ng-template #success>
-						<a class='button is-success'>
-							<span class="icon is-small">
-								<i class="fas fa-check"></i>
-							</span>
-						</a>
-					</ng-template>
-					<ng-template #danger>
-						<a class='button is-danger'>
-							<span class="icon is-small">
-								<i class="fas fa-times"></i>
-							</span>
-						</a>
-					</ng-template>
 				</tr>
 			</ng-container>
+			<ng-template #success>
+				<a class='button is-success'>
+					<span class="icon is-small">
+						<i class="fas fa-check"></i>
+					</span>
+				</a>
+			</ng-template>
+			<ng-template #danger>
+				<a class='button is-danger'>
+					<span class="icon is-small">
+						<i class="fas fa-times"></i>
+					</span>
+				</a>
+			</ng-template>
 		</tbody>
 	</table>
 </div>
