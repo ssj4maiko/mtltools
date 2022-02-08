@@ -15,5 +15,5 @@ export class Novel {
   completed: boolean;
   addedBy: Date;
   show: boolean;
-  @Optional() dictionary: Dictionary[];
+  /*@Optional()*/ dictionary: Dictionary[];
 }

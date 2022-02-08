@@ -79,12 +79,12 @@ export class FormService {
       , dictionary: dic
       , driver: novel.driver
       , flagR18: novel.flagR18
-      , completed: novel.flagR18
+      , completed: novel.completed
       , show: novel.show
     });
   }
 
-  getValues(dictionariesAlreadyThere?:Dictionary[]): {novel: Novel, dictionaries: number[]} {
+  getValues(dictionariesAlreadyThere?:Dictionary[]): {novel: Novel, dictionaries?: number[]} {
     const values2return = {novel: null, dictionaries: null};
     values2return.novel = new Novel(this.formGroup.value);
     delete (values2return.novel.dictionary);

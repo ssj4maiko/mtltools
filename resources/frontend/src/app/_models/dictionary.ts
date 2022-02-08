@@ -14,7 +14,7 @@ export class Dictionary {
   dateRevision: Date;
   @Optional() changes?: boolean; // Use on FullSave, to learn if there is a need to get a new cache
   @Optional() novel?: Novel[];
-  count_categories?: number;
+  /*@Optional()*/ count_categories?: number;
 
   countCategories(): number {
     return this.count_categories ?? 0;
