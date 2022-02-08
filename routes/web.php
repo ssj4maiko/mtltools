@@ -18,6 +18,8 @@ Route::any('/novel/{query}',[IndexController::class, 'home'])
     ->where('query', '.*');
 Route::any('/dictionary/{query}', [IndexController::class, 'home'])
     ->where('query', '.*');
+Route::any('/novel/', [IndexController::class, 'home']);
+Route::any('/dictionary/', [IndexController::class, 'home']);
 Route::any('/dashboard', [IndexController::class, 'home']);
 
 Route::get('static/{idNovel}/{idDictionary}/{noChapter}/{part?}', [FrontNovelController::class, 'getChapter']);

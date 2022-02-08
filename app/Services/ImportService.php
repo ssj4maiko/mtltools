@@ -118,7 +118,7 @@ class ImportService
 					$chapter = new Chapter();
 					$chapter->idNovel = $importedChapter['idNovel'];
 					$chapter->no = $importedChapter['no'];
-					$chapter->noCode = $importedChapter['noCode'];
+					$chapter->noCode = $importedChapter['noCode'] ?? null;
 					$chapter->title = $importedChapter['title'];
 					$chapter->dateOriginalPost = $importedChapter['dateOriginalPost'];
 					$chapter->dateOriginalRevision = $importedChapter['dateOriginalRevision'];
