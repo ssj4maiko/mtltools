@@ -90,12 +90,16 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy {
   refreshOriginal() {
     this.Sidebar2Chapter.emit([]);
   }
+  saving: boolean = false;
   saveModifications() {
+    this.saving = true;
     this.api.Dictionary.fullSave(this.idDictionary, this.categories)
       .then(res => {
         this.categories = [];
         this.getCache();
         this.refreshTranslation();
+
+        this.saving = false;
         console.log(res);
       });
   }

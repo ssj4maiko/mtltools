@@ -11,11 +11,9 @@
     </ul>
     <ul>
         <li class="dictionary-buttons">
-            <input type="button" (click)="saveModifications()" value='Save Modifications'
-                class="button is-small is-danger" />
+            <input type="button" (click)="saveModifications()" value='Save Modifications' class="button is-small is-danger" [disabled]="saving"  />
             <input type="button" (click)="openOutside(true)" value='Google Translate' class="button is-small is-info" />
-            <input type="button" (click)="openOutside(false)" value='Open Keyword Translated Raw'
-                class="button is-small is-warning" />
+            <input type="button" (click)="openOutside(false)" value='Open Keyword Translated Raw' class="button is-small is-warning" />
         </li>
     </ul>
     <div class="interactiveBox">
@@ -64,7 +62,7 @@
     </div>
     <ul>
         <li class="dictionary-buttons">
-            <input type="button" (click)="saveModifications()" value='Save Modifications'  class="button is-small is-danger" />
+            <input type="button" (click)="saveModifications()" value='Save Modifications'  class="button is-small is-danger" [disabled]="saving"  />
             <input type="button" (click)="openOutside(true)" value='Google Translate' class="button is-small is-info" />
             <input type="button" (click)="openOutside(false)" value='Open Keyword Translated Raw'  class="button is-small is-warning" />
         </li>
