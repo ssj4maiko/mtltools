@@ -7,7 +7,7 @@ import { AjaxService } from './ajax.service';
   providedIn: 'root'
 })
 export class MetaService extends AjaxService {
-  route = 'meta/';
+  route = 'meta';
   items = [];
   api: ApiService = null;
   setApi(api: ApiService): void {
