@@ -13,12 +13,13 @@ class NovelService
 	public function getAll($search = [])
 	{
 		if(empty($search)){
-			return Novel::all();
+			$novel = Novel::all();
 		} else {
-			return Novel::where('nameCustom','LIKE','%'.$search['search'].'%')
+			$novel = Novel::where('nameCustom','LIKE','%'.$search['search'].'%')
 						->orWhere('nameCustom', 'LIKE', '%' . $search['search'] . '%')
 						->get();
 		}
+		return $novel;
 	}
 	public function get(int $id)
 	{

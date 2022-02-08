@@ -12,16 +12,12 @@ export class Dictionary {
   language: string;
   dateCreated: Date;
   dateRevision: Date;
-  @Optional() changes: boolean; // Use on FullSave, to learn if there is a need to get a new cache
-  @Optional() novel: Novel[];
-  // tslint:disable-next-line: variable-name
-  @Optional() count_categories: [{count: number}];
+  @Optional() changes?: boolean; // Use on FullSave, to learn if there is a need to get a new cache
+  @Optional() novel?: Novel[];
+  count_categories?: number;
 
   countCategories(): number {
-    if (this.count_categories[0]) {
-      return this.count_categories[0].count;
-    }
-    return 0;
+    return this.count_categories ?? 0;
   }
 }
 
@@ -31,9 +27,7 @@ export class CacheDictionary {
   id: number;
   name: string;
   language: string;
-  // tslint:disable-next-line: variable-name
   dictionary_category: DictionaryCategory[];
-  // tslint:disable-next-line: variable-name
   dictionary_entry: DictionaryEntry[];
 }
 

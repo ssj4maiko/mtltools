@@ -1,1 +1,0 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[2],{WIjz:function(t,s,n){"use strict";n.d(s,"b",(function(){return i})),n.d(s,"a",(function(){return l}));let i=class{constructor(t,s=null){this.value=t,this.label=s,this.label||(this.label=this.value)}},l=class{constructor(t,s,n,i=[]){this.name=t,this.label=s,this.type=n,this.options=i}}}}]);

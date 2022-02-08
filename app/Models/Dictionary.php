@@ -61,4 +61,11 @@ class Dictionary extends Model
         $this->novel()->detach();
         $this->novel()->attach($idsNovel);
     }
+    public function toArray(){
+        $array = parent::toArray();
+        if(isset($array['count_categories'])){
+            $array['count_categories'] = isset($array['count_categories'][0]) ? $array['count_categories'][0]['count'] : 0;
+        }
+        return $array;
+    }
 }
