@@ -35,6 +35,7 @@ class MassDictionaryService
 	{
 		if (count($this->insert) > 0) {
 			DB::table('dictionaryEntries')->insert($this->insert);
+			$this->insert = [];
 			return true;
 		}
 		return false;
@@ -44,12 +45,15 @@ class MassDictionaryService
 		foreach ($this->update as $update) {
 			$update->save();
 		}
-		return count($this->update) > 0;
+		$count = count($this->update) > 0;
+		$this->update = [];
+		return $count;
 	}
 	public function massDelete()
 	{
 		if (count($this->delete) > 0) {
 			DB::table('dictionaryEntries')->whereIn('id', $this->delete)->delete();
+			$this->delete = [];
 			return true;
 		}
 		return false;
@@ -130,11 +134,11 @@ class MassDictionaryService
 			}
 			if (isset($category['entries'])) {
 				$changes = $this->updateAllEntries($category['entries'], $idDictionary, $idCategory, false);
-				if (!empty($changes))
+				if (!empty($changes)) {
 					$this->clearCache = true;
+				}
 			}
 		}
-
 		$return = ['changes' => $this->clearCache];
 
 		if ($this->clearCache) {
