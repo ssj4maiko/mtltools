@@ -85,15 +85,50 @@ class ImportService
 			// UPDATE
 			$counter = $KnownChapter->$pointer;
 			$foundChapter = null;
-
-			if (isset($ImportedChapters[$counter])) {
+			$pass = isset($ImportedChapters[$counter]);
+			if(!$pass){
+				/**
+				 * The chapter was deleted, and reposted, thus earning a new post date
+				 */
+				foreach($ImportedChapters as $idx1 => $importedChaptersSub){
+					foreach($importedChaptersSub as $idx2 => $importedChapter){
+						if($importedChapter['no'] == $KnownChapter->no){
+							$foundChapter = $importedChapter;
+							$pass = true;
+							unset($ImportedChapters[$idx1][$idx2]);
+							if(count($ImportedChapters[$idx1]) == 0){
+								unset($ImportedChapters[$idx1]);
+							}
+							break;
+						}
+					}
+				}
+			}
+			if($pass && !$foundChapter){
+				// If there is only one chapter at this specific time, just get it
+				if(count($ImportedChapters[$counter]) == 1){
+					$foundChapter = $ImportedChapters[$counter][0];
+					unset($ImportedChapters[$counter]);
+				}
+				// If there are more, check with no
+				else {
+					for($i=0; $i < count($ImportedChapters[$counter]); ++$i) {
+						if ($ImportedChapters[$counter][$i]['no'] == $KnownChapter->no) {
+							$foundChapter = array_splice($ImportedChapters[$counter],$i,1)[0];
+						}
+					}
+				}
+			}
+			if ($foundChapter) {
 				$update = false;
 				if (!$KnownChapter->hasText) {
 					// There is no text, go get it
 					$update = 1;
 					$KnownChapter->textOriginal = $driver->importContent($KnownChapter);
 				} elseif (
-					$foundChapter['dateOriginalRevision'] > $KnownChapter->dateOriginalRevision
+					(empty($KnownChapter->dateOriginalRevision) && $foundChapter['dateOriginalRevision'])
+					||
+					($foundChapter['dateOriginalRevision'] > $KnownChapter->dateOriginalRevision)
 				) {
 					// There is a revision
 					$update = 2;
