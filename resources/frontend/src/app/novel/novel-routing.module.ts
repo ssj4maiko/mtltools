@@ -13,7 +13,7 @@ const routes: Routes = [
   {
      path: ''
     , component: ListComponent
-    , data: { title: 'List Novels', breadcrumb: 'Novels' }
+    , data: { title: 'List Novels', breadcrumb: 'List' }
   },
   {
      path: 'add'
