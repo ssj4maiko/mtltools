@@ -40,8 +40,8 @@
                     </p>
                 </li>
                 <ng-container *ngFor="let category of categories; let i = index">
-                    <li [ngClass]="{'hidden': (selectOpenCategory != i)}" #category>
-                        <div class="category-entry-container">
+                    <li [ngClass]="{'hidden': (selectOpenCategory != i)}">
+                        <div class="category-entry-container" #category>
                             <div *ngFor="let entry of category.entries; let j = index" class="entry" [ngClass]="{'changed': entry.update == true, 'deleted': entry.delete == true, 'new': entry.id == null }">
                                 <input class="entry-original" type="text" [(ngModel)]="entry.entryOriginal" placeholder="Original" (ngModelChange)="changeEntry(entry, i, j)" #entry />
                                 <input class="entry-translation" type="text" [(ngModel)]="entry.entryTranslation" placeholder="Translation" (ngModelChange)="changeEntry(entry, i, j)" />
