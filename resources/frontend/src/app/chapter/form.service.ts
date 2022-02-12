@@ -18,7 +18,7 @@ export class FormService {
 
   indexes: string[] = [];
 
-  @ViewChildren('category') DOMcategories: QueryList<HTMLLIElement>;
+  @ViewChildren('categoryDOM') public DOMcategories: QueryList<ElementRef<HTMLDivElement>>;
 
   constructor(
     public api: ApiService
@@ -61,13 +61,21 @@ export class FormService {
 
     // Wait until new input is rendered to focus it
     setTimeout(() => {
-      let DOMcategory = this.DOMcategories.toArray()[category_index];
-      if (DOMcategory) {
-        // @ts-expect-error
-        let DOMLi: HTMLLIElement = DOMcategory.nativeElement;
-        (DOMLi.children[DOMLi.children.length - 2].children[0] as HTMLInputElement).focus();
+      let DOMLi: HTMLDivElement;
+      let DOMInput: HTMLInputElement;
+      if (this.DOMcategories){
+        let DOMcategory = this.DOMcategories.toArray()[category_index];
+        if (DOMcategory) {
+          DOMLi = DOMcategory.nativeElement;
+        }
       }
-    },100)
+      // Fallback for AOT
+      if (!DOMInput) {
+        DOMLi = <HTMLDivElement>document.getElementById("categoryDOM-" + category_index);
+      }
+      DOMInput = (DOMLi.children[DOMLi.children.length - 2].children[0] as HTMLInputElement);
+      DOMInput.focus();
+    },150)
   }
   addCategory() {
     this.categories.push(new DictionaryCategory(null, this.idDictionary));

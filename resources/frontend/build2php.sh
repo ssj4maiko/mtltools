@@ -1,4 +1,4 @@
-ng build --aot --configuration production 
+ng build --build-optimizer --aot --configuration production 
 rm -f -R ../../public/*.js
 rm -f -R ../../public/*.css
 rm -f -R ../../public/*.ico
