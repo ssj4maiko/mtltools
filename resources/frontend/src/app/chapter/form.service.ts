@@ -70,7 +70,7 @@ export class FormService {
         }
       }
       // Fallback for AOT
-      if (!DOMInput) {
+      if (!DOMLi) {
         DOMLi = <HTMLDivElement>document.getElementById("categoryDOM-" + category_index);
       }
       DOMInput = (DOMLi.children[DOMLi.children.length - 2].children[0] as HTMLInputElement);

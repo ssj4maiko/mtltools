@@ -26,10 +26,10 @@ export class HeaderComponent implements OnInit {
             filter((event: RouterEvent) => event instanceof NavigationEnd),
             distinctUntilChanged(),
         ).subscribe((next) => {
-            console.log('ROUTER', next, this.activatedRoute.root);
+            //console.log('ROUTER', next, this.activatedRoute.root);
             this.breadcrumbs = this.buildBreadCrumb(this.activatedRoute.root);
             this.renameLabels();
-            console.log('ROUTER END');
+            //console.log('ROUTER END');
         });
   }
 
@@ -80,7 +80,7 @@ export class HeaderComponent implements OnInit {
             idCategory: null,
             noChapter: null
         };
-        console.log('header calls');
+        //console.log('header calls');
         this.breadcrumbs.forEach(el => {
             if (el.type) {
                 rememberVariables[el.type] = parseInt(el.label, 10);
@@ -113,6 +113,6 @@ export class HeaderComponent implements OnInit {
                 }
             }
         });
-        console.log('header calls end');
+        //console.log('header calls end');
     }
 }

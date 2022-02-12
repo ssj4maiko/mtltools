@@ -60,7 +60,7 @@ export class ListComponent implements OnInit {
     if (idCategory) {
       base.push(idCategory);
     }
-    console.log(base);
+    //console.log(base);
     this.router.navigate(base);
   }
   delete(idCategory: number) {

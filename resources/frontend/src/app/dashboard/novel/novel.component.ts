@@ -34,7 +34,7 @@ export class NovelComponent implements OnInit {
   updateChapters(idNovel: number) {
     this.api.Chapter.autoUpdate({ idNovel })
       .then(res => {
-        console.log('Novel updated', res);
+        console.log('updateChapters', res);
         /**
          * Auto update on the list too
          */

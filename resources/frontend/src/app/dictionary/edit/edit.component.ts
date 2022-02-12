@@ -42,7 +42,7 @@ export class EditComponent extends FormService implements OnInit {
 
       this.api.Novel.getAll({ idDictionary: this.idDictionary })
           .then((selectedNovels: Novel[]) => {
-            console.log('SELECTED NOVELS', selectedNovels);
+            //console.log('SELECTED NOVELS', selectedNovels);
             this.dictionary = values[1];
             this.novels = values[2];
             this.loadMeta(values[0], values[2]);
@@ -55,7 +55,7 @@ export class EditComponent extends FormService implements OnInit {
 
   submitForm(form: NgForm) {
     const values = this.getValues(this.novels);
-    console.log(values);
+    //console.log('submitForm',values);
     this.api.Dictionary.update({ id: this.idDictionary, values })
       .then(res => {
         this.goBack();

@@ -69,7 +69,7 @@ export class FormService {
   getValues(novelsAlreadyThere?:Novel[]): {dictionary: Dictionary, novels: number[]} {
     const values2return = { dictionary: null, novels: null};
     values2return.dictionary = new Dictionary(this.formGroup.value);
-    console.log(values2return.dictionary);
+    //console.log(values2return.dictionary);
     delete (values2return.dictionary.novel);
 
     const novIndex = this.indexes.indexOf('novel');

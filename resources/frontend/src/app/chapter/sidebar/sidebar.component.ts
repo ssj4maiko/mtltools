@@ -100,7 +100,7 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy {
         this.refreshTranslation();
 
         this.saving = false;
-        console.log(res);
+        console.log('saveModifications',res);
       });
   }
 

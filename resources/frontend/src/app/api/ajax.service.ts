@@ -74,6 +74,6 @@ export class AjaxService {
     return this._call({ type: 'delete', url });
   }
   public DEBUG(...args: any): void {
-    console.log(args);
+    console.log('AJAXService Debug', args);
   }
 }

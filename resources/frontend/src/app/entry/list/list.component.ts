@@ -83,7 +83,7 @@ export class ListComponent extends FormService implements OnInit, OnDestroy {
                 if (status) {
                     this.router.navigate(['/dictionary/', this.idDictionary]);
                 } else {
-                    console.log('THERE WAS AN ERROR!');
+                    console.log('THERE WAS AN ERROR! (SubmitForm)');
                 }
             });
     }

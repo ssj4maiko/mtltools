@@ -46,7 +46,7 @@ export class ListComponent implements OnInit {
     if (idDictionary) {
       base.push(idDictionary);
     }
-    console.log(base);
+    console.log('LINK', base);
     this.router.navigate(base);
   }
   delete(idDictionary: number) {

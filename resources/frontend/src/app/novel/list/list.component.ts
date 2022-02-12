@@ -27,7 +27,6 @@ export class ListComponent implements OnInit {
       .then((novels) => {
         // this.novels = [novels];
         this.novels = Object.values(novels);
-        console.log(this.novels);
       }, (error) => {
         console.log(error);
       });
