@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { ElementRef, Injectable, QueryList, ViewChildren } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ApiService } from '../api';
 import { DictionaryCategory, DictionaryEntry, EntryForm } from '../_models';
@@ -18,6 +18,8 @@ export class FormService {
 
   indexes: string[] = [];
 
+  @ViewChildren('category') DOMcategories: QueryList<HTMLLIElement>;
+
   constructor(
     public api: ApiService
   ) { }
@@ -35,9 +37,7 @@ export class FormService {
             this.api.Entry.getAll({ idDictionary: this.idDictionary, idCategory: category.id })
               .then((entries) => {
                 LoadedPromise.push(new Promise<void>((resolveEnt, rejectEnt) => {
-                  /**
-                   * @var DictionaryEntry[] category.entries
-                   */
+                  /** @var DictionaryEntry[] category.entries */
                   category.entries = Object.values(entries);
                   resolveEnt();
                 }));
@@ -53,11 +53,21 @@ export class FormService {
           });
       });
   }
-  addEntry(category) {
+  addEntry(category, category_id, category_index:number) {
     if (!category.entries) {
       category.entries = [];
     }
     category.entries.push(new EntryForm());
+
+    // Wait until new input is rendered to focus it
+    setTimeout(() => {
+      let DOMcategory = this.DOMcategories.toArray()[category_index];
+      if (DOMcategory) {
+        // @ts-expect-error
+        let DOMLi: HTMLLIElement = DOMcategory.nativeElement;
+        (DOMLi.children[DOMLi.children.length - 2].children[0] as HTMLInputElement).focus();
+      }
+    },100)
   }
   addCategory() {
     this.categories.push(new DictionaryCategory(null, this.idDictionary));

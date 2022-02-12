@@ -1,133 +1,196 @@
 .dictionaryList {
-    width:100%;
-    height:100%;
-    display:flex;
+    width: 100%;
+    height: 100%;
+    display: flex;
     flex-direction: column;
 
-    .dictionary-selector{
+    .dictionary-selector {
         align-self: flex-start;
-        width:100%;
+        width: 100%;
 
-        &>*{
+        &>* {
             width: 33.3%;
-            height:100%;
+            height: 100%;
         }
     }
+
     li:last-child {
         align-self: flex-end;
     }
-    .interactiveBox {   
-        display:flex;
+
+    .interactiveBox {
+        display: flex;
         flex-direction: row;
-        height:500px;
+        height: 500px;
         flex: 1 1 auto;
 
         .categories {
-            color:white;
-            background: rgba(255,255,255,0.5);
-            width:30%;
-            float:left;
+            color: white;
+            background: rgba(255, 255, 255, 0.5);
+            width: 30%;
+            float: left;
             line-height: 1.4;
 
             h1 {
-                height:30px;
-                width:100%;
+                height: 30px;
+                width: 100%;
                 background: #2f0050;
             }
+
             h1.changed {
                 background: #009013;
             }
+
             h1.new {
                 background: #000063;
             }
+
             h1.categoryButtonRow {
                 background: #00d1b2;
+
                 input {
                     background: transparent;
                 }
             }
+
             .category-name {
-                background-color:transparent;
-                border:0px solid white;
-                color:white;
+                background-color: transparent;
+                border: 0px solid white;
+                color: white;
                 //margin-left:15px;
                 outline-width: 0px;
             }
+
             .category-selected {
                 border-width: 2px 0px 2px 5px;
                 border-style: solid;
                 border-color: red;
             }
         }
+
         .entries {
-            width:70%;
-            height:100%;
+            width: 70%;
+            height: 100%;
             padding: left 10;
-            overflow-y:auto;
-            float:left;
+            float: left;
+            overflow: hidden;
+
             .hint {
                 background: black;
-                color:white;
+                color: white;
             }
-            li {
-                div:after {
-                    clear:both;
-                    content:"";
-                    display:block;
-                }
-                div:nth-child(odd){
-                    background-color:#555;
-                }
-                div:nth-child(even){
-                    background-color:#888;
-                }
-                div.changed {
-                    background-color:green;
-                }
-                div.new {
-                    background-color:#000063;
-                }
-                div.deleted {
-                    background-color:#480000;
-                }
 
-                input {
-                    background-color: transparent;
-                    border:0px solid white;
-                    color:white;
-                }
-                .entry-original{
-                    width:50%;
-                    float:left;
-                }
-                .entry-translation{
-                    width:50%;
-                    float:left;
-                }
-                .entry-description{
-                    width:80%;
-                    float:left;
-                }
-                .deleteButton {
-                    color:red;
-                    margin:0px 8px;
-                }
-                .resetButton {
-                    color:blue;
-                    margin:0px 8px;
+            .entries-container {
+                height: 100%;
+
+                li {
+                    height: 100%;
+                    position: relative;
+                    overflow-x: auto;
+
+                    .category-entry-container {
+                        overflow-y: auto;
+                        height: 100%;
+                        height: calc(100% - 30px);
+                    }
+
+                    input {
+                        //outline:1px solid #f0f;
+                    }
+
+                    .entry {
+                        width: 630px;
+                    }
+
+                    .entry:after {
+                        clear: both;
+                        content: "";
+                        display: block;
+                    }
+
+                    .entry:nth-child(odd) {
+                        background-color: #555;
+                    }
+
+                    .entry:nth-child(even) {
+                        background-color: #888;
+                    }
+
+                    .entry.changed {
+                        background-color: green;
+                    }
+
+                    .entry.new {
+                        background-color: #000063;
+                    }
+
+                    .entry.deleted {
+                        background-color: #480000;
+                    }
+
+                    input {
+                        background-color: transparent;
+                        border: 0px solid white;
+                        color: white;
+                    }
+
+                    .entry-original {
+                        width: 100px;
+                        float: left;
+                    }
+
+                    .entry-translation {
+                        width: 150px;
+                        float: left;
+                    }
+
+                    .entry-description {
+                        width: 300px;
+                        float: left;
+                    }
+
+                    .deleteButton {
+                        color: red;
+                        margin: 0px 8px;
+                        float: left;
+                    }
+
+                    .resetButton {
+                        color: blue;
+                        margin: 0px 8px;
+                        float: left;
+                    }
+
+                    .entry-spacer {
+                        height: 200px;
+                    }
+
+                    .addNewEntryButton {
+                        position: absolute;
+                        bottom: 0px;
+                        left: 0px;
+                        width: 100%;
+                        height: 30px;
+                        text-align: left;
+                        border-width: 2px 0;
+                        border-color: #009013;
+                        background-color: #000;
+                    }
                 }
             }
         }
     }
-    .hidden {
-        display:none;
-    }
-    .dictionary-buttons {
-        width:100%;
 
-        &>*{
+    .hidden {
+        display: none;
+    }
+
+    .dictionary-buttons {
+        width: 100%;
+
+        &>* {
             width: 33.3%;
-            height:100%;
+            height: 100%;
         }
     }
 }
