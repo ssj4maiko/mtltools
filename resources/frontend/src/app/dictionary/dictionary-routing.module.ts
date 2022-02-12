@@ -28,7 +28,7 @@ const routes: Routes = [
   },
   {
     path: 'diff/:idDictionary'
-        , component: DiffComponent
+    , component: DiffComponent
     , data: { title: 'Diff Dictionary', breadcrumb: 'Diff' }
   },
   {

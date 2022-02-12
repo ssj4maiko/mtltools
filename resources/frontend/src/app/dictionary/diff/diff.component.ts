@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Dictionary } from 'src/app/_models/dictionary';
 import { DictionaryCategory } from 'src/app/_models/dictionarycategory';
-import { ApiService } from 'src/app/api.service';
+import { ApiService } from 'src/app/api';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DictionaryEntry } from 'src/app/_models/dictionaryentry';
 
@@ -39,23 +39,14 @@ export class DiffComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.idNovel = this.route.snapshot.params.idNovel;
         this.idDictionary = this.route.snapshot.params.idDictionary;
-        this.dictionaries = Object.values(this.api.Dictionaries());
-
-        if (this.dictionaries.length == 0) {
-            this.api.getDictionaries()
-                .subscribe(res => {
-                    const dictionaries = this.api.Dictionaries();
-                    if (dictionaries) {
-                        this.dictionaries = Object.values(dictionaries);
-                    }
-                    this.getCache();
-
-                }, err => {
-                    console.log(err);
-                });
-        } else {
-            this.getCache();
-        }
+        this.api.Dictionary.getAll({ idNovel: this.idNovel })
+            .then((dictionaries) => {
+                // this.novels = [novels];
+                this.dictionaries = Object.values(dictionaries);
+                this.getCache();
+            }, (error) => {
+                console.log(error);
+            });
     }
     ngOnDestroy(): void {
         delete this.dictionaries;
@@ -77,15 +68,13 @@ export class DiffComponent implements OnInit, OnDestroy {
     }
     changeEntry(entry) {
         if (entry.id > 0) {
-            console.log(entry.id);
-            console.log(entry.idCategory);
+            console.log('changeEntry', entry.id, entry.idCategory, entry);
             entry.update =
                     entry.entryOriginal != this.entriesOriginalValues[entry.id].entryOriginal
                 || entry.entryTranslation != this.entriesOriginalValues[entry.id].entryTranslation
                 || (!!entry.description && (entry.description != this.entriesOriginalValues[entry.id].description))
                 || entry.idCategory != this.entriesOriginalValues[entry.id].idCategory
                 ;
-            console.log(entry);
         }
     }
     addEntry($event, i) {
@@ -118,79 +107,85 @@ export class DiffComponent implements OnInit, OnDestroy {
             sen.entries = tmpEntries[sen.id];
         });
 
-        this.api.saveFullDictionary(this.idDictionary, send)
-            .subscribe(res => {
-                if (res.changes) {
-                    this.dictionaries = Object.values(this.api.Dictionaries());
+        this.api.Dictionary.fullSave(this.idDictionary, send)
+            .then(status => {
+                if (status) {
                     this.categories = [];
-                    this.router.navigate(['/novel/dictionary/', ]);
+                    this.dictionaries = Object.values(this.api.Dictionary.getAll());
+                    this.router.navigate(['/novel/dictionary/' ]);
                 }
-                console.log(res);
-            }, err => {
-                console.log(err);
             });
     }
     private getCache() {
         if (this.categories.length == 0) {
-            this.api.dictionaryCache(this.idDictionary)
-                .subscribe(res => {
+
+            this.api.Dictionary.getCache(this.idDictionary)
+                .then((status) => {
                     this.categories = [];
                     this.entries = [];
 
-                    this.categories = Object.values(this.api.Categories(this.idDictionary));
-                    this.categories.forEach(category => {
-                        this.categoriesHash[category.id] = {
-                            name: category.name
-                        };
-                        const entries = this.api.Entries(category.id);
-                        for (const i in entries) {
-                            this.entry2SelectHash[entries[i].entryOriginal] = {
-                                entry : this.entries.length,
-                                selected : null
-                            };
-                            this.entries.push(entries[i]);
-                            this.entriesOriginalValues[entries[i].id] = {
-                                  entryOriginal: '' + entries[i].entryOriginal
-                                , entryTranslation: '' + entries[i].entryTranslation
-                                , description: '' + entries[i].description
-                                , idCategory: '' + entries[i].idCategory
-                            };
-                        }
-                    });
+                    this.api.Category.getAll({idDictionary : this.idDictionary})
+                        .then((categories: DictionaryCategory[]) => {
+                            this.categories = categories;
+                            this.categories.forEach(category => {
+                                this.categoriesHash[category.id] = {
+                                    name: category.name
+                                };
+                                this.api.Entry.getAll({idDictionary : this.idDictionary, idCategory: category.id})
+                                    .then((entries : DictionaryEntry[]) => {
+                                        for (const i in entries) {
+                                            this.entry2SelectHash[entries[i].entryOriginal] = {
+                                                entry : this.entries.length,
+                                                selected : null
+                                            };
+                                            this.entries.push(entries[i]);
+                                            this.entriesOriginalValues[entries[i].id] = {
+                                                entryOriginal: '' + entries[i].entryOriginal
+                                                , entryTranslation: '' + entries[i].entryTranslation
+                                                , description: '' + entries[i].description
+                                                , idCategory: '' + entries[i].idCategory
+                                            };
+                                        }
+                                    });
+                            });
+                        });
+
                     this.entry2SelectHashKeys = Object.keys(this.entry2SelectHash);
-                }, err => {
-                    console.log(err);
                 });
         }
     }
     getSelectedCache() {
-        this.api.dictionaryCache(this.idDictionarySelected)
-            .subscribe(res => {
+        this.api.Dictionary.getCache(this.idDictionarySelected)
+            .then((status) => {
                 this.categoriesSelected = [];
                 this.entriesSelected = [];
 
-                this.categoriesSelected = Object.values(this.api.Categories(this.idDictionarySelected));
+                this.api.Category.getAll({idDictionary : this.idDictionarySelected})
+                .then((categories:DictionaryCategory[]) => {
+                        this.categoriesSelected = categories;
+
+                    });
                 this.categoriesSelected.forEach(category => {
                     this.categoriesSelectedHash[category.id] = {
                         name: category.name
                     };
-                    const entries = this.api.Entries(category.id);
-                    for (const i in entries) {
-
-                        if (!this.entry2SelectHash[entries[i].entryOriginal]) {
-                            this.entry2SelectHash[entries[i].entryOriginal] = {
-                                entry: null,
-                                selected: this.entriesSelected.length
-                            };
-                        } else {
-                            this.entry2SelectHash[entries[i].entryOriginal].selected = this.entriesSelected.length;
-                        }
-                        this.entriesSelected.push(entries[i]);
-                    }
+                    this.api.Entry.getAll({ idDictionary: this.idDictionarySelected, idCategory: category.id})
+                        .then((entries:DictionaryEntry[]) => {
+                            for (const i in entries) {
+        
+                                if (!this.entry2SelectHash[entries[i].entryOriginal]) {
+                                    this.entry2SelectHash[entries[i].entryOriginal] = {
+                                        entry: null,
+                                        selected: this.entriesSelected.length
+                                    };
+                                } else {
+                                    this.entry2SelectHash[entries[i].entryOriginal].selected = this.entriesSelected.length;
+                                }
+                                this.entriesSelected.push(entries[i]);
+                            }
+                        });
                 });
                 this.entry2SelectHashKeys = Object.keys(this.entry2SelectHash);
-            }, err => {
-                console.log(err);
             });
     }
 
