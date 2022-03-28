@@ -102,22 +102,29 @@ export class DetailComponent implements OnInit {
     // In case the dictionary comes first, then let it wait for the chapter
     this.loadedChapter.then(_ => {
       this.renderDataView();
+      // Confirm that there are categories
       if (categories.length > 0) {
         const entries = [];
         categories.forEach(category => {
-          category.entries.forEach(entry => {
-            const length = entry.entryOriginal.length;
-            if (!entries[length]) {
-              entries[length] = [];
-            }
-            entries[length].push({
-              entryOriginal: entry.entryOriginal,
-              entryTranslation: entry.entryTranslation,
-              idEntry: entry.id,
-              idCategory: category.id,
-              category: category.name,
+          // Newly created Categories don't come with Entries, so let's not break the code
+          if (category.entries) {
+            category.entries.forEach(entry => {
+              // Newly created Entries won't have the variables set by default, which would break the code on AOT
+              if (entry.entryOriginal){
+                const length = entry.entryOriginal.length;
+                if (!entries[length]) {
+                  entries[length] = [];
+                }
+                entries[length].push({
+                  entryOriginal: entry.entryOriginal,
+                  entryTranslation: entry.entryTranslation,
+                  idEntry: entry.id,
+                  idCategory: category.id,
+                  category: category.name,
+                });
+              }
             });
-          });
+          }
         });
         for (let i = entries.length; i > 0; --i) {
           if (entries[i]) {
