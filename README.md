@@ -1,3 +1,14 @@
+# What is this?
+
+This is an interface to **backup and partially translate keywords for Japanese Webnovels**.
+
+Right now, it has support for Syosetu and Kakuyomu, meaning, by inserting the novel IDs, **you can import all chapters of a novel** so, even if the authors delete the source, you will still have them **for yourself**. Although it has no interface right now, you can go straight to the Database and insert chapters manually, so if you want to push a book you bought, you can copy paste them straight to the Database, this also means *there is no reason to restrict solely to Japanese novels, any language works really*.
+
+The main functionality however is the **translation of keywords**, meaning that you can make a dictionary based on categories and entries on the fly while reading, thus these keywords are replaced automatically from there on.
+
+The main purpose for this is to use alongside any Machine Translation (MTL) tool, such as Google Translator, DeepL and so on, by translating certain words, **you can keep consistency in the translation, and you can also use it as a dictionary, by giving descriptions and reminders for each keyword**, this is useful to note things to remember for the future on your reading.
+
+For this functionality, however, you need to have the project online, on a place where these MTL tools can reach, thus the interface uses Angular AOT compilation, meaning, instead of requiring a Node server alongside a PHP server for the API, you really just need a cheap PHP server, and there are scripts to compile and move all the new files to their places, so you just need to copy them to your server.
 
 # Install
 
