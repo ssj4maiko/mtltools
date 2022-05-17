@@ -18,7 +18,7 @@
 		<ng-container *ngIf="chapter">
 			<h1 class='title'>{{ this.renderedTitle }}</h1>
 			<hr />
-			<div class="novel-content" innerHTML="{{ this.renderedText }}">
+			<div class="novel-content" [innerHTML]="renderedText | safeHtml">
 
 			</div>
 		</ng-container>
@@ -27,7 +27,7 @@
 
 	<div class="show-sidebar" (click)="toogleSidebar()"></div>
 	<div class="sidebar" [hidden]="!showSidebar">
-		<app-chapter-sidebar (Sidebar2Chapter)="translateText($event)"></app-chapter-sidebar>
+		<app-chapter-sidebar #SidebarChild (Sidebar2Chapter)="translateText($event)"></app-chapter-sidebar>
 	</div>
 </div>
 <ng-keyboard-shortcuts [shortcuts]="shortcuts"></ng-keyboard-shortcuts>

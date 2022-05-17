@@ -50,6 +50,7 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
         this.dictionarySelected(this.dictionarySelector);
       });
   }
+
   @ViewChild(KeyboardShortcutsComponent) private keyboard: KeyboardShortcutsComponent;
   shortcuts: ShortcutInput[] = [];
   selectOpenCategory:number = -1;
@@ -63,7 +64,7 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
     }
     return '';
   }
-  private moveFocus = (id: string, direction?: string, output?:ShortcutEventOutput) => {
+  private moveFocus = (id: string, output?:ShortcutEventOutput) => {
     let el = document.getElementById(id);
     if (el)
       el.focus();
@@ -71,20 +72,37 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
       console.error(id);
     }
 
-    // if(direction){
-    //   console.log({
-    //     direction,
-    //     category: this.selectOpenCategory,
-    //     categoryLength: this.categories.length,
-    //     entry: this.selectedEntry,
-    //     entryLength: this.categories[this.selectOpenCategory].entries?.length,
-    //     target: output?.event.target
-    //   });
-    // }
+    if(output){
+      console.log({
+        output: output.key,
+        category: this.selectOpenCategory,
+        categoryLength: this.categories.length,
+        entry: this.selectedEntry,
+        entryLength: this.categories[this.selectOpenCategory].entries?.length,
+        target: output?.event.target
+      });
+    }
   }
-
+  private moveCurrentCategory = (output?:ShortcutEventOutput) => {
+    let id = 'category-' + this.selectOpenCategory;
+    this.moveFocus(id, output);
+  }
+  private moveCurrentEntry = (entryType: string = '', output?: ShortcutEventOutput) => {
+    let id = 'entry-' + this.selectOpenCategory + '-' + this.selectedEntry + entryType;
+    this.moveFocus(id, output);
+  }
   ngAfterViewInit(): void {
     this.shortcuts.push(
+      {
+        key: ["ctrl + s"],
+        preventDefault: true,
+        label: "Dictionary",
+        description: "Save Modifications",
+        allowIn: [AllowIn.ContentEditable, AllowIn.Input, AllowIn.Select, AllowIn.Textarea],
+        command: (output: ShortcutEventOutput) => {
+          this.saveModifications();
+        }
+      },
       {
         key: ["ctrl + up","ctrl + alt + up"],
         preventDefault: true,
@@ -98,8 +116,7 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
           } else {
             this.selectOpenCategory = this.categories.length-1;
           }
-          let id = 'category-' + this.selectOpenCategory;
-          this.moveFocus(id, 'CUp', output);
+          this.moveCurrentCategory(output);
         }
       },
       {
@@ -115,8 +132,7 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
           } else {
             this.selectOpenCategory = 0;
           }
-          let id = 'category-'+this.selectOpenCategory;
-          this.moveFocus(id, 'CDown', output);
+          this.moveCurrentCategory(output);
         }
       },
       {
@@ -128,9 +144,8 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
         command: (output: ShortcutEventOutput) => {
           this.addCategory();
           this.selectOpenCategory = this.categories.length-1;
-          let id = 'category-' + this.selectOpenCategory;
           setTimeout(() => {
-            this.moveFocus(id, 'CNew', output);
+            this.moveCurrentCategory(output);
           },100)
         }
       },
@@ -150,10 +165,9 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
             } else {
               this.selectedEntry++;
             }
-            /* @ts-ignore */
-            let entryType: string = (output.event.target.id ? this.getSelectedEntryType(output.event.target.id) : '');
-            let id = 'entry-' + this.selectOpenCategory + '-' + this.selectedEntry + entryType;
-            this.moveFocus(id, 'EDown', output);
+            let target = (output.event.target as HTMLElement)
+            let entryType: string = (target.id ? this.getSelectedEntryType(target.id) : '');
+            this.moveCurrentEntry(entryType, output);
           }
         }
       },
@@ -173,10 +187,9 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
             } else {
               this.selectedEntry--;
             }
-            /* @ts-ignore */
-            let entryType: string = (output.event.target.id ? this.getSelectedEntryType(output.event.target.id) : '');
-            let id = 'entry-' + this.selectOpenCategory + '-' + this.selectedEntry + entryType;
-            this.moveFocus(id, 'EUp', output);
+            let target = (output.event.target as HTMLElement)
+            let entryType: string = (target.id ? this.getSelectedEntryType(target.id) : '');
+            this.moveCurrentEntry(entryType, output);
           }
         }
       },
@@ -192,12 +205,11 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
           }
           if (!this.categories[this.selectOpenCategory].entries)
             return;
-            /* @ts-ignore */
-          if(output.event.target.id.indexOf('entry-') !== 0)
+          let target = (output.event.target as HTMLElement)
+          if (target.id.indexOf('entry-') !== 0)
             return;
 
-          /* @ts-ignore */
-          let entryType: string = (output.event.target.id ? this.getSelectedEntryType(output.event.target.id) : '');
+          let entryType: string = (target.id ? this.getSelectedEntryType(target.id) : '');
           switch(entryType){
             case '':
               entryType = '-trans';
@@ -206,8 +218,7 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
               entryType = '-desc';
               break;
           }
-          let id = 'entry-' + this.selectOpenCategory + '-' + this.selectedEntry + entryType;
-          this.moveFocus(id, 'ERight', output);
+          this.moveCurrentEntry(entryType, output);
         }
       },
       {
@@ -222,12 +233,12 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
           }
           if (!this.categories[this.selectOpenCategory].entries)
             return;
-          /* @ts-ignore */
-          if (output.event.target.id.indexOf('entry-') !== 0)
+
+          let target = (output.event.target as HTMLElement)
+          if (target.id.indexOf('entry-') !== 0)
             return;
 
-          /* @ts-ignore */
-          let entryType: string = (output.event.target.id ? this.getSelectedEntryType(output.event.target.id) : '');
+          let entryType: string = (target.id ? this.getSelectedEntryType(target.id) : '');
           switch (entryType) {
             case '-trans':
               entryType = '';
@@ -236,13 +247,48 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
               entryType = '-trans';
               break;
           }
-          let id = 'entry-' + this.selectOpenCategory + '-' + this.selectedEntry + entryType;
-          this.moveFocus(id, 'ERight', output);
+          this.moveCurrentEntry(entryType, output);
+        }
+      },
+      {
+        key: "alt + home",
+        preventDefault: true,
+        label: "Entries",
+        description: "Move to First Entry",
+        allowIn: [AllowIn.ContentEditable, AllowIn.Input, AllowIn.Select, AllowIn.Textarea],
+        command: (output: ShortcutEventOutput) => {
+          if (this.selectOpenCategory < 0) {
+            this.selectOpenCategory = 0;
+          }
+          if (this.categories[this.selectOpenCategory].entries) {
+            this.selectedEntry = 0;
+            let target = (output.event.target as HTMLElement)
+            let entryType: string = (target.id ? this.getSelectedEntryType(target.id) : '');
+            this.moveCurrentEntry(entryType, output);
+          }
+        }
+      },
+      {
+        key: "alt + end",
+        preventDefault: true,
+        label: "Entries",
+        description: "Move to Last Entry",
+        allowIn: [AllowIn.ContentEditable, AllowIn.Input, AllowIn.Select, AllowIn.Textarea],
+        command: (output: ShortcutEventOutput) => {
+          if (this.selectOpenCategory < 0) {
+            this.selectOpenCategory = 0;
+          }
+          if (this.categories[this.selectOpenCategory].entries) {
+            this.selectedEntry = this.categories[this.selectOpenCategory].entries.length - 1;
+            let target = (output.event.target as HTMLElement)
+            let entryType: string = (target.id ? this.getSelectedEntryType(target.id) : '');
+            this.moveCurrentEntry(entryType, output);
+          }
         }
       },
       
       {
-        key: "alt + plus",
+        key: ["alt + plus", "alt + insert"],
         preventDefault: true,
         label: "Entries",
         description: "Add New Entry",
@@ -254,16 +300,53 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
           this.addEntry(this.categories[this.selectOpenCategory], this.categories[this.selectOpenCategory].id, this.selectOpenCategory);
 
           this.selectedEntry = this.categories[this.selectOpenCategory].entries.length - 1;
-          let id = 'entry-' + this.selectOpenCategory + '-' + this.selectedEntry;
           setTimeout(() => {
-            this.moveFocus(id, 'ENew', output);
+            this.moveCurrentEntry('', output);
           }, 100)
         }
+      },
+      {
+        key: ["alt + -"],
+        preventDefault: true,
+        label: "Entries",
+        description: "Remove Entry",
+        allowIn: [AllowIn.ContentEditable, AllowIn.Input, AllowIn.Select, AllowIn.Textarea],
+        command: (output: ShortcutEventOutput) => {
+          if (this.selectOpenCategory < 0) {
+            return;
+          }
+          if (this.selectedEntry < 0) {
+            return;
+          }
+          let entryform = this.categories[this.selectOpenCategory].entries[this.selectedEntry] as EntryForm
+          entryform.delete = !entryform.delete;
+        }
+      },
+      {
+        key: ["alt + *", "alt + r"],
+        preventDefault: true,
+        label: "Entries",
+        description: "Return Entry to normal",
+        allowIn: [AllowIn.ContentEditable, AllowIn.Input, AllowIn.Select, AllowIn.Textarea],
+        command: (output: ShortcutEventOutput) => {
+          if (this.selectOpenCategory < 0) {
+            return;
+          }
+          if (this.selectedEntry < 0) {
+            return;
+          }
+          let entryform = this.categories[this.selectOpenCategory].entries[this.selectedEntry] as EntryForm
+          entryform.reset = true;
+          this.changeEntry(entryform, this.selectOpenCategory, this.selectedEntry);
+          setTimeout(() => {
+            let target = (output.event.target as HTMLElement);
+            let id = target.id;
+            this.moveFocus(id);
+          }, 100);
+        }
       }
-      
     );
-
-    //this.keyboard.select("ctrl + f").subscribe(e => console.log(e));
+    //this.keyboard.select("ctrl + alt + u").subscribe(e => console.log(e));
   }
 
   ngOnDestroy() {
@@ -329,5 +412,14 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
       url = 'https://translate.google.com/translate?sl=auto&tl=en&u=' + url;
     }
     window.open(url);
+  }
+
+  textPointer(catIdx: number, entIdx: number) {
+    this.selectOpenCategory = catIdx;
+    this.selectedEntry = entIdx;
+    console.log('TESTES', this.selectOpenCategory, this.selectedEntry);
+    setTimeout(() => {
+      this.moveCurrentEntry('');
+    }, 100)
   }
 }

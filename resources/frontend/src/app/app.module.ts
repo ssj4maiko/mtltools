@@ -15,6 +15,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { KeyboardShortcutsModule } from 'ng-keyboard-shortcuts';
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { SafeHtmlPipe } from './_pipes/safe-html.pipe';
 
 
 library.add(fas);
@@ -23,6 +24,7 @@ library.add(fas);
   declarations: [
     AppComponent,
     HeaderComponent,
+    SafeHtmlPipe,
     //Papa,    // Necessary for CSV
   ],
   imports: [

@@ -26,22 +26,12 @@
 
         .categories {
             @keyframes categoriesShow {
-                from {
-                    width: 10%;
-                }
-
-                to {
-                    width: 30%;
-                }
+                from { width: 50px; }
+                to { width: 150px; }
             }
             @keyframes categoriesHide {
-                from {
-                    width: 30%;
-                }
-
-                to {
-                    width: 10%;
-                }
+                from { width: 150px; }
+                to { width: 50px; }
             }
 
             color: white;
@@ -49,14 +39,14 @@
             float: left;
             line-height: 1.4;
             
-            animation-duration: 0.5s;
+            animation-duration: 0.05s;
             animation-name: categoriesHide;
-            width: 10%;
+            width: 50px;
 
             &:hover {
-                animation-duration: 0.5s;
+                animation-duration: 0.05s;
                 animation-name: categoriesShow;
-                width:30%;
+                width:150px;
             }
             
             h1 {
@@ -98,6 +88,7 @@
 
         .entries {
             width: 90%;
+            min-width:750px;
             height: 100%;
             padding: left 10;
             float: left;
@@ -127,10 +118,13 @@
 
                     input {
                         //outline:1px solid #f0f;
+                        box-sizing:border-box;
                     }
 
                     .entry {
-                        width: 630px;
+                        width: 100%;
+                        min-width:630px;
+                        display: table-row;
                     }
 
                     .entry:after {
@@ -168,28 +162,33 @@
                     .entry-original {
                         width: 100px;
                         float: left;
+                        display: table-cell;
                     }
 
                     .entry-translation {
                         width: 150px;
                         float: left;
+                        display: table-cell;
                     }
 
                     .entry-description {
-                        width: 300px;
+                        width: 420px;
                         float: left;
+                        display: table-cell;
                     }
 
                     .deleteButton {
                         color: red;
                         margin: 0px 8px;
                         float: left;
+                        display: table-cell;
                     }
 
                     .resetButton {
                         color: blue;
                         margin: 0px 8px;
                         float: left;
+                        display: table-cell;
                     }
 
                     .entry-spacer {

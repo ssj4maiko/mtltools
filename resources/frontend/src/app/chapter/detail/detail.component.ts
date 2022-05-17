@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../api';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -12,10 +12,21 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
 import { ViewportScroller } from '@angular/common';
 import { AllowIn, KeyboardShortcutsComponent, ShortcutEventOutput, ShortcutInput } from 'ng-keyboard-shortcuts';
 
+import { PipeTransform, Pipe } from "@angular/core";
+
+@Pipe({ name: 'safeHtml' })
+export class SafeHtmlPipe implements PipeTransform {
+  constructor(private sanitized: DomSanitizer) { }
+  transform(value) {
+    return this.sanitized.bypassSecurityTrustHtml(value);
+  }
+}
+
 @Component({
   selector: 'app-chapter-detail',
   templateUrl: './detail.component.html',
-  styleUrls: ['./detail.component.scss']
+  styleUrls: ['./detail.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class DetailComponent implements OnInit {
   @ViewChild(SidebarComponent) Sidebar;
@@ -135,10 +146,10 @@ export class DetailComponent implements OnInit {
       // Confirm that there are categories
       if (categories.length > 0) {
         const entries = [];
-        categories.forEach(category => {
+        categories.forEach((category,i) => {
           // Newly created Categories don't come with Entries, so let's not break the code
           if (category.entries) {
-            category.entries.forEach(entry => {
+            category.entries.forEach((entry,j) => {
               // Newly created Entries won't have the variables set by default, which would break the code on AOT
               if (entry.entryOriginal){
                 const length = entry.entryOriginal.length;
@@ -148,9 +159,11 @@ export class DetailComponent implements OnInit {
                 entries[length].push({
                   entryOriginal: entry.entryOriginal,
                   entryTranslation: entry.entryTranslation,
+                  entryDescription: entry.description,
                   idEntry: entry.id,
                   idCategory: category.id,
                   category: category.name,
+                  index: [i,j]
                 });
               }
             });
@@ -158,11 +171,15 @@ export class DetailComponent implements OnInit {
         });
         for (let i = entries.length; i > 0; --i) {
           if (entries[i]) {
-            entries[i].forEach(entry => {
+            entries[i].forEach((entry, j) => {
               // console.log('Change ', entry.entryOriginal, entry.entryTranslation);
               const regex = new RegExp(entry.entryOriginal, 'g');
               this.renderedTitle = this.renderedTitle.replace(regex, '\[\[' + entry.entryTranslation + '\]\]');
-              this.renderedText = this.renderedText.replace(regex, '\[\[' + entry.entryTranslation + '\]\]');
+              this.renderedText = this.renderedText.replace(regex, '\[\[<span class="replaced" '
+                                                                        + (entry.entryDescription ? `title="${entry.entryDescription}"` : '') 
+                                                                      +' id="replaced-' + entry.index[0] + '-' + entry.index[1] +'">'
+                                                                        + entry.entryTranslation
+                                                                      +'</span>\]\]');
             });
           }
         }
@@ -176,6 +193,17 @@ export class DetailComponent implements OnInit {
         regex = new RegExp('\\[\\[', 'g');
         this.renderedTitle = this.renderedTitle.replace(regex, '');
         this.renderedText = this.renderedText.replace(regex, '');
+
+        setTimeout(() => {
+          let els = Array.from(document.getElementsByClassName('replaced'));
+          els.forEach(element => {
+            element.addEventListener('click',(event) => {
+              let idxs = (event.target as HTMLElement).id.split('-');
+              this.Sidebar.textPointer(idxs[1],idxs[2]);
+            })
+          });
+        }, 200);
+        //alert(this.renderedText);
       }
     });
 

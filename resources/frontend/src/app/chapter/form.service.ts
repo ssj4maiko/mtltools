@@ -53,7 +53,7 @@ export class FormService {
           });
       });
   }
-  addEntry(category, category_id, category_index:number) {
+  addEntry(category:DictionaryCategory, category_id:number, category_index:number) {
     if (!category.entries) {
       category.entries = [];
     }
