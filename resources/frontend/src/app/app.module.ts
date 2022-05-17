@@ -13,6 +13,10 @@ import { ModalComponent } from './_services/modal/modal.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
+import { KeyboardShortcutsModule } from 'ng-keyboard-shortcuts';
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+
+
 library.add(fas);
 
 @NgModule({
@@ -27,9 +31,11 @@ library.add(fas);
     HttpClientModule, 	// Necessary for API Services
     FormsModule,		// Necessary for Dynamic Forms
     ReactiveFormsModule, // Necessary for Dynamic Forms
-        FontAwesomeModule,	// Necessary for SVG
-        //Papa,    // Necessary for CSV
-    ],
+    FontAwesomeModule,	// Necessary for SVG
+    //Papa,    // Necessary for CSV
+    KeyboardShortcutsModule.forRoot(),
+    BrowserAnimationsModule
+  ],
   exports: [
     //Papa,    // Necessary for CSV
   ],

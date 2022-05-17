@@ -3,13 +3,13 @@
 		<ng-template #controlButtons>
 			<div class="columns controlButtons">
 				<div class="column">
-					<a class="button is-large is-primary" *ngIf="chapterPrevious" [routerLink]="['/novel/', idNovel, chapterPrevious.no]"> Previous </a>
+					<a class="button is-large is-primary" *ngIf="chapterPrevious" (click)="chapterRoute.previous()"> Previous </a>
 				</div>
 				<div class="column">
 					<a class="button is-large is-primary" [routerLink]="['/novel/', idNovel]"> Table of Contents </a>
 				</div>
 				<div class="column">
-					<a class="button is-large is-primary" *ngIf="chapterNext" [routerLink]="['/novel/', idNovel, chapterNext.no]"> Next </a>
+					<a class="button is-large is-primary" *ngIf="chapterNext" (click)="chapterRoute.next()"> Next </a>
 				</div>
 			</div>
 		</ng-template>
@@ -25,8 +25,10 @@
 		<ng-container *ngTemplateOutlet="controlButtons"></ng-container>
 	</div>
 
-	<div class="show-sidebar" (click)="toogleSidebar()">AHHHHHHH</div>
+	<div class="show-sidebar" (click)="toogleSidebar()"></div>
 	<div class="sidebar" [hidden]="!showSidebar">
 		<app-chapter-sidebar (Sidebar2Chapter)="translateText($event)"></app-chapter-sidebar>
 	</div>
 </div>
+<ng-keyboard-shortcuts [shortcuts]="shortcuts"></ng-keyboard-shortcuts>
+<ng-keyboard-shortcuts-help [key]="'f1'" [title]="'Help'"></ng-keyboard-shortcuts-help>

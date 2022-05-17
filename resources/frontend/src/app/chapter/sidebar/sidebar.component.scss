@@ -25,12 +25,40 @@
         flex: 1 1 auto;
 
         .categories {
+            @keyframes categoriesShow {
+                from {
+                    width: 10%;
+                }
+
+                to {
+                    width: 30%;
+                }
+            }
+            @keyframes categoriesHide {
+                from {
+                    width: 30%;
+                }
+
+                to {
+                    width: 10%;
+                }
+            }
+
             color: white;
             background: rgba(255, 255, 255, 0.5);
-            width: 30%;
             float: left;
             line-height: 1.4;
+            
+            animation-duration: 0.5s;
+            animation-name: categoriesHide;
+            width: 10%;
 
+            &:hover {
+                animation-duration: 0.5s;
+                animation-name: categoriesShow;
+                width:30%;
+            }
+            
             h1 {
                 height: 30px;
                 width: 100%;
@@ -69,15 +97,18 @@
         }
 
         .entries {
-            width: 70%;
+            width: 90%;
             height: 100%;
             padding: left 10;
             float: left;
             overflow: hidden;
+            z-index:1;
+            background-color: #5e009f;
 
             .hint {
                 background: black;
                 color: white;
+                height:100%;
             }
 
             .entries-container {

@@ -8,6 +8,7 @@ import { ListComponent } from './list/list.component';
 import { DetailComponent } from './detail/detail.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { FormsModule } from '@angular/forms';
+import { KeyboardShortcutsModule } from 'ng-keyboard-shortcuts';
 
 @NgModule({
 	declarations: [
@@ -19,7 +20,8 @@ import { FormsModule } from '@angular/forms';
 		CommonModule,
 		ChapterRoutingModule,
         RouterModule,
-        FormsModule
+		FormsModule,
+		KeyboardShortcutsModule.forRoot()  
 	]
 })
 export class ChapterModule { }

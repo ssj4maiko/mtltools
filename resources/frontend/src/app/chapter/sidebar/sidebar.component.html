@@ -22,7 +22,8 @@
                 <li>
                     <h1 (click)="selectOpenCategory = i"  [ngClass]="{'changed': category.update == true, 'new': category.id == null, 'category-selected': (selectOpenCategory == i) }">
                         <input class="category-name" type="text" [(ngModel)]="category.name"
-                                placeholder="Category Name" (ngModelChange)="changeCategory(category,i)" />
+                                placeholder="Category Name" (ngModelChange)="changeCategory(category,i)"
+                                id="category-{{i}}"/>
                     </h1>
                 </li>
             </ng-container>
@@ -34,7 +35,7 @@
         </ul>
         <div class="entries">
             <ul class="entries-container">
-                <li [ngClass]="{'hidden': (selectOpenCategory != null)}">
+                <li [ngClass]="{'hidden': (selectOpenCategory >= 0)}">
                     <p class="hint">
                         &LT;- Select a category
                     </p>
@@ -43,9 +44,9 @@
                     <li [ngClass]="{'hidden': (selectOpenCategory != i)}">
                         <div class="category-entry-container" #categoryDOM id="categoryDOM-{{i}}">
                             <div *ngFor="let entry of category.entries; let j = index" class="entry" [ngClass]="{'changed': entry.update == true, 'deleted': entry.delete == true, 'new': entry.id == null }">
-                                <input class="entry-original" type="text" [(ngModel)]="entry.entryOriginal" placeholder="Original" (ngModelChange)="changeEntry(entry, i, j)" #entry id="entry-{{i}}-{{j}}" />
-                                <input class="entry-translation" type="text" [(ngModel)]="entry.entryTranslation" placeholder="Translation" (ngModelChange)="changeEntry(entry, i, j)" />
-                                <input class="entry-description" type="text" [(ngModel)]="entry.description" placeholder="Description" (ngModelChange)="changeEntry(entry, i, j)" />
+                                <input class="entry-original" type="text" [(ngModel)]="entry.entryOriginal" (focus)="selectedEntry = j" placeholder="Original" (ngModelChange)="changeEntry(entry, i, j)" #entry id="entry-{{i}}-{{j}}" />
+                                <input class="entry-translation" type="text" [(ngModel)]="entry.entryTranslation" (focus)="selectedEntry = j" placeholder="Translation" (ngModelChange)="changeEntry(entry, i, j)" id="entry-{{i}}-{{j}}-trans"/>
+                                <input class="entry-description" type="text" [(ngModel)]="entry.description" (focus)="selectedEntry = j" placeholder="Description" (ngModelChange)="changeEntry(entry, i, j)" id="entry-{{i}}-{{j}}-desc" />
                                 <label class="deleteButton">
                                     <i class="fas fa-trash"></i>
                                     <input type="checkbox" class="hidden" [(ngModel)]="entry.delete" title="Delete" (change)="changeEntry(entry, i, j)" />
@@ -73,3 +74,6 @@
         </li>
     </ul>
 </div>
+
+<ng-keyboard-shortcuts [shortcuts]="shortcuts"></ng-keyboard-shortcuts>
+<ng-keyboard-shortcuts-help [key]="'f1'" [title]="'Help'"></ng-keyboard-shortcuts-help>

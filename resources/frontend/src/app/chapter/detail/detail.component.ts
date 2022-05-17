@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../api';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -9,6 +9,8 @@ import { DictionaryCategory } from 'src/app/_models/dictionarycategory';
 import { CategoryModule } from 'src/app/category';
 import { count } from 'rxjs-compat/operator/count';
 import { SidebarComponent } from '../sidebar/sidebar.component';
+import { ViewportScroller } from '@angular/common';
+import { AllowIn, KeyboardShortcutsComponent, ShortcutEventOutput, ShortcutInput } from 'ng-keyboard-shortcuts';
 
 @Component({
   selector: 'app-chapter-detail',
@@ -38,7 +40,8 @@ export class DetailComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     public sanitized: DomSanitizer,
-    private api: ApiService
+    private api: ApiService,
+    private viewport: ViewportScroller
   ) {
     this.showSidebar = true;
   }
@@ -49,6 +52,33 @@ export class DetailComponent implements OnInit {
     });
     this.startContent();
   }
+
+  @ViewChild(KeyboardShortcutsComponent) private keyboard: KeyboardShortcutsComponent;
+  shortcuts: ShortcutInput[] = [];
+  ngAfterViewInit(): void {
+    this.shortcuts.push(
+      {
+        key: "alt + pageup",
+        preventDefault: true,
+        label: "Chapter",
+        description: "Previous Chapter",
+        command: (output: ShortcutEventOutput) => {
+          this.chapterRoute.previous()
+        },
+      },
+      {
+        key: "alt + pagedown",
+        preventDefault: true,
+        label: "Chapter",
+        description: "Next Chapter",
+        command: (output: ShortcutEventOutput) => {
+          this.chapterRoute.next()
+        },
+      },
+    );
+
+    //this.keyboard.select("ctrl + f").subscribe(e => console.log(e));
+  }  
   ngOnDestroy() {
     delete this.loadedChapter;
     console.log('destroy detailed chapter');
@@ -155,6 +185,17 @@ export class DetailComponent implements OnInit {
       this.showSidebar = false;
     else
       this.showSidebar = true;
+  }
+
+  public chapterRoute = {
+    next: () => {
+      this.viewport.scrollToPosition([0,0]);
+      this.router.navigate(['novel', this.idNovel, this.chapterNext.no]);
+    },
+    previous: () => {
+      this.viewport.scrollToPosition([0,0]);
+      this.router.navigate(['novel', this.idNovel, this.chapterPrevious.no]);
+    }
   }
 
 }
