@@ -217,11 +217,11 @@ export class DetailComponent implements OnInit {
 
   public chapterRoute = {
     next: () => {
-      this.viewport.scrollToPosition([0,0]);
+      document.getElementById('content').scrollTop = 0;
       this.router.navigate(['novel', this.idNovel, this.chapterNext.no]);
     },
     previous: () => {
-      this.viewport.scrollToPosition([0,0]);
+      document.getElementById('content').scrollTop = 0;
       this.router.navigate(['novel', this.idNovel, this.chapterPrevious.no]);
     }
   }

@@ -3,7 +3,7 @@
 	<div class="sidebar" [hidden]="!showSidebar">
 		<app-chapter-sidebar #SidebarChild (Sidebar2Chapter)="translateText($event)"></app-chapter-sidebar>
 	</div>
-	<div class='content'>
+	<div #Content id="content" class='content'>
 		<ng-template #controlButtons>
 			<div class="columns controlButtons">
 				<div class="column">
