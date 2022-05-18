@@ -1,12 +1,12 @@
 <div class="dictionaryList" *ngIf="dictionaries.length > 0">
     <ul>
         <li class="dictionary-selector" *ngIf="dictionaries.length > 0">
+            <input type="button" class="button is-small is-info" value="Refresh Translation" (click)="refreshTranslation()" />
+            <input type="button" class="button is-small is-warning" value="Refresh to Original" (click)="refreshOriginal()" />
             <select class='select' [(ngModel)]="dictionarySelector" (change)="dictionarySelected($event.target.value)">
                 <option value='' selected='selected'>Choose a language</option>
                 <option *ngFor="let option of dictionaries" value="{{option.id}}">{{ option.language }}</option>
             </select>
-            <input type="button" class="button is-small is-info" value="Refresh Translation" (click)="refreshTranslation()" />
-            <input type="button" class="button is-small is-warning" value="Refresh to Original" (click)="refreshOriginal()" />
         </li>
     </ul>
     <ul>
