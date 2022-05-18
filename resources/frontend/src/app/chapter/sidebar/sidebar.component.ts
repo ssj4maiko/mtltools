@@ -66,8 +66,14 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
   }
   private moveFocus = (id: string, output?:ShortcutEventOutput) => {
     let el = document.getElementById(id);
-    if (el)
+    if (el){
       el.focus();
+      el.scrollIntoView({
+        behavior:'smooth',
+        block: 'center',
+        inline: 'center',
+      });
+    }
     else {
       console.error(id);
     }
@@ -93,6 +99,26 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
   }
   ngAfterViewInit(): void {
     this.shortcuts.push(
+      {
+        key: ["f5"],
+        preventDefault: true,
+        label: "Dictionary",
+        description: "Refresh Translation",
+        allowIn: [AllowIn.ContentEditable, AllowIn.Input, AllowIn.Select, AllowIn.Textarea],
+        command: (output: ShortcutEventOutput) => {
+          this.refreshTranslation();
+        }
+      },
+      {
+        key: ["f4"],
+        preventDefault: true,
+        label: "Dictionary",
+        description: "Refresh to Original",
+        allowIn: [AllowIn.ContentEditable, AllowIn.Input, AllowIn.Select, AllowIn.Textarea],
+        command: (output: ShortcutEventOutput) => {
+          this.refreshOriginal();
+        }
+      },
       {
         key: ["ctrl + s"],
         preventDefault: true,
@@ -136,7 +162,7 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
         }
       },
       {
-        key: "ctrl + alt + plus",
+        key: ["ctrl + alt + plus", "ctrl + alt + n"],
         preventDefault: true,
         label: "Categories",
         description: "Add New Category",
@@ -251,7 +277,7 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
         }
       },
       {
-        key: "alt + home",
+        key: ["alt + home", "alt + 1"],
         preventDefault: true,
         label: "Entries",
         description: "Move to First Entry",
@@ -288,7 +314,7 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
       },
       
       {
-        key: ["alt + plus", "alt + insert"],
+        key: ["alt + plus", "alt + insert", "alt + n"],
         preventDefault: true,
         label: "Entries",
         description: "Add New Entry",
@@ -306,7 +332,7 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
         }
       },
       {
-        key: ["alt + -"],
+        key: ["alt + -", "alt + d"],
         preventDefault: true,
         label: "Entries",
         description: "Remove Entry",
@@ -344,7 +370,7 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
             this.moveFocus(id);
           }, 100);
         }
-      }
+      },
     );
     //this.keyboard.select("ctrl + alt + u").subscribe(e => console.log(e));
   }

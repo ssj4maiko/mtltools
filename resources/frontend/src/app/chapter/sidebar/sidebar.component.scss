@@ -3,6 +3,13 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+    overflow-y:hidden;
+
+    & > ul {
+        flex-grow: 0;
+        flex-basis: 25px;
+        height: 25px;
+    }
 
     .dictionary-selector {
         align-self: flex-start;
@@ -21,8 +28,9 @@
     .interactiveBox {
         display: flex;
         flex-direction: row;
-        height: 500px;
-        flex: 1 1 auto;
+        overflow-y:hidden;
+        flex-grow: 1;
+        flex-basis: auto;
 
         .categories {
             @keyframes categoriesShow {
@@ -87,8 +95,7 @@
         }
 
         .entries {
-            width: 90%;
-            min-width:750px;
+            width: 100%;
             height: 100%;
             padding: left 10;
             float: left;
@@ -111,84 +118,93 @@
                     overflow-x: auto;
 
                     .category-entry-container {
+                        flex-direction:row;
                         overflow-y: auto;
+                        overflow-x: hidden;
                         height: 100%;
                         height: calc(100% - 30px);
-                    }
+                        width:100%;
 
-                    input {
-                        //outline:1px solid #f0f;
-                        box-sizing:border-box;
-                    }
+                        input {
+                            box-sizing:border-box;
+                        }
 
-                    .entry {
-                        width: 100%;
-                        min-width:630px;
-                        display: table-row;
-                    }
+                        .entry {
+                            width: 100%;
+                            min-width:630px;
+                            height:25px;
+                            display: flex;
+                            flex-direction: row;
 
-                    .entry:after {
-                        clear: both;
-                        content: "";
-                        display: block;
-                    }
+                            &:focus-within{
+                                background-color:rgba(255,255,255,0.2) !important;
+                            }
+                            
+                            input {
+                                background-color: transparent;
+                                border: 0px solid white;
+                                color: white;
+                            }
 
-                    .entry:nth-child(odd) {
-                        background-color: #555;
-                    }
 
-                    .entry:nth-child(even) {
-                        background-color: #888;
-                    }
+                            .entry-original,
+                            .entry-translation,
+                            .entry-description,
+                            .deleteButton,
+                            .resetButton {
+                                flex-grow:0;
+                            }
+                            .entry-original {
+                                flex-basis: 100px;
+                            }
 
-                    .entry.changed {
-                        background-color: green;
-                    }
+                            .entry-translation {
+                                flex-basis: 150px;
+                            }
 
-                    .entry.new {
-                        background-color: #000063;
-                    }
+                            .entry-description {
+                                flex-grow:1;
+                            }
 
-                    .entry.deleted {
-                        background-color: #480000;
-                    }
+                            .deleteButton {
+                                flex-basis:14px;
+                                color: red;
+                                margin: 0px 8px;
+                            }
 
-                    input {
-                        background-color: transparent;
-                        border: 0px solid white;
-                        color: white;
-                    }
+                            .resetButton {
+                                flex-basis:14px;
+                                color: blue;
+                                margin: 0px 8px;
+                            }
+                        }
 
-                    .entry-original {
-                        width: 100px;
-                        float: left;
-                        display: table-cell;
-                    }
+                        .entry:after {
+                            clear: both;
+                            content: "";
+                            display: block;
+                        }
 
-                    .entry-translation {
-                        width: 150px;
-                        float: left;
-                        display: table-cell;
-                    }
+                        .entry:nth-child(odd) {
+                            background-color: #555;
+                        }
 
-                    .entry-description {
-                        width: 420px;
-                        float: left;
-                        display: table-cell;
-                    }
+                        .entry:nth-child(even) {
+                            background-color: #888;
+                        }
 
-                    .deleteButton {
-                        color: red;
-                        margin: 0px 8px;
-                        float: left;
-                        display: table-cell;
-                    }
+                        .entry.changed {
+                            background-color: green;
+                        }
 
-                    .resetButton {
-                        color: blue;
-                        margin: 0px 8px;
-                        float: left;
-                        display: table-cell;
+                        .entry.new {
+                            background-color: #000063;
+                        }
+
+                        .entry.deleted {
+                            background-color: #480000;
+                        }
+
                     }
 
                     .entry-spacer {
@@ -205,6 +221,7 @@
                         border-width: 2px 0;
                         border-color: #009013;
                         background-color: #000;
+                        color:#fff;
                     }
                 }
             }

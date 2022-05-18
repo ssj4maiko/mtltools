@@ -1,4 +1,8 @@
 <div class='flexContent'>
+	<!--div class="show-sidebar" (click)="toogleSidebar()"></div-->
+	<div class="sidebar" [hidden]="!showSidebar">
+		<app-chapter-sidebar #SidebarChild (Sidebar2Chapter)="translateText($event)"></app-chapter-sidebar>
+	</div>
 	<div class='content'>
 		<ng-template #controlButtons>
 			<div class="columns controlButtons">
@@ -25,10 +29,6 @@
 		<ng-container *ngTemplateOutlet="controlButtons"></ng-container>
 	</div>
 
-	<div class="show-sidebar" (click)="toogleSidebar()"></div>
-	<div class="sidebar" [hidden]="!showSidebar">
-		<app-chapter-sidebar #SidebarChild (Sidebar2Chapter)="translateText($event)"></app-chapter-sidebar>
-	</div>
 </div>
 <ng-keyboard-shortcuts [shortcuts]="shortcuts"></ng-keyboard-shortcuts>
 <ng-keyboard-shortcuts-help [key]="'f1'" [title]="'Help'"></ng-keyboard-shortcuts-help>

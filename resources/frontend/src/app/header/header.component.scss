@@ -16,18 +16,23 @@ header {
         height: 100%;
         padding:0px;
         margin:0px;
+        // display:inline-flex;
+        // flex-direction: row;
 
         & li {
-            height: 100%;
             display:block;
             float:left;
             margin: 25px 0px 0px 20px;
+            position:relative;
+            // flex-basis: auto;
+            // flex-grow: 1;
 
             & a {
                 margin: auto;
                 height:50px;
                 border-radius:20px 20px 0px 20px;
                 color: #ffffff;
+                width:auto;
 
                 &:after {
                     content: '';
@@ -37,8 +42,8 @@ header {
                     border: 13px solid transparent;
                     border-right-color: inherit;
                     position: absolute;
-                    bottom: -14px;
-                    right: -14px;
+                    top: 19px;
+                    right: -21px;
                     transform: rotate(-135deg);
                 }
             }
