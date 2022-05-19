@@ -7,6 +7,9 @@ export class DictionaryEntry {
   entryOriginal: string;
   entryTranslation: string;
   description: string;
+  sufix: number;
+  prefix: number;
+  simplified: string;
   length: number;
 }
 export class EntryForm {
@@ -23,6 +26,8 @@ export class EntryForm {
   entryOriginal: string;
   entryTranslation: string;
   description: string;
+  sufix: number;
+  prefix: number;
   update: boolean;
   delete: boolean;
   reset: boolean;

@@ -100,6 +100,8 @@ export class FormService {
                       || entry.entryTranslation !== this.categoriesOriginalValues[catIdx].entries[entIdx].entryTranslation
                       || entry.description      !== this.categoriesOriginalValues[catIdx].entries[entIdx].description
                       || entry.idCategory       !== this.categoriesOriginalValues[catIdx].entries[entIdx].idCategory
+                      || entry.sufix            !== this.categoriesOriginalValues[catIdx].entries[entIdx].sufix
+                      || entry.prefix           !== this.categoriesOriginalValues[catIdx].entries[entIdx].prefix
             ;
         }
       }

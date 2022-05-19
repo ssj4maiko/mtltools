@@ -160,6 +160,8 @@ export class DetailComponent implements OnInit {
                   entryOriginal: entry.entryOriginal,
                   entryTranslation: entry.entryTranslation,
                   entryDescription: entry.description,
+                  sufix: entry.sufix,
+                  prefix: entry.prefix,
                   idEntry: entry.id,
                   idCategory: category.id,
                   category: category.name,
@@ -173,26 +175,55 @@ export class DetailComponent implements OnInit {
           if (entries[i]) {
             entries[i].forEach((entry, j) => {
               // console.log('Change ', entry.entryOriginal, entry.entryTranslation);
-              const regex = new RegExp(entry.entryOriginal, 'g');
-              this.renderedTitle = this.renderedTitle.replace(regex, '\[\[' + entry.entryTranslation + '\]\]');
-              this.renderedText = this.renderedText.replace(regex, '\[\[<span class="replaced" '
-                                                                        + (entry.entryDescription ? `title="${entry.entryDescription}"` : '') 
-                                                                      +' id="replaced-' + entry.index[0] + '-' + entry.index[1] +'">'
-                                                                        + entry.entryTranslation
-                                                                      +'</span>\]\]');
+              if (entry.sufix) {
+                const regex = new RegExp(']' + entry.sufix + ']' + entry.entryOriginal, 'g');
+                this.renderedTitle = this.renderedTitle.replace(regex, entry.entryTranslation + '\]' + entry.idCategory + '\]');
+
+                this.renderedText = this.renderedText.replace(regex, '<span class="replaced sufix" '
+                  + (entry.entryDescription ? `title="${entry.entryDescription}"` : '')
+                  + ' id="replaced-' + entry.index[0] + '-' + entry.index[1] + '">'
+                  + entry.entryTranslation
+                  + '</span>\]' + entry.idCategory + '\]');
+              } else if (entry.prefix) {
+                const regex = new RegExp(entry.entryOriginal + '[' + entry.idCategory + '[', 'g');
+                this.renderedTitle = this.renderedTitle.replace(regex, '\[' + entry.idCategory + '\[' + entry.entryTranslation);
+
+                this.renderedText = this.renderedText.replace(regex, '\[' + entry.idCategory + '\[<span class="replaced sufix" '
+                  + (entry.entryDescription ? `title="${entry.entryDescription}"` : '')
+                  + ' id="replaced-' + entry.index[0] + '-' + entry.index[1] + '">'
+                  + entry.entryTranslation
+                  + '</span>');
+              } else {
+                const regex = new RegExp(entry.entryOriginal, 'g');
+                this.renderedTitle = this.renderedTitle.replace(regex, '\[' + entry.idCategory + '\[' + entry.entryTranslation + '\]' + entry.idCategory + '\]');
+                
+                this.renderedText = this.renderedText.replace(regex, '\[' + entry.idCategory + '\[<span class="replaced" '
+                                                                  + (entry.entryDescription ? `title="${entry.entryDescription}"` : '') 
+                                                                  +' id="replaced-' + entry.index[0] + '-' + entry.index[1] +'">'
+                                                                  + entry.entryTranslation
+                                                                  + '</span>\]' + entry.idCategory + '\]');
+              }
             });
           }
         }
         // The extra characters are to allow to create a space in between translated words
-        let regex = new RegExp('\\]\\]\\[\\[', 'g');
-        this.renderedTitle = this.renderedTitle.replace(regex, ' ');
-        this.renderedText = this.renderedText.replace(regex, ' ');
-        regex = new RegExp('\\]\\]', 'g');
-        this.renderedTitle = this.renderedTitle.replace(regex, '');
-        this.renderedText = this.renderedText.replace(regex, '');
-        regex = new RegExp('\\[\\[', 'g');
-        this.renderedTitle = this.renderedTitle.replace(regex, '');
-        this.renderedText = this.renderedText.replace(regex, '');
+        const regexEnd = '\\][0-9]+\\]';
+        const regexStart = '\\[[0-9]+\\[';
+        try{
+
+          let regex = new RegExp('(' + regexEnd + regexStart +')+', 'gm');
+          this.renderedTitle = this.renderedTitle.replace(regex, ' ');
+          this.renderedText = this.renderedText.replace(regex, ' ');
+          regex = new RegExp('(' + regexEnd + ')+', 'gm');
+          this.renderedTitle = this.renderedTitle.replace(regex, '');
+          this.renderedText = this.renderedText.replace(regex, '');
+          regex = new RegExp('('+regexStart+')+', 'gm');
+          this.renderedTitle = this.renderedTitle.replace(regex, '');
+          this.renderedText = this.renderedText.replace(regex, '');
+        } catch (e){
+          console.info(regexEnd+regexStart);
+          console.error(e)
+        }
 
         setTimeout(() => {
           let els = Array.from(document.getElementsByClassName('replaced'));

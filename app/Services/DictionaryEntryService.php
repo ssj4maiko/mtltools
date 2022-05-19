@@ -22,7 +22,8 @@ class DictionaryEntryService
 	{
 		$data['idDictionary'] = $idDictionary;
 		$data['idCategory'] = $idCategory;
-		$data['length'] = strlen($data['entryOriginal']);
+		$data['simplified'] = preg_replace('/[^\p{Hiragana}\p{Katakana}\p{Han}\p{Hangul}ａ-ｚＡ-Ｚ０-９a-zA-Z0-9]/u', '', $data['entryOriginal']);
+		$data['length'] = strlen($data['simplified']);
 		return DictionaryEntry::create($data);
 	}
 	public function update($data,$idDictionary, $idCategory, $id)

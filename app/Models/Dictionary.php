@@ -29,7 +29,11 @@ class Dictionary extends Model
         return $this->hasManyThrough(DictionaryEntry::class,DictionaryCategory::class
                                     ,self::$defaultForeignKey,DictionaryCategory::$defaultForeignKey
                                     ,'id', 'id'
-                                )->orderBy('length', 'desc');
+                                )
+                                // Must come at the end
+                                ->orderBy('sufix', 'ASC')
+                                ->orderBy('prefix', 'ASC')
+                                ->orderBy('length', 'desc');
     }
     public function novel(){
         return $this->belongsToMany(Novel::class,'novelsDictionaries','idDictionary', 'idNovel');

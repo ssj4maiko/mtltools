@@ -13,13 +13,14 @@ class DictionaryService
 {
 	public function getAll($search = [])
 	{
-		$dicts = Dictionary::with('countCategories');
+		$dicts = Dictionary::with(['countCategories']);
 		if (empty($search)) {
-			return $dicts->get();
+			$result = $dicts->get();
 		} else {
-			return $dicts->where('name', 'LIKE', '%' . $search['search'] . '%')
+			$result = $dicts->where('name', 'LIKE', '%' . $search['search'] . '%')
 				->get();
 		}
+		return $result;
 	}
 	public function get($id){
 		return Dictionary::with('novel', 'countCategories')->find($id);

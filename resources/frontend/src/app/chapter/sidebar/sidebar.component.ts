@@ -448,4 +448,20 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
       this.moveCurrentEntry('');
     }, 100)
   }
+  activateSufix(entry:EntryForm, catIdx:number, entIdx:number) {
+    switch(true){
+      case !!entry.sufix:
+        entry.sufix = null;
+        entry.prefix = this.categories[0].id;
+        break;
+      case !!entry.prefix:
+        entry.sufix = null;
+        entry.prefix = null;
+        break;
+      default:
+        entry.sufix = this.categories[0].id;
+        entry.prefix = null;
+    }
+    this.changeEntry(entry, catIdx, entIdx);
+  }
 }

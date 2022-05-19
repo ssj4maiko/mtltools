@@ -114,6 +114,7 @@ class CacheChapters extends Model
             $novel = Novel::where('id', $this->idNovel)->first();
             $chapterService = app(ChapterService::class);
 
+            /** @var Chapter $chapter */
             $chapter = $chapterService->get($this->idNovel, $this->noChapter);
             if ($chapter) {
                 // To avoid  multiple translations at the same time, marking it here so that others wait.

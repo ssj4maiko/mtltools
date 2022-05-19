@@ -20,6 +20,9 @@ class DictionaryEntry extends Model
 		'entryOriginal',
 		'entryTranslation',
 		'description',
+		'sufix',
+		'prefix',
+		'simplified',
         'length'
 	];
 	protected $hidden = [

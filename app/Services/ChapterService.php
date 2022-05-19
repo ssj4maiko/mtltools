@@ -24,7 +24,7 @@ class ChapterService {
 		}
 		return $chapter->get();
 	}
-	public function get($idNovel, $no)
+	public function get($idNovel, $no):Chapter
 	{
 		return Chapter::select()->addSelect(DB::raw('(textOriginal IS NOT NULL) as hasText'))
 			->where(['idNovel' => $idNovel, 'no' => $no])

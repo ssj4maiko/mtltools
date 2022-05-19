@@ -59,5 +59,4 @@ class DictionaryCategoryService
 		}
 		return false;
 	}
-	
 }

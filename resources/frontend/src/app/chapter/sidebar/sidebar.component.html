@@ -45,17 +45,32 @@
                         <div class="category-entry-container" #categoryDOM id="categoryDOM-{{i}}">
                             <div *ngFor="let entry of category.entries; let j = index" class="entry"
                                 [ngClass]="{'changed': entry.update == true, 'deleted': entry.delete == true, 'new': entry.id == null }">
+                                
+                                <select *ngIf="entry.sufix" class='select' [(ngModel)]="entry.sufix" (change)="changeEntry(entry, i, j)">
+                                    <option *ngFor="let option of categories" value="{{option.id}}">{{ option.name }}</option>
+                                </select>
+
                                 <input class="entry-original" type="text" [(ngModel)]="entry.entryOriginal" (focus)="selectedEntry = j"
                                         placeholder="Original" (ngModelChange)="changeEntry(entry, i, j)" #entry id="entry-{{i}}-{{j}}" />
+
+                                <select *ngIf="entry.prefix" class='select' [(ngModel)]="entry.prefix" (change)="changeEntry(entry, i, j)">
+                                    <option *ngFor="let option of categories" value="{{option.id}}">{{ option.name }}</option>
+                                </select>
+
                                 <input class="entry-translation" type="text" [(ngModel)]="entry.entryTranslation" (focus)="selectedEntry = j"
                                         placeholder="Translation" (ngModelChange)="changeEntry(entry, i, j)" id="entry-{{i}}-{{j}}-trans"/>
                                 <input class="entry-description" type="text" [(ngModel)]="entry.description" (focus)="selectedEntry = j"
                                         placeholder="Description" (ngModelChange)="changeEntry(entry, i, j)" id="entry-{{i}}-{{j}}-desc" />
-                                <label class="deleteButton">
-                                    <i class="fas fa-trash"></i>
+
+                                <label class="sufixButton sidebarButton">
+                                    <i class="fas fa-angry"></i> 
+                                    <input type="checkbox" class="hidden" [(ngModel)]="entry.sefixButton" title="Sufix" (change)="activateSufix(entry, i, j)" />
+                                </label>
+                                <label class="deleteButton sidebarButton">
+                                    <i class="fas fa-trash"></i> 
                                     <input type="checkbox" class="hidden" [(ngModel)]="entry.delete" title="Delete" (change)="changeEntry(entry, i, j)" />
                                 </label>
-                                <label class="resetButton">
+                                <label class="resetButton sidebarButton">
                                     <i class="fas fa-sync-alt"></i>
                                     <input type="checkbox" class="hidden" [(ngModel)]="entry.reset" title="Reset" (change)="changeEntry(entry, i, j)" />
                                 </label>

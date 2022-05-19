@@ -69,9 +69,12 @@ class MassDictionaryService
 						'idCategory'        =>  $v['idCategory'] ?? $idCategory,
 						'entryOriginal'     =>  $v['entryOriginal'] ?? '',
 						'entryTranslation'  =>  $v['entryTranslation'] ?? '',
-						'description'       =>  $v['description'] ?? '',
-						'length' 	        =>  strlen($v['entryOriginal'] ?? '')
+						'sufix'  			=>  $v['sufix'] ?? null,
+						'prefix'  			=>  $v['prefix'] ?? null,
+						'description'       =>  $v['description'] ?? ''
 					];
+					$insert['simplified'] = preg_replace('/[^\p{Hiragana}\p{Katakana}\p{Han}\p{Hangul}ａ-ｚＡ-Ｚ０-９a-zA-Z0-9]/u', '', $v['entryOriginal']);
+					$insert['length'] = strlen($data['simplified']);
 					$this->affectedCategories[$insert['idCategory']] = true;
 					$this->insert[] = $insert;
 				}
@@ -86,7 +89,11 @@ class MassDictionaryService
 					$tmp->entryOriginal = $v['entryOriginal'] ?? '';
 					$tmp->entryTranslation = $v['entryTranslation'] ?? '';
 					$tmp->description = $v['description'] ?? '';
+					$tmp->sufix =  $v['sufix'] ?? null;
+					$tmp->prefix =  $v['prefix'] ?? null;
 					$tmp->length = strlen($v['entryOriginal'] ?? '');
+					$tmp->simplified = preg_replace('/[^\p{Hiragana}\p{Katakana}\p{Han}\p{Hangul}ａ-ｚＡ-Ｚ０-９a-zA-Z0-9]/u', '', $v['entryOriginal']);
+					$tmp->length = strlen($tmp->simplified);
 
 					$this->update[] = $tmp;
 					$this->affectedCategories[$tmp['idCategory']] = true;

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Dotenv\Parser\Entry;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -33,15 +34,33 @@ class Chapter extends Model
 
 		return $data;
     }
-    public function translateText($dictionary){
+    public function translateText($dictionary):string{
         $text = $this->textRevision ? $this->textRevision : $this->textOriginal;
-
+        /** @var Dictionary $dictionary */
         foreach ($dictionary->dictionary_entry as $entry) {
-            $text = str_replace($entry->entryOriginal, '[['.$entry->entryTranslation.']]', $text);
+            /** @var DictionaryEntry $entry */
+            if($entry->sufix){
+                $text = str_replace(
+                    ']'.$entry->sufix.']'.$entry->entryOriginal
+                    ,$entry->entryTranslation.']'.$entry->idCategory.']', $text);
+            } else if($entry->prefix) {
+                $text = str_replace(
+                    $entry->entryOriginal . '[' . $entry->idCategory . '[',
+                    '[' . $entry->idCategory . '['. $entry->entryTranslation,
+                    $text
+                );
+            } else {
+                $text = str_replace($entry->entryOriginal, '['. $entry->idCategory.'['.$entry->entryTranslation.']'.$entry->idCategory.']', $text);
+            }
         }
-        $text = str_replace(']][[', ' ', $text);
-        $text = str_replace(']]', '', $text);
-        $text = str_replace('[[', '', $text);
+        $regexStart = '\[[0-9]+\[';
+        $regexEnd   = '\][0-9]+\]';
+        $text = preg_replace('/(' . $regexEnd.$regexStart . ')+/m', ' ', $text);
+        $text = preg_replace('/('.$regexEnd.')+/m', '', $text);
+        $text = preg_replace('/('.$regexStart.')+/m', '', $text);
+        // $text = str_replace(']][[', ' ', $text);
+        // $text = str_replace(']]', '', $text);
+        // $text = str_replace('[[', '', $text);
         return $text;
     }
 
