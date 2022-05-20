@@ -98,7 +98,7 @@ Although the instructions rely on Linux, everything is tested using WSL2 on Wind
 After checking that you are able to access it through the URLs above:
 
 ```bash
-sh build-front.sh
+sh build-front-production.sh
 ```
 
 This script will compile (relies on Docker) the project and then move the relevant files to the PHP folder.
