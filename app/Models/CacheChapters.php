@@ -124,23 +124,12 @@ class CacheChapters extends Model
                     // There is no processing this yet
                     $this->Lock($key);
                     $cacheDictionary = json_decode($cache);
-                    $translatedText = $chapter->translateText($cacheDictionary);
-
-                    /*
-                    while ($textLength > $strStart) {
-                        $strEnd += self::AVERAGE_CHAR_COUNT;
-                        if ($strEnd < $textLength) {
-                            $strEnd = strpos($translatedText, "\n", $strEnd);
-                            $chunks[] = substr($translatedText, $strStart, $strEnd);
-                        } else {
-                            $chunks[] = substr($translatedText, $strStart);
-                        }
-                        $strStart = $strEnd + 1;
-                    };
-                    */
+                    $translatedText = $chapter->translateText($chapter->textRevision ? $chapter->textRevision : $chapter->textOriginal, $cacheDictionary);
+                    $translatedTitle = $chapter->translateText($chapter->title, $cacheDictionary);
 
                     $view = view('cache/chapter', [
                         'text'      => $translatedText,
+                        'title'     => $translatedTitle,
                         'novel'     => $novel,
                         'chapter'   => $chapter,
                         'total'     => 1,

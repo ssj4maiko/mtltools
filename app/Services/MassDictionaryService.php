@@ -69,12 +69,12 @@ class MassDictionaryService
 						'idCategory'        =>  $v['idCategory'] ?? $idCategory,
 						'entryOriginal'     =>  $v['entryOriginal'] ?? '',
 						'entryTranslation'  =>  $v['entryTranslation'] ?? '',
-						'sufix'  			=>  $v['sufix'] ?? null,
-						'prefix'  			=>  $v['prefix'] ?? null,
+						'sufix'  			=>  isset($v['sufix']) && $v['sufix'] 	!= 'null' ? $v['sufix'] : null,
+						'prefix'  			=>  isset($v['prefix']) && $v['prefix'] != 'null' ? $v['prefix'] : null,
 						'description'       =>  $v['description'] ?? ''
 					];
-					$insert['simplified'] = preg_replace('/[^\p{Hiragana}\p{Katakana}\p{Han}\p{Hangul}ａ-ｚＡ-Ｚ０-９a-zA-Z0-9]/u', '', $v['entryOriginal']);
-					$insert['length'] = strlen($data['simplified']);
+					$insert['simplified'] = preg_replace('/[\p{P}]/u', '', $v['entryOriginal']);
+					$insert['length'] = strlen($insert['simplified']);
 					$this->affectedCategories[$insert['idCategory']] = true;
 					$this->insert[] = $insert;
 				}
@@ -89,10 +89,10 @@ class MassDictionaryService
 					$tmp->entryOriginal = $v['entryOriginal'] ?? '';
 					$tmp->entryTranslation = $v['entryTranslation'] ?? '';
 					$tmp->description = $v['description'] ?? '';
-					$tmp->sufix =  $v['sufix'] ?? null;
-					$tmp->prefix =  $v['prefix'] ?? null;
+					$tmp->sufix =	isset($v['sufix']) && $v['sufix'] 	!= 'null' ? $v['sufix'] : null;
+					$tmp->prefix =	isset($v['prefix']) && $v['prefix'] != 'null' ? $v['prefix'] : null;
 					$tmp->length = strlen($v['entryOriginal'] ?? '');
-					$tmp->simplified = preg_replace('/[^\p{Hiragana}\p{Katakana}\p{Han}\p{Hangul}ａ-ｚＡ-Ｚ０-９a-zA-Z0-9]/u', '', $v['entryOriginal']);
+					$tmp->simplified = preg_replace('/[^\p{P}]/u', '', $v['entryOriginal']);
 					$tmp->length = strlen($tmp->simplified);
 
 					$this->update[] = $tmp;

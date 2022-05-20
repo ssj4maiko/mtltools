@@ -56,13 +56,13 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
   selectOpenCategory:number = -1;
   selectedEntry:number = -1;
   private getSelectedEntryType = (inputId:string) => {
-    if(inputId.indexOf('trans') > 0){
-      return '-trans';
+    let explode = inputId.split('-');
+    if(!explode[3]){
+      return '';
     }
-    if(inputId.indexOf('desc') > 0){
-      return '-desc';
+    else {
+      return '-'+explode[3];
     }
-    return '';
   }
   private moveFocus = (id: string, output?:ShortcutEventOutput) => {
     let el = document.getElementById(id);
@@ -97,6 +97,99 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
     let id = 'entry-' + this.selectOpenCategory + '-' + this.selectedEntry + entryType;
     this.moveFocus(id, output);
   }
+
+  ngOnDestroy() {
+    delete this.dictionaries;
+    delete this.categories;
+    delete this.categoriesOriginalValues;
+    delete this.idCategory;
+    delete this.idDictionary;
+    delete this.idNovel;
+    delete this.dictionarySelector;
+    console.log('destroy Sidebar');
+  }
+  dictionarySelected(idDictionary: number) {
+    this.idDictionary = idDictionary;
+    this.getCache();
+  }
+  private getCache() {
+    if (this.categories.length === 0) {
+      this.api.Dictionary.getCache(this.idDictionary)
+        .then((status) => {
+          this.PrepareCacheThenTranslate(status);
+        });
+    } else {
+      this.refreshTranslation();
+    }
+  }
+  private PrepareCacheThenTranslate(status) {
+    if (status) {
+      const loadedDictionary = new Promise<void>((resolveDic, rejectDic) => {
+        this.rebuildCache(resolveDic);
+      });
+
+      loadedDictionary.then(_ => {
+        this.refreshTranslation();
+      });
+    }
+  }
+
+  refreshTranslation() {
+    this.Sidebar2Chapter.emit(this.categories);
+  }
+  refreshOriginal() {
+    this.Sidebar2Chapter.emit([]);
+  }
+  saving: boolean = false;
+  saveModifications() {
+    this.saving = true;
+    this.api.Dictionary.fullSave(this.idDictionary, this.categories)
+      .then(res => {
+        this.categories = [];
+        this.getCache();
+        this.refreshTranslation();
+
+        this.saving = false;
+        console.log('saveModifications',res);
+      }).catch(res => {
+        this.saving = false;
+        console.error(res);
+      });
+  }
+
+  openOutside(translate) {
+    const no = this.route.snapshot.params.noChapter;
+    let url = `${environment.backendServer}/static/${this.idNovel}/${this.idDictionary}/${no}/`;
+    if (translate) {
+      url = 'https://translate.google.com/translate?sl=auto&tl=en&u=' + url;
+    }
+    window.open(url);
+  }
+
+  textPointer(catIdx: number, entIdx: number) {
+    this.selectOpenCategory = catIdx;
+    this.selectedEntry = entIdx;
+    console.log('TESTES', this.selectOpenCategory, this.selectedEntry);
+    setTimeout(() => {
+      this.moveCurrentEntry('');
+    }, 100)
+  }
+  activateSufix(entry:EntryForm, catIdx:number, entIdx:number) {
+    switch(true){
+      case !!entry.sufix:
+        entry.sufix = null;
+        entry.prefix = this.categories[0].id;
+        break;
+      case !!entry.prefix:
+        entry.sufix = null;
+        entry.prefix = null;
+        break;
+      default:
+        entry.sufix = this.categories[0].id;
+        entry.prefix = null;
+    }
+    this.changeEntry(entry, catIdx, entIdx);
+  }
   ngAfterViewInit(): void {
     this.shortcuts.push(
       {
@@ -130,17 +223,17 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
         }
       },
       {
-        key: ["ctrl + up","ctrl + alt + up"],
+        key: ["ctrl + up", "ctrl + alt + up"],
         preventDefault: true,
         label: "Categories",
         description: "Category Up",
-        allowIn: [AllowIn.ContentEditable,AllowIn.Input, AllowIn.Select, AllowIn.Textarea],  
+        allowIn: [AllowIn.ContentEditable, AllowIn.Input, AllowIn.Select, AllowIn.Textarea],
         command: (output: ShortcutEventOutput) => {
           this.selectedEntry = -1;
-          if (this.selectOpenCategory > 0){
+          if (this.selectOpenCategory > 0) {
             this.selectOpenCategory--
           } else {
-            this.selectOpenCategory = this.categories.length-1;
+            this.selectOpenCategory = this.categories.length - 1;
           }
           this.moveCurrentCategory(output);
         }
@@ -150,10 +243,10 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
         preventDefault: true,
         label: "Categories",
         description: "Category Down",
-        allowIn: [AllowIn.ContentEditable,AllowIn.Input, AllowIn.Select, AllowIn.Textarea],  
+        allowIn: [AllowIn.ContentEditable, AllowIn.Input, AllowIn.Select, AllowIn.Textarea],
         command: (output: ShortcutEventOutput) => {
           this.selectedEntry = -1;
-          if (this.selectOpenCategory < this.categories.length-1) {
+          if (this.selectOpenCategory < this.categories.length - 1) {
             this.selectOpenCategory++
           } else {
             this.selectOpenCategory = 0;
@@ -169,10 +262,10 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
         allowIn: [AllowIn.ContentEditable, AllowIn.Input, AllowIn.Select, AllowIn.Textarea],
         command: (output: ShortcutEventOutput) => {
           this.addCategory();
-          this.selectOpenCategory = this.categories.length-1;
+          this.selectOpenCategory = this.categories.length - 1;
           setTimeout(() => {
             this.moveCurrentCategory(output);
-          },100)
+          }, 100)
         }
       },
       {
@@ -180,7 +273,7 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
         preventDefault: true,
         label: "Entries",
         description: "Move Down on Entry List",
-        allowIn: [AllowIn.ContentEditable,AllowIn.Input, AllowIn.Select, AllowIn.Textarea],  
+        allowIn: [AllowIn.ContentEditable, AllowIn.Input, AllowIn.Select, AllowIn.Textarea],
         command: (output: ShortcutEventOutput) => {
           if (this.selectOpenCategory < 0) {
             this.selectOpenCategory = 0;
@@ -193,6 +286,12 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
             }
             let target = (output.event.target as HTMLElement)
             let entryType: string = (target.id ? this.getSelectedEntryType(target.id) : '');
+            if (
+              (entryType == '-sufix' && !this.categories[this.selectOpenCategory].entries[this.selectedEntry].sufix) ||
+              (entryType == '-prefix' && !this.categories[this.selectOpenCategory].entries[this.selectedEntry].prefix)
+            ) {
+              entryType = '-trans';
+            }
             this.moveCurrentEntry(entryType, output);
           }
         }
@@ -202,19 +301,25 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
         preventDefault: true,
         label: "Entries",
         description: "Move Up on Entry List",
-        allowIn: [AllowIn.ContentEditable,AllowIn.Input, AllowIn.Select, AllowIn.Textarea],  
+        allowIn: [AllowIn.ContentEditable, AllowIn.Input, AllowIn.Select, AllowIn.Textarea],
         command: (output: ShortcutEventOutput) => {
           if (this.selectOpenCategory < 0) {
             this.selectOpenCategory = 0;
           }
-          if (this.categories[this.selectOpenCategory].entries){
+          if (this.categories[this.selectOpenCategory].entries) {
             if (this.selectedEntry <= 0) {
-              this.selectedEntry = this.categories[this.selectOpenCategory].entries.length-1;
+              this.selectedEntry = this.categories[this.selectOpenCategory].entries.length - 1;
             } else {
               this.selectedEntry--;
             }
             let target = (output.event.target as HTMLElement)
             let entryType: string = (target.id ? this.getSelectedEntryType(target.id) : '');
+            if (
+              (entryType == '-sufix' && !this.categories[this.selectOpenCategory].entries[this.selectedEntry].sufix) ||
+              (entryType == '-prefix' && !this.categories[this.selectOpenCategory].entries[this.selectedEntry].prefix)
+            ){
+              entryType = '-trans';
+            }
             this.moveCurrentEntry(entryType, output);
           }
         }
@@ -227,7 +332,7 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
         allowIn: [AllowIn.ContentEditable, AllowIn.Input, AllowIn.Select, AllowIn.Textarea],
         command: (output: ShortcutEventOutput) => {
           if (this.selectOpenCategory < 0) {
-            return ;
+            return;
           }
           if (!this.categories[this.selectOpenCategory].entries)
             return;
@@ -236,11 +341,26 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
             return;
 
           let entryType: string = (target.id ? this.getSelectedEntryType(target.id) : '');
-          switch(entryType){
+          switch (entryType) {
             case '':
+              if (this.categories[this.selectOpenCategory].entries[this.selectedEntry].sufix){
+                entryType = '-sufix';
+              } else {
+                entryType = '-trans';
+              }
+              break;
+            case '-sufix':
               entryType = '-trans';
               break;
             case '-trans':
+
+              if (this.categories[this.selectOpenCategory].entries[this.selectedEntry].prefix) {
+                entryType = '-prefix';
+              } else {
+                entryType = '-desc';
+              }
+              break;
+            case '-prefix':
               entryType = '-desc';
               break;
           }
@@ -265,12 +385,27 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
             return;
 
           let entryType: string = (target.id ? this.getSelectedEntryType(target.id) : '');
+
           switch (entryType) {
-            case '-trans':
-              entryType = '';
-              break;
             case '-desc':
+              if (this.categories[this.selectOpenCategory].entries[this.selectedEntry].prefix) {
+                entryType = '-prefix';
+              } else {
+                entryType = '-trans';
+              }
+              break;
+            case '-prefix':
               entryType = '-trans';
+              break;
+            case '-trans':
+              if (this.categories[this.selectOpenCategory].entries[this.selectedEntry].sufix) {
+                entryType = '-sufix';
+              } else {
+                entryType = '';
+              }
+              break;
+            case '-sufix':
+              entryType = '';
               break;
           }
           this.moveCurrentEntry(entryType, output);
@@ -312,7 +447,7 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
           }
         }
       },
-      
+
       {
         key: ["alt + plus", "alt + insert", "alt + n"],
         preventDefault: true,
@@ -371,97 +506,24 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
           }, 100);
         }
       },
+      {
+        key: ["alt + s"],
+        preventDefault: true,
+        label: "Entries",
+        description: "Toggle Suffix/Prefix",
+        allowIn: [AllowIn.ContentEditable, AllowIn.Input, AllowIn.Select, AllowIn.Textarea],
+        command: (output: ShortcutEventOutput) => {
+          if (this.selectOpenCategory < 0) {
+            return;
+          }
+          if (this.selectedEntry < 0) {
+            return;
+          }
+          let entryform = this.categories[this.selectOpenCategory].entries[this.selectedEntry] as EntryForm;
+          this.activateSufix(entryform, this.selectOpenCategory, this.selectedEntry);
+        }
+      },
     );
     //this.keyboard.select("ctrl + alt + u").subscribe(e => console.log(e));
-  }
-
-  ngOnDestroy() {
-    delete this.dictionaries;
-    delete this.categories;
-    delete this.categoriesOriginalValues;
-    delete this.idCategory;
-    delete this.idDictionary;
-    delete this.idNovel;
-    delete this.dictionarySelector;
-    console.log('destroy Sidebar');
-  }
-  dictionarySelected(idDictionary: number) {
-    this.idDictionary = idDictionary;
-    this.getCache();
-  }
-  private getCache() {
-    if (this.categories.length === 0) {
-      this.api.Dictionary.getCache(this.idDictionary)
-        .then((status) => {
-          this.PrepareCacheThenTranslate(status);
-        });
-    } else {
-      this.refreshTranslation();
-    }
-  }
-  private PrepareCacheThenTranslate(status) {
-    if (status) {
-      const loadedDictionary = new Promise<void>((resolveDic, rejectDic) => {
-        this.rebuildCache(resolveDic);
-      });
-
-      loadedDictionary.then(_ => {
-        this.refreshTranslation();
-      });
-    }
-  }
-
-  refreshTranslation() {
-    this.Sidebar2Chapter.emit(this.categories);
-  }
-  refreshOriginal() {
-    this.Sidebar2Chapter.emit([]);
-  }
-  saving: boolean = false;
-  saveModifications() {
-    this.saving = true;
-    this.api.Dictionary.fullSave(this.idDictionary, this.categories)
-      .then(res => {
-        this.categories = [];
-        this.getCache();
-        this.refreshTranslation();
-
-        this.saving = false;
-        console.log('saveModifications',res);
-      });
-  }
-
-  openOutside(translate) {
-    const no = this.route.snapshot.params.noChapter;
-    let url = `${environment.backendServer}/static/${this.idNovel}/${this.idDictionary}/${no}/`;
-    if (translate) {
-      url = 'https://translate.google.com/translate?sl=auto&tl=en&u=' + url;
-    }
-    window.open(url);
-  }
-
-  textPointer(catIdx: number, entIdx: number) {
-    this.selectOpenCategory = catIdx;
-    this.selectedEntry = entIdx;
-    console.log('TESTES', this.selectOpenCategory, this.selectedEntry);
-    setTimeout(() => {
-      this.moveCurrentEntry('');
-    }, 100)
-  }
-  activateSufix(entry:EntryForm, catIdx:number, entIdx:number) {
-    switch(true){
-      case !!entry.sufix:
-        entry.sufix = null;
-        entry.prefix = this.categories[0].id;
-        break;
-      case !!entry.prefix:
-        entry.sufix = null;
-        entry.prefix = null;
-        break;
-      default:
-        entry.sufix = this.categories[0].id;
-        entry.prefix = null;
-    }
-    this.changeEntry(entry, catIdx, entIdx);
   }
 }

@@ -64,7 +64,7 @@
                 <a class='next' href="{{$control['next']}}">Next</a>
                 @endif
             </p>
-            <h1>{{$chapter->title}}</h1>
+            <h1>{{$title}}</h1>
             {!!$text!!}
             <p class='controls'>
                 @if($control['previous'])

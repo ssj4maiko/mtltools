@@ -22,14 +22,19 @@ class DictionaryEntryService
 	{
 		$data['idDictionary'] = $idDictionary;
 		$data['idCategory'] = $idCategory;
-		$data['simplified'] = preg_replace('/[^\p{Hiragana}\p{Katakana}\p{Han}\p{Hangul}ａ-ｚＡ-Ｚ０-９a-zA-Z0-9]/u', '', $data['entryOriginal']);
+		$data['simplified'] = preg_replace('/[\p{P}]/u', '', $data['entryOriginal']);
 		$data['length'] = strlen($data['simplified']);
+		if ($data['sufix'] == 'null') $data['sufix'] = null;
+		if ($data['prefix'] == 'null') $data['prefix'] = null;
 		return DictionaryEntry::create($data);
 	}
 	public function update($data,$idDictionary, $idCategory, $id)
 	{
 		$entry = DictionaryEntry::findOrFail($id);
-		$data['length'] = strlen($data['entryOriginal']);
+		$data['simplified'] = preg_replace('/[\p{P}]/u', '', $data['entryOriginal']);
+		$data['length'] = strlen($data['simplified']);
+		if($data['sufix'] == 'null') $data['sufix'] = null;
+		if($data['prefix'] == 'null') $data['prefix'] = null;
 		$entry->update($data);
 		return $entry;
 	}

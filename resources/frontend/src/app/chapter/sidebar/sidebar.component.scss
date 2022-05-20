@@ -149,32 +149,56 @@
 
                             .entry-original,
                             .entry-translation,
-                            .entry-description,
-                            .sidebarButton {
+                            .sidebarButton,
+                            .select {
                                 flex-grow:0;
                             }
                             .entry-original {
                                 flex-basis: 100px;
                             }
 
+                            .entry-translation,
+                            .entry-translation-half{
+                                min-width: 30px;
+                            }
                             .entry-translation {
                                 flex-basis: 150px;
+                            }
+                            .entry-translation-half {
+                                flex-basis: 75px;
                             }
 
                             .entry-description {
                                 flex-grow:1;
                             }
 
+                            .select {
+                                flex-basis: 75px;
+                                max-width: 75px;
+                                color:white;
+                                background-color: black;
+                                outline: 0px solid #000;
+                                border: 0px solid #000;
+                                height:100%;
+                            }
+                            .select:focus {
+                                outline: 1px solid blue;
+                            }
+                            .sufixButton {
+                                color: pink;
+                            }
+
                             .deleteButton {
-                                flex-basis:14px;
                                 color: red;
-                                margin: 0px 8px;
                             }
 
                             .resetButton {
-                                flex-basis:14px;
                                 color: blue;
+                            }
+                            .sidebarButton {
+                                flex-basis:14px;
                                 margin: 0px 8px;
+                                text-align:center;
                             }
                         }
 

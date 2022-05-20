@@ -34,11 +34,13 @@ class Chapter extends Model
 
 		return $data;
     }
-    public function translateText($dictionary):string{
-        $text = $this->textRevision ? $this->textRevision : $this->textOriginal;
+    public function translateText($text, $dictionary):string{
         /** @var Dictionary $dictionary */
         foreach ($dictionary->dictionary_entry as $entry) {
             /** @var DictionaryEntry $entry */
+            if($entry->entryOriginal == $entry->entryTranslation){
+                continue;
+            }
             if($entry->sufix){
                 $text = str_replace(
                     ']'.$entry->sufix.']'.$entry->entryOriginal
@@ -58,9 +60,6 @@ class Chapter extends Model
         $text = preg_replace('/(' . $regexEnd.$regexStart . ')+/m', ' ', $text);
         $text = preg_replace('/('.$regexEnd.')+/m', '', $text);
         $text = preg_replace('/('.$regexStart.')+/m', '', $text);
-        // $text = str_replace(']][[', ' ', $text);
-        // $text = str_replace(']]', '', $text);
-        // $text = str_replace('[[', '', $text);
         return $text;
     }
 

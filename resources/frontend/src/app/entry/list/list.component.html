@@ -80,7 +80,9 @@
 				<tr>
 					<th>Category</th>
 					<th>Original</th>
+					<th>Suffix</th>
 					<th>Translated</th>
+					<th>Prefix</th>
 					<th>Description</th>
 					<th>Reset</th>
 					<th>Delete</th>
@@ -114,12 +116,23 @@
                                     [(ngModel)]="entry.entryOriginal"
                                     class="input" type="text" />
 						</td>
+                        <td>
+                            <select (change)="onChange(entry,i);" name="formEntries[{{i}}].sufix" [(ngModel)]="entry.sufix">
+                                <option value="null">Not a Sufix</option>
+                                <option *ngFor="let category of categories" value="{{category.id}}">{{category.name}}</option>
+                            </select>
+                        </td>
 						<td>
 							<input (change)="onChange(entry,i);"
                                     name="formEntries[{{i}}].entryTranslation" 
                                     [(ngModel)]="entry.entryTranslation"
                                     class="input" type="text" />
-						</td>
+						</td><td>
+                            <select (change)="onChange(entry,i);" name="formEntries[{{i}}].prefix" [(ngModel)]="entry.prefix">
+                                <option value="null">Not a Prefix</option>
+                                <option *ngFor="let category of categories" value="{{category.id}}">{{category.name}}</option>
+                            </select>
+                        </td>
 						<td>
 							<textarea (change)="onChange(entry,i);"
                                     name="formEntries[{{i}}].description" 

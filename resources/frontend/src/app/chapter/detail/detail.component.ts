@@ -13,6 +13,7 @@ import { ViewportScroller } from '@angular/common';
 import { AllowIn, KeyboardShortcutsComponent, ShortcutEventOutput, ShortcutInput } from 'ng-keyboard-shortcuts';
 
 import { PipeTransform, Pipe } from "@angular/core";
+import { DictionaryEntry } from 'src/app/_models';
 
 @Pipe({ name: 'safeHtml' })
 export class SafeHtmlPipe implements PipeTransform {
@@ -145,28 +146,32 @@ export class DetailComponent implements OnInit {
       this.renderDataView();
       // Confirm that there are categories
       if (categories.length > 0) {
-        const entries = [];
+        const entries:DictionaryEntry[][] = [];
         categories.forEach((category,i) => {
           // Newly created Categories don't come with Entries, so let's not break the code
           if (category.entries) {
             category.entries.forEach((entry,j) => {
               // Newly created Entries won't have the variables set by default, which would break the code on AOT
-              if (entry.entryOriginal){
-                const length = entry.entryOriginal.length;
+              if (entry.entryOriginal) {
+                let regex = new RegExp('(\\p{P})+', 'gu');
+                const simplified = entry.entryOriginal.replace(regex, '');
+                const length = simplified.length;
+
                 if (!entries[length]) {
                   entries[length] = [];
                 }
                 entries[length].push({
                   entryOriginal: entry.entryOriginal,
                   entryTranslation: entry.entryTranslation,
-                  entryDescription: entry.description,
+                  description: entry.description,
                   sufix: entry.sufix,
                   prefix: entry.prefix,
-                  idEntry: entry.id,
+                  id: entry.id,
                   idCategory: category.id,
                   category: category.name,
+                  simplified: simplified,
                   index: [i,j]
-                });
+                } as DictionaryEntry);
               }
             });
           }
@@ -174,13 +179,16 @@ export class DetailComponent implements OnInit {
         for (let i = entries.length; i > 0; --i) {
           if (entries[i]) {
             entries[i].forEach((entry, j) => {
+              if(entry.entryOriginal == entry.entryTranslation){
+                return;
+              }
               // console.log('Change ', entry.entryOriginal, entry.entryTranslation);
               if (entry.sufix) {
                 const regex = new RegExp(']' + entry.sufix + ']' + entry.entryOriginal, 'g');
                 this.renderedTitle = this.renderedTitle.replace(regex, entry.entryTranslation + '\]' + entry.idCategory + '\]');
 
                 this.renderedText = this.renderedText.replace(regex, '<span class="replaced sufix" '
-                  + (entry.entryDescription ? `title="${entry.entryDescription}"` : '')
+                  + (entry.description ? `title="${entry.description}"` : '')
                   + ' id="replaced-' + entry.index[0] + '-' + entry.index[1] + '">'
                   + entry.entryTranslation
                   + '</span>\]' + entry.idCategory + '\]');
@@ -188,8 +196,8 @@ export class DetailComponent implements OnInit {
                 const regex = new RegExp(entry.entryOriginal + '[' + entry.idCategory + '[', 'g');
                 this.renderedTitle = this.renderedTitle.replace(regex, '\[' + entry.idCategory + '\[' + entry.entryTranslation);
 
-                this.renderedText = this.renderedText.replace(regex, '\[' + entry.idCategory + '\[<span class="replaced sufix" '
-                  + (entry.entryDescription ? `title="${entry.entryDescription}"` : '')
+                this.renderedText = this.renderedText.replace(regex, '\[' + entry.idCategory + '\[<span class="replaced prefix" '
+                  + (entry.description ? `title="${entry.description}"` : '')
                   + ' id="replaced-' + entry.index[0] + '-' + entry.index[1] + '">'
                   + entry.entryTranslation
                   + '</span>');
@@ -198,7 +206,7 @@ export class DetailComponent implements OnInit {
                 this.renderedTitle = this.renderedTitle.replace(regex, '\[' + entry.idCategory + '\[' + entry.entryTranslation + '\]' + entry.idCategory + '\]');
                 
                 this.renderedText = this.renderedText.replace(regex, '\[' + entry.idCategory + '\[<span class="replaced" '
-                                                                  + (entry.entryDescription ? `title="${entry.entryDescription}"` : '') 
+                                                                  + (entry.description ? `title="${entry.description}"` : '') 
                                                                   +' id="replaced-' + entry.index[0] + '-' + entry.index[1] +'">'
                                                                   + entry.entryTranslation
                                                                   + '</span>\]' + entry.idCategory + '\]');

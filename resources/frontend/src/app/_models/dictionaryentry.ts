@@ -11,9 +11,14 @@ export class DictionaryEntry {
   prefix: number;
   simplified: string;
   length: number;
+
+  category?: string;
+  index?: [number, number];
 }
 export class EntryForm {
   public constructor(init?: DictionaryEntry | EntryForm, idCategory?: number) {
+    this.sufix = null;
+    this.prefix = null;
     if (init) {
       Object.assign(this, init);
     }

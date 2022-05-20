@@ -61,7 +61,10 @@ export class FormService {
                                       this.formEntries[i].idCategory !== this.entries[i].idCategory ||
                                       this.formEntries[i].entryOriginal !== this.entries[i].entryOriginal ||
                                       this.formEntries[i].entryTranslation !== this.entries[i].entryTranslation ||
-                                      this.formEntries[i].description !== this.entries[i].description));
+                                      this.formEntries[i].description !== this.entries[i].description ||
+                                      this.formEntries[i].sufix !== this.entries[i].sufix ||
+                                      this.formEntries[i].prefix !== this.entries[i].prefix)
+                                      );
       }
       // For the sake of always having one extra entry opened
       this.checkIfNeedsToAutoAddAnExtraItem();

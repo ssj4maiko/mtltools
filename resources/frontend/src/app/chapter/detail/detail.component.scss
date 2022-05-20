@@ -16,6 +16,12 @@
     .replaced {
         background-color:rgb(99, 99, 99);
     }
+    .replaced.sufix {
+        background-color:rgb(206, 116, 116);
+    }
+    .replaced.prefix {
+        background-color:rgb(116, 118, 206);
+    }
 }
 .flexContent{
     display: flex;
@@ -25,7 +31,7 @@
 
     .sidebar {
         z-index: 20;
-        width:300px;
+        width:400px;
         position:fixed;
         left: 0px;
         margin-right:10px;
@@ -43,9 +49,9 @@
         }
     }
     .content {
-        width: calc(100% - 320px);
+        width: calc(100% - 400px);
         height: calc(100% - 100px);
-        left: 310px;
+        right: 0px;
         position:fixed;
         overflow-y: auto;
         overflow-x: hidden;
