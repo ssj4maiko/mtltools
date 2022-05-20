@@ -38,16 +38,13 @@ class Chapter extends Model
         /** @var Dictionary $dictionary */
         foreach ($dictionary->dictionary_entry as $entry) {
             /** @var DictionaryEntry $entry */
-            if($entry->entryOriginal == $entry->entryTranslation){
-                continue;
-            }
             if($entry->sufix){
                 $text = str_replace(
                     ']'.$entry->sufix.']'.$entry->entryOriginal
                     ,$entry->entryTranslation.']'.$entry->idCategory.']', $text);
             } else if($entry->prefix) {
                 $text = str_replace(
-                    $entry->entryOriginal . '[' . $entry->idCategory . '[',
+                    $entry->entryOriginal . '[' . $entry->prefix . '[',
                     '[' . $entry->idCategory . '['. $entry->entryTranslation,
                     $text
                 );

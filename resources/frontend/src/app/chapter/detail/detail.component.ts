@@ -140,6 +140,40 @@ export class DetailComponent implements OnInit {
     this.renderedText = !!this.chapter.textRevision ? this.chapter.textRevision : this.chapter.textOriginal;
   }
 
+  private replaceText(entry: DictionaryEntry) {
+    // try{
+      if (entry.sufix) {
+        const regex = new RegExp('(\]' + entry.sufix + '\]' + entry.entryOriginal + ')', 'g');
+        this.renderedTitle = this.renderedTitle.replace(regex, entry.entryTranslation + '\]' + entry.idCategory + '\]');
+
+        this.renderedText = this.renderedText.replace(regex, '<span class="replaced sufix" '
+          + (entry.description ? `title="${entry.description}"` : '')
+          + ' id="replaced-' + entry.index[0] + '-' + entry.index[1] + '">'
+          + entry.entryTranslation
+          + '</span>\]' + entry.idCategory + '\]');
+      } else if (entry.prefix) {
+        const regex = new RegExp('(' + entry.entryOriginal + '\\[' + entry.prefix + '\\[)', 'g');
+        this.renderedTitle = this.renderedTitle.replace(regex, '\[' + entry.idCategory + '\[' + entry.entryTranslation);
+
+        this.renderedText = this.renderedText.replace(regex, '\[' + entry.idCategory + '\[<span class="replaced prefix" '
+          + (entry.description ? `title="${entry.description}"` : '')
+          + ' id="replaced-' + entry.index[0] + '-' + entry.index[1] + '">'
+          + entry.entryTranslation
+          + '</span>');
+      } else {
+        const regex = new RegExp(entry.entryOriginal, 'g');
+        this.renderedTitle = this.renderedTitle.replace(regex, '\[' + entry.idCategory + '\[' + entry.entryTranslation + '\]' + entry.idCategory + '\]');
+
+        this.renderedText = this.renderedText.replace(regex, '\[' + entry.idCategory + '\[<span class="replaced" '
+          + (entry.description ? `title="${entry.description}"` : '')
+          + ' id="replaced-' + entry.index[0] + '-' + entry.index[1] + '">'
+          + entry.entryTranslation
+          + '</span>\]' + entry.idCategory + '\]');
+      }
+    // } catch (e){
+    //   console.error(entry);
+    // }
+  }
   translateText(categories: DictionaryCategory[]) {
     // In case the dictionary comes first, then let it wait for the chapter
     this.loadedChapter.then(_ => {
@@ -147,6 +181,7 @@ export class DetailComponent implements OnInit {
       // Confirm that there are categories
       if (categories.length > 0) {
         const entries:DictionaryEntry[][] = [];
+        const entriesFixes:DictionaryEntry[][] = [];
         categories.forEach((category,i) => {
           // Newly created Categories don't come with Entries, so let's not break the code
           if (category.entries) {
@@ -156,11 +191,7 @@ export class DetailComponent implements OnInit {
                 let regex = new RegExp('(\\p{P})+', 'gu');
                 const simplified = entry.entryOriginal.replace(regex, '');
                 const length = simplified.length;
-
-                if (!entries[length]) {
-                  entries[length] = [];
-                }
-                entries[length].push({
+                const insert = {
                   entryOriginal: entry.entryOriginal,
                   entryTranslation: entry.entryTranslation,
                   description: entry.description,
@@ -170,47 +201,38 @@ export class DetailComponent implements OnInit {
                   idCategory: category.id,
                   category: category.name,
                   simplified: simplified,
-                  index: [i,j]
-                } as DictionaryEntry);
+                  index: [i, j]
+                } as DictionaryEntry;
+
+                if((!entry.sufix && !entry.prefix)) {
+                  if (!entries[length]) {
+                    entries[length] = [];
+                  }
+                  entries[length].push(insert);
+                } else {
+                  if (!entriesFixes[length]) {
+                    entriesFixes[length] = [];
+                  }
+                  entriesFixes[length].push(insert);
+                }
               }
             });
           }
         });
-        for (let i = entries.length; i > 0; --i) {
+        for (let i = entries.length; i >= 0; --i) {
           if (entries[i]) {
-            entries[i].forEach((entry, j) => {
-              if(entry.entryOriginal == entry.entryTranslation){
-                return;
-              }
-              // console.log('Change ', entry.entryOriginal, entry.entryTranslation);
-              if (entry.sufix) {
-                const regex = new RegExp(']' + entry.sufix + ']' + entry.entryOriginal, 'g');
-                this.renderedTitle = this.renderedTitle.replace(regex, entry.entryTranslation + '\]' + entry.idCategory + '\]');
-
-                this.renderedText = this.renderedText.replace(regex, '<span class="replaced sufix" '
-                  + (entry.description ? `title="${entry.description}"` : '')
-                  + ' id="replaced-' + entry.index[0] + '-' + entry.index[1] + '">'
-                  + entry.entryTranslation
-                  + '</span>\]' + entry.idCategory + '\]');
-              } else if (entry.prefix) {
-                const regex = new RegExp(entry.entryOriginal + '[' + entry.idCategory + '[', 'g');
-                this.renderedTitle = this.renderedTitle.replace(regex, '\[' + entry.idCategory + '\[' + entry.entryTranslation);
-
-                this.renderedText = this.renderedText.replace(regex, '\[' + entry.idCategory + '\[<span class="replaced prefix" '
-                  + (entry.description ? `title="${entry.description}"` : '')
-                  + ' id="replaced-' + entry.index[0] + '-' + entry.index[1] + '">'
-                  + entry.entryTranslation
-                  + '</span>');
-              } else {
-                const regex = new RegExp(entry.entryOriginal, 'g');
-                this.renderedTitle = this.renderedTitle.replace(regex, '\[' + entry.idCategory + '\[' + entry.entryTranslation + '\]' + entry.idCategory + '\]');
-                
-                this.renderedText = this.renderedText.replace(regex, '\[' + entry.idCategory + '\[<span class="replaced" '
-                                                                  + (entry.description ? `title="${entry.description}"` : '') 
-                                                                  +' id="replaced-' + entry.index[0] + '-' + entry.index[1] +'">'
-                                                                  + entry.entryTranslation
-                                                                  + '</span>\]' + entry.idCategory + '\]');
-              }
+            entries[i].forEach((entry:DictionaryEntry, j) => {
+              this.replaceText(entry)
+              //console.log('Change ', entry.entryOriginal, entry.entryTranslation);
+            });
+          }
+        }
+        for (let i = entriesFixes.length; i >= 0; --i) {
+          if (entriesFixes[i]) {
+            console.log('fix: ', entriesFixes[i])
+            entriesFixes[i].forEach((entry: DictionaryEntry, j) => {
+              this.replaceText(entry)
+              //console.log('Change ', entry.entryOriginal, entry.entryTranslation);
             });
           }
         }
