@@ -58,7 +58,7 @@ class MassDictionaryService
 		}
 		return false;
 	}
-	public function prepare($data, $idDictionary, $idCategory = null)
+	public function prepareCategory($data, $idDictionary, $idCategory = null)
 	{
 		foreach ($data as $v) {
 			// Insert cases
@@ -103,7 +103,7 @@ class MassDictionaryService
 	}
 	public function updateAllEntries(array $data, $idDictionary, $idCategory)
 	{
-		$this->prepare($data, $idDictionary, $idCategory);
+		$this->prepareCategory($data, $idDictionary, $idCategory);
 		$changes = [];
 		$changes[] = $this->massInsert();
 		$changes[] = $this->massUpdate();
