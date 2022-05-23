@@ -229,7 +229,6 @@ export class DetailComponent implements OnInit {
         }
         for (let i = entriesFixes.length; i >= 0; --i) {
           if (entriesFixes[i]) {
-            console.log('fix: ', entriesFixes[i])
             entriesFixes[i].forEach((entry: DictionaryEntry, j) => {
               this.replaceText(entry)
               //console.log('Change ', entry.entryOriginal, entry.entryTranslation);

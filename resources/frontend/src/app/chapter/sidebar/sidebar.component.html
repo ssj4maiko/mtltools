@@ -56,7 +56,7 @@
                                 
                                 <select *ngIf="entry.sufix" class='select' [(ngModel)]="entry.sufix" (change)="changeEntry(entry, i, j)" id="entry-{{i}}-{{j}}-sufix">
                                     <option disabled="disabled">Select a Category for the suffix</option>
-                                    <option *ngFor="let option of categories" value="{{option.id}}">{{ option.name }}</option>
+                                    <option *ngFor="let option of categoriesOriginalValues" value="{{option.id}}">{{ option.name }}</option>
                                 </select>
 
                                 <input [ngClass]="{'entry-translation-half': entry.sufix || entry.prefix, 'entry-translation': !entry.sufix && !entry.prefix }"
@@ -65,7 +65,7 @@
 
                                 <select *ngIf="entry.prefix" class='select' [(ngModel)]="entry.prefix" (change)="changeEntry(entry, i, j)" id="entry-{{i}}-{{j}}-prefix">
                                     <option disabled="disabled">Select a Category for the Prefix</option>
-                                    <option *ngFor="let option of categories" value="{{option.id}}">{{ option.name }}</option>
+                                    <option *ngFor="let option of categoriesOriginalValues" value="{{option.id}}">{{ option.name }}</option>
                                 </select>
 
                                 <input class="entry-description" type="text" [(ngModel)]="entry.description" (focus)="selectedEntry = j"

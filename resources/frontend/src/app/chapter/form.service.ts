@@ -53,11 +53,11 @@ export class FormService {
           });
       });
   }
-  addEntry(category:DictionaryCategory, category_id:number, category_index:number) {
+  addEntry(category:DictionaryCategory, category_id:number, category_index:number,entry?:DictionaryEntry) {
     if (!category.entries) {
       category.entries = [];
     }
-    category.entries.push(new EntryForm());
+    category.entries.push(new EntryForm(entry));
 
     // Wait until new input is rendered to focus it
     setTimeout(() => {
@@ -77,6 +77,11 @@ export class FormService {
       DOMInput.focus();
     },150)
   }
+  duplicateEntry(category:DictionaryCategory, category_id:number, category_index:number, entry:DictionaryEntry|EntryForm) {
+    let clone = JSON.parse(JSON.stringify(entry));
+    delete clone.id;
+    this.addEntry(category, category_id, category_index, clone);
+  }
   addCategory() {
     this.categories.push(new DictionaryCategory(null, this.idDictionary));
   }
@@ -95,14 +100,16 @@ export class FormService {
           this.categories[catIdx].entries.splice(entIdx, 1);
         }
       } else {
-        if (entry.id) {
-          entry.update = entry.entryOriginal    !== this.categoriesOriginalValues[catIdx].entries[entIdx].entryOriginal
-                      || entry.entryTranslation !== this.categoriesOriginalValues[catIdx].entries[entIdx].entryTranslation
-                      || entry.description      !== this.categoriesOriginalValues[catIdx].entries[entIdx].description
-                      || entry.idCategory       !== this.categoriesOriginalValues[catIdx].entries[entIdx].idCategory
-                      || entry.sufix            !== this.categoriesOriginalValues[catIdx].entries[entIdx].sufix
-                      || entry.prefix           !== this.categoriesOriginalValues[catIdx].entries[entIdx].prefix
-            ;
+        if(!entry.update){
+          if (entry.id) {
+            entry.update = entry.entryOriginal    !== this.categoriesOriginalValues[catIdx].entries[entIdx].entryOriginal
+                        || entry.entryTranslation !== this.categoriesOriginalValues[catIdx].entries[entIdx].entryTranslation
+                        || entry.description      !== this.categoriesOriginalValues[catIdx].entries[entIdx].description
+                        || entry.idCategory       !== this.categoriesOriginalValues[catIdx].entries[entIdx].idCategory
+                        || entry.sufix            !== this.categoriesOriginalValues[catIdx].entries[entIdx].sufix
+                        || entry.prefix           !== this.categoriesOriginalValues[catIdx].entries[entIdx].prefix
+              ;
+          }
         }
       }
     }

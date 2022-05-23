@@ -467,6 +467,27 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
         }
       },
       {
+        key: ["ctrl + d", "alt + d"],
+        preventDefault: true,
+        label: "Entries",
+        description: "Duplicate Entry",
+        allowIn: [AllowIn.ContentEditable, AllowIn.Input, AllowIn.Select, AllowIn.Textarea],
+        command: (output: ShortcutEventOutput) => {
+          if (this.selectOpenCategory < 0) {
+            return;
+          }
+          if (this.selectedEntry < 0) {
+            return;
+          }
+          this.duplicateEntry(
+            this.categories[this.selectOpenCategory],
+            this.categories[this.selectOpenCategory].id,
+            this.selectOpenCategory,
+            this.categories[this.selectOpenCategory].entries[this.selectedEntry]
+          );
+        }
+      },
+      {
         key: ["alt + -", "alt + d"],
         preventDefault: true,
         label: "Entries",
