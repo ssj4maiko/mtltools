@@ -1,4 +1,12 @@
 .container {
 	width: 100%;
-	max-width: 100%;
+	max-width: 100% !important;
+	top:100px;
+	position:absolute;
+	overflow-y:auto;
+	overflow-x:hidden;
+	height: calc(100% - 101px);
+}
+body {
+	overflow-y:hidden;
 }

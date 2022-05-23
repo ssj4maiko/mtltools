@@ -1,5 +1,6 @@
 .subarea {
 	width:50%;
+	height: 100%;
 	float:left;
 	padding: 3px;
 
@@ -9,5 +10,11 @@
 		color: #fff;
 		padding: 10px 0;
 		border-radius: 10px;
+		cursor:pointer;
 	}
+	height:100%;
+	overflow-y: auto;
+}
+.columns {
+	margin:5px;
 }

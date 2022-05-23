@@ -84,8 +84,7 @@
 					<th>Translated</th>
 					<th>Prefix</th>
 					<th>Description</th>
-					<th>Reset</th>
-					<th>Delete</th>
+					<th>Actions</th>
 				</tr>
 			</thead>
 			<tbody class="tableContent">
@@ -140,23 +139,21 @@
                                     class="textarea" rows="1"></textarea>
                         </td>
                         <td>
-                            <label class="icon  is-large">
-                                <i class="fas fa-exclamation-triangle"></i>
+                            <label class="icon is-large" title="Reset Entry">
+                                <i class="fas fa-exclamation-triangle has-text-success"></i>
                                 <input (change)="onChange(entry,i);"
                                         name="formEntries[{{i}}].reset" 
                                         [(ngModel)]="entry.reset"
                                         class='hidden' type="checkbox" value='1' />
                             </label>
-                        </td>
-						<td>
-                            <label class="icon is-large">
-                                <i class="fas fa-times"></i>
+                            <label class="icon is-large" title="Delete Entry">
+                                <i class="fas fa-times has-text-danger"></i>
                                 <input (change)="onChange(entry,i);"
                                         name="formEntries[{{i}}].delete" 
                                         [(ngModel)]="entry.delete"
                                         class='hidden' type="checkbox" value='1' />
                             </label>
-						</td>
+                        </td>
                     </tr>
                 </ng-container>
 			</tbody>

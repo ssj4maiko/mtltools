@@ -3,14 +3,14 @@
 		<thead>
 			<tr>
 				<th>Language</th>
-				<th style="width: 200px;"># of Categories</th>
+				<th>#Categories</th>
 			</tr>
 		</thead>
 		<tbody>
 			<ng-container *ngFor="let dictionary of dictionaries" >
 				<tr [routerLink]="['/dictionary/', dictionary.id]">
                     <td>{{ dictionary.name }}</td>
-                    <td>{{ dictionary.countCategories() }}</td>
+                    <td class="count">{{ dictionary.countCategories() }}</td>
 				</tr>
 			</ng-container>
 		</tbody>

@@ -2,47 +2,33 @@
 	<table class='table is-striped is-hoverable is-fullwidth'>
 		<thead>
 			<tr>
-				<th>Code</th>
 				<th>Name</th>
 				<th>Chapters</th>
-				<th>Finished</th>
-				<th>R18</th>
-				<th>Update Chapters</th>
-				<th>Edit</th>
+				<th width="60px">Status</th>
+				<th width="60px">Actions</th>
 			</tr>
 		</thead>
 		<tbody>
 			<ng-container *ngFor="let novel of novels" >
 				<tr title="{{ novel.nameOriginal }}" *ngIf="novel.show">
-					<td [routerLink]="['/novel/', novel.id]">{{ novel.code }}</td>
 					<td [routerLink]="['/novel/', novel.id]">{{ novel.nameCustom }}</td>
-					<td>{{ novel.numberChapters }}</td>
-					<td>
-						<ng-container *ngIf="novel.completed == 1; then success else danger"></ng-container>
+					<td class="noChapters">{{ novel.numberChapters }}</td>
+					<td class="status">
+						<i *ngIf="novel.completed" class="fas fa-envelope has-text-success" title="Complete"></i>
+						<i *ngIf="!novel.completed" class="fas fa-envelope-open-text has-text-info" title="Still going"></i>
+						<i *ngIf="novel.flagR18" class="fas fa-user-secret has-text-danger" title="R18"></i>
+						<i *ngIf="!novel.flagR18" class="fas fa-user-secret has-text-grey-lighter" title="Everyone"></i>
 					</td>
-					<td>
-						<ng-container *ngIf="novel.flagR18 == 1; then success else danger"></ng-container>
-					</td>
-					<td (click)="updateChapters(novel.id)"><a>Update</a></td>
-					<td>
-						<a [routerLink]="['/novel/edit', novel.id]"><i class="fas fa-edit"></i></a>
+					<td class="actions">
+						<i class="fas fa-sync" title="Update chapters" (click)="updateChapters(novel.id)">
+
+						</i>
+						<a [routerLink]="['/novel/edit', novel.id]">
+							<i class="fas fa-edit"></i>
+						</a>
 					</td>
 				</tr>
 			</ng-container>
-			<ng-template #success>
-				<a class='button is-success'>
-					<span class="icon is-small">
-						<i class="fas fa-check"></i>
-					</span>
-				</a>
-			</ng-template>
-			<ng-template #danger>
-				<a class='button is-danger'>
-					<span class="icon is-small">
-						<i class="fas fa-times"></i>
-					</span>
-				</a>
-			</ng-template>
 		</tbody>
 	</table>
 </div>

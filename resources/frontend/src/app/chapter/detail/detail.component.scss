@@ -49,7 +49,7 @@
         }
     }
     .content {
-        width: calc(100% - 400px);
+        width: calc(100% - 410px);
         height: calc(100% - 100px);
         right: 0px;
         position:fixed;
@@ -59,4 +59,5 @@
 }
 .help-modal__body {
     min-width:700px;
+    color: #000;
 }

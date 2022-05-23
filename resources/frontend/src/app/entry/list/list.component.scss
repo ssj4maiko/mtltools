@@ -1,3 +1,6 @@
+.columns {
+	margin:5px;
+}
 .actionButtons a, .actionButtons .button {
 	text-align: center;
 	width:100%;
@@ -7,11 +10,27 @@
 }
 
 .tableContent .changed{
-    background-color: green;
+    background-color: rgb(0, 61, 0);
 }
 .tableContent .new{
     background-color: blue;
 }
 .tableContent .deleted{
-    background-color: red;
+    background-color: rgb(70, 0, 0);
+}
+
+.table {
+	.fas {
+		margin:3px;
+		font-size: 30px;
+		vertical-align: super;
+		cursor:pointer;
+	}
+    select {
+        background-color: black;
+        color:white;
+        padding:5px;
+        font-size:15px;
+        border-radius:15px;
+    }
 }

@@ -1,3 +1,21 @@
+.table {
+	& tr {
+		td:nth-child(5),
+		td:nth-child(6),
+		td:nth-child(8){
+			text-align:center;
+		}
+	}
+	.fas {
+		margin:3px;
+		font-size: 20px;
+		vertical-align: super;
+		cursor:pointer;
+	}
+}
+.columns {
+	margin:5px;
+}
 .actionButtons a {
 	text-align: center;
 	width:100%;

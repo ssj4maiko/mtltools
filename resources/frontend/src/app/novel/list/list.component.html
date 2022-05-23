@@ -6,9 +6,9 @@
 	</div>
 </ng-template>
 
-<ng-container *ngTemplateOutlet="actionButtons"></ng-container>
 
 <div>
+	<ng-container *ngTemplateOutlet="actionButtons"></ng-container>
 	<table class='table is-striped is-hoverable is-fullwidth'>
 		<thead>
 			<tr>
@@ -17,13 +17,10 @@
 				<th>Name</th>
 				<th>Name Japanese</th>
 				<th>Chapters</th>
-				<th>Driver</th>
-				<th>Completed</th>
-				<th>R18</th>
+				<th style="text-align:center;">Driver</th>
+				<th style="width:76px;">Status</th>
 				<th>Added By</th>
-				<th>Dictionary</th>
-				<th>Update Chapters</th>
-				<th>Actions</th>
+				<th style="width:131px;">Actions</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -35,15 +32,26 @@
 					<td [routerLink]="['/novel/', novel.id]">{{ novel.nameOriginal }}</td>
 					<td [routerLink]="['/novel/', novel.id]">{{ novel.numberChapters }}</td>
 					<td>{{ novel.driver }}</td>
-					<td><ng-container *ngIf="novel.completed == 1; then success else danger"></ng-container></td>
-					<td><ng-container *ngIf="novel.flagR18 == 1; then success else danger"></ng-container></td>
+					<td class="status">
+						<i *ngIf="novel.completed" class="fas fa-envelope has-text-success" title="Complete"></i>
+						<i *ngIf="!novel.completed" class="fas fa-envelope-open-text has-text-info" title="Still going"></i>
+						<i *ngIf="novel.flagR18" class="fas fa-user-secret has-text-danger" title="R18"></i>
+						<i *ngIf="!novel.flagR18" class="fas fa-user-secret has-text-grey-lighter" title="Everyone"></i>
+					</td>
 					<td>{{ novel.addedBy }}</td>
-					<td [routerLink]="['/novel/dictionary', novel.id]"><a>Check</a></td>
-					<td (click)="updateChapters(novel.id)"><a>Update</a></td>
 					<td>
-						<a [routerLink]="['/novel/edit', novel.id]"><i class="fas fa-edit"></i></a>
-						/
-						<a (click)="delete(novel.id);"><i class="fas fa-trash"></i></a>
+						<a [routerLink]="['/novel/dictionary', novel.id]">
+							<i class=" fas fa-book-open" title="Dictionaries"></i>
+						</a>
+						<a (click)="updateChapters(novel.id)">
+							<i class="has-text-info fas fa-sync" title="Update Chapters"></i>
+						</a>
+						<a [routerLink]="['/novel/edit', novel.id]">
+							<i class="has-text-success fas fa-edit" title="Edit"></i>
+						</a>
+						<a (click)="delete(novel.id);">
+							<i class="has-text-danger fas fa-trash" title="Delete"></i>
+						</a>
 					</td>
 				</tr>
 			</ng-container>
