@@ -91,10 +91,8 @@ class MassDictionaryService
 					$tmp->description = $v['description'] ?? '';
 					$tmp->sufix =	isset($v['sufix']) && $v['sufix'] 	!= 'null' ? $v['sufix'] : null;
 					$tmp->prefix =	isset($v['prefix']) && $v['prefix'] != 'null' ? $v['prefix'] : null;
-					$tmp->length = strlen($v['entryOriginal'] ?? '');
-					$tmp->simplified = preg_replace('/[^\p{P}]/u', '', $v['entryOriginal']);
+					$tmp->simplified = preg_replace('/[\p{P}]/u', '', $v['entryOriginal']);
 					$tmp->length = strlen($tmp->simplified);
-
 					$this->update[] = $tmp;
 					$this->affectedCategories[$tmp['idCategory']] = true;
 				}
