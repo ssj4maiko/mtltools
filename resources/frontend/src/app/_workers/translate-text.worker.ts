@@ -16,7 +16,7 @@ const replaceTextAllEntries = (entries: DictionaryEntry[], cloneText: string, cl
   while (entries.length !== 0) {
     const entry = entries.pop();
     const regex = new RegExp(scapeRegex(entry.entryOriginal), 'g');
-    const replace = '\[' + entry.idCategory + '\[<span class="replaced" '
+    const replace = entry.entryTranslation.length === 0 ? '' : '\[' + entry.idCategory + '\[<span class="replaced" '
       + (entry.description ? `title="${entry.description}"` : '')
       + ' id="replaced-' + entry.index[0] + '-' + entry.index[1] + '">'
       + entry.entryTranslation

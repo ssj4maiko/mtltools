@@ -49,7 +49,9 @@ class Chapter extends Model
                     $text
                 );
             } else {
-                $text = str_replace($entry->entryOriginal, '['. $entry->idCategory.'['.$entry->entryTranslation.']'.$entry->idCategory.']', $text);
+                $text = str_replace($entry->entryOriginal,
+                                    strlen($entry->entryTranslation) === 0 ?
+                                        '' : '['. $entry->idCategory.'['.$entry->entryTranslation.']'.$entry->idCategory.']', $text);
             }
         }
         $regexStart = '\[[0-9]+\[';
