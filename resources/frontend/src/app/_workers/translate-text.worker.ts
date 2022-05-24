@@ -8,6 +8,8 @@ const scapeRegex = (entry:string) => {
   return entry.replace('-','\\-')
               .replace('[','\\[')
               .replace(']','\\]')
+              .replace('(','\\(')
+              .replace(')','\\)')
               ;
 }
 const replaceTextAllEntries = (entries: DictionaryEntry[], cloneText: string, cloneTitle: string) => {
