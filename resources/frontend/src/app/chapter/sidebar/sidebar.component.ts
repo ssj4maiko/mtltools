@@ -98,6 +98,32 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
     this.moveFocus(id, output);
   }
 
+  changeEntryTarget(entry:EntryForm, i:number, j:number, target?:HTMLInputElement|HTMLSelectElement){
+    if(target){
+      const els = target.id.split('-');
+      if(els[0] == 'entry'){
+        switch(els[3]) {
+          case 'sufix':
+            entry.sufix = parseInt(target.value);
+            break;
+          case 'prefix':
+            entry.prefix = parseInt(target.value);
+            break;
+          case 'desc':
+            entry.description = target.value;
+            break;
+          case 'trans':
+            entry.entryTranslation = target.value;
+            break;
+          default:
+            entry.entryOriginal = target.value;
+        }
+      }
+      console.log(entry);
+    }
+    this.changeEntry(entry,i,j);
+  }
+
   ngOnDestroy() {
     delete this.dictionaries;
     delete this.categories;

@@ -20,7 +20,7 @@
 
 		<ng-container *ngTemplateOutlet="controlButtons"></ng-container>
 		<ng-container *ngIf="chapter">
-			<h1 class='title'>{{ this.renderedTitle }}</h1>
+			<h1 class='title'  [innerHTML]="renderedTitle | safeHtml"></h1>
 			<hr />
 			<div class="novel-content" [innerHTML]="renderedText | safeHtml">
 

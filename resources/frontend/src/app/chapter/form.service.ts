@@ -26,17 +26,17 @@ export class FormService {
 
   rebuildCache(resolveDic): void {
     this.api.Category.getAll({ idDictionary: this.idDictionary })
-      .then((categories) => {
+      .then(async (categories) => {
 
         this.categories = Object.values(categories);
         const LoadedPromise = [];
 
-        this.categories.forEach((category, categoryIndex) => {
+        this.categories.forEach(async (category, categoryIndex) => {
           LoadedPromise.push(new Promise<void>((resolveCat, rejectCat) => {
 
             this.api.Entry.getAll({ idDictionary: this.idDictionary, idCategory: category.id })
-              .then((entries) => {
-                LoadedPromise.push(new Promise<void>((resolveEnt, rejectEnt) => {
+              .then(async (entries) => { 
+                LoadedPromise.push(new Promise<void>(async (resolveEnt, rejectEnt) => {
                   /** @var DictionaryEntry[] category.entries */
                   category.entries = Object.values(entries);
                   resolveEnt();
@@ -87,7 +87,7 @@ export class FormService {
   }
 
 
-  changeEntry(entry: EntryForm, catIdx?: number, entIdx?: number) {
+  changeEntry(entry: EntryForm, catIdx?: number, entIdx?: number, target?:any) {
     if (entry.reset) {
       if (this.categories[catIdx].entries[entIdx].id) {
         this.categories[catIdx].entries[entIdx] = new EntryForm(this.categoriesOriginalValues[catIdx].entries[entIdx]);
@@ -100,16 +100,14 @@ export class FormService {
           this.categories[catIdx].entries.splice(entIdx, 1);
         }
       } else {
-        if(!entry.update){
-          if (entry.id) {
-            entry.update = entry.entryOriginal    !== this.categoriesOriginalValues[catIdx].entries[entIdx].entryOriginal
-                        || entry.entryTranslation !== this.categoriesOriginalValues[catIdx].entries[entIdx].entryTranslation
-                        || entry.description      !== this.categoriesOriginalValues[catIdx].entries[entIdx].description
-                        || entry.idCategory       !== this.categoriesOriginalValues[catIdx].entries[entIdx].idCategory
-                        || entry.sufix            !== this.categoriesOriginalValues[catIdx].entries[entIdx].sufix
-                        || entry.prefix           !== this.categoriesOriginalValues[catIdx].entries[entIdx].prefix
-              ;
-          }
+        if (entry.id) {
+          entry.update = entry.entryOriginal    !== this.categoriesOriginalValues[catIdx].entries[entIdx].entryOriginal
+                      || entry.entryTranslation !== this.categoriesOriginalValues[catIdx].entries[entIdx].entryTranslation
+                      || entry.description      !== this.categoriesOriginalValues[catIdx].entries[entIdx].description
+                      || entry.idCategory       !== this.categoriesOriginalValues[catIdx].entries[entIdx].idCategory
+                      || entry.sufix            !== this.categoriesOriginalValues[catIdx].entries[entIdx].sufix
+                      || entry.prefix           !== this.categoriesOriginalValues[catIdx].entries[entIdx].prefix
+            ;
         }
       }
     }

@@ -73,14 +73,12 @@
 
                                 <label class="deleteButton sidebarButton">
                                     <i class="fas fa-trash"></i> 
-                                    <input type="checkbox" class="hidden" [(ngModel)]="entry.delete" title="Delete" (change)="changeEntry(entry, i, j)" />
+                                    <input type="checkbox" class="hidden" title="Delete" (change)="entry.delete = true; changeEntry(entry, i, j)" />
                                 </label>
                                 <label class="resetButton sidebarButton">
                                     <i class="fas fa-sync-alt"></i>
-                                    <input type="checkbox" class="hidden" [(ngModel)]="entry.reset" title="Reset" (change)="changeEntry(entry, i, j)" />
+                                    <input type="checkbox" class="hidden" title="Reset" (change)="entry.reset = true; changeEntry(entry, i, j)" />
                                 </label>
-                                <!--input  type="hidden" [(ngModel)]="entry.update" /-->
-                                <input type="hidden" [(ngModel)]="entry.idCategory" />
                             </div>
                             <div class="entry-spacer"></div>
                         </div>
