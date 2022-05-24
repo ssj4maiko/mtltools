@@ -1,12 +1,19 @@
 /// <reference lib="webworker" />
 
-import { DictionaryEntry } from "../_models/dictionaryentry";
+import { DictionaryCategory } from "../_models/dictionarycategory";
+import { DictionaryEntry, EntryForm } from "../_models/dictionaryentry";
 
 //import { DictionaryCategory, DictionaryEntry } from "../_models";
+const scapeRegex = (entry:string) => {
+  return entry.replace('-','\\-')
+              .replace('[','\\[')
+              .replace(']','\\]')
+              ;
+}
 const replaceTextAllEntries = (entries: DictionaryEntry[], cloneText: string, cloneTitle: string) => {
   while (entries.length !== 0) {
     const entry = entries.pop();
-    const regex = new RegExp(entry.entryOriginal.replace('-','\-'), 'g');
+    const regex = new RegExp(scapeRegex(entry.entryOriginal), 'g');
     const replace = '\[' + entry.idCategory + '\[<span class="replaced" '
       + (entry.description ? `title="${entry.description}"` : '')
       + ' id="replaced-' + entry.index[0] + '-' + entry.index[1] + '">'
@@ -23,7 +30,7 @@ const replaceTextAllFixes = (entries: DictionaryEntry[], cloneText: string, clon
     let regex, replace;
 
     if (entry.sufix) {
-      regex = new RegExp('(\]' + entry.sufix + '\]' + entry.entryOriginal.replace('-', '\-') + ')', 'g');
+      regex = new RegExp('(\]' + entry.sufix + '\]' + scapeRegex(entry.entryOriginal) + ')', 'g');
       replace = '<span class="replaced sufix" '
         + (entry.description ? `title="${entry.description}"` : '')
         + ' id="replaced-' + entry.index[0] + '-' + entry.index[1] + '">'
@@ -31,7 +38,7 @@ const replaceTextAllFixes = (entries: DictionaryEntry[], cloneText: string, clon
         + '</span>\]' + entry.idCategory + '\]';
 
     } else {
-      regex = new RegExp('(' + entry.entryOriginal.replace('-', '\-') + '\\[' + entry.prefix + '\\[)', 'g');
+      regex = new RegExp('(' + scapeRegex(entry.entryOriginal) + '\\[' + entry.prefix + '\\[)', 'g');
       replace = '\[' + entry.idCategory + '\[<span class="replaced prefix" '
         + (entry.description ? `title="${entry.description}"` : '')
         + ' id="replaced-' + entry.index[0] + '-' + entry.index[1] + '">'
@@ -44,18 +51,16 @@ const replaceTextAllFixes = (entries: DictionaryEntry[], cloneText: string, clon
   return [cloneText, cloneTitle];
 }
 addEventListener('message', (data:MessageEvent) => {
-  let {categories, text, title} = data.data;
+  let {categories, text, title} = data.data as {categories:DictionaryCategory[], text:string, title:string};
   if (categories.length > 0) {
     let entries: DictionaryEntry[][] = [];
     let entriesFixes: DictionaryEntry[][] = [];
-    let total = 0;
     categories.forEach((category, i) => {
       // Newly created Categories don't come with Entries, so let's not break the code
       if (category.entries) {
-        category.entries.forEach((entry, j) => {
+        category.entries.forEach((entry:EntryForm, j) => {
           // Newly created Entries won't have the variables set by default, which would break the code on AOT
-          if (entry.entryOriginal && !entry.deleted) {
-            ++total;
+          if (entry.entryOriginal && !entry.delete) {
             let regex = new RegExp('(\\p{P})+', 'gu');
             const simplified = entry.entryOriginal.replace(regex, '');
             const length = simplified.length;

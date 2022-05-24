@@ -77,17 +77,6 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
     else {
       console.error(id);
     }
-
-    if(output){
-      console.log({
-        output: output.key,
-        category: this.selectOpenCategory,
-        categoryLength: this.categories.length,
-        entry: this.selectedEntry,
-        entryLength: this.categories[this.selectOpenCategory].entries?.length,
-        target: output?.event.target
-      });
-    }
   }
   private moveCurrentCategory = (output?:ShortcutEventOutput) => {
     let id = 'category-' + this.selectOpenCategory;
@@ -119,7 +108,6 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
             entry.entryOriginal = target.value;
         }
       }
-      console.log(entry);
     }
     this.changeEntry(entry,i,j);
   }
@@ -176,7 +164,6 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
         this.refreshTranslation();
 
         this.saving = false;
-        console.log('saveModifications',res);
       }).catch(res => {
         this.saving = false;
         console.error(res);
@@ -195,7 +182,6 @@ export class SidebarComponent extends FormService implements OnInit, OnDestroy, 
   textPointer(catIdx: number, entIdx: number) {
     this.selectOpenCategory = catIdx;
     this.selectedEntry = entIdx;
-    console.log('TESTES', this.selectOpenCategory, this.selectedEntry);
     setTimeout(() => {
       this.moveCurrentEntry('');
     }, 100)
