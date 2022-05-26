@@ -79,7 +79,7 @@ And it should be good to go.
 # URLs
 FRONT: http://mtltools.docker:800/
 
-API: http://api.mtltools.docker:800/
+API: http://api.mtltools.docker:800/api/
 
 # How to install it in a cheap PHP server
 
