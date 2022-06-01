@@ -1,6 +1,13 @@
 tr.disabled > td {
 	background-color: rgba($color: #b3c7ff84, $alpha: 1.0)
 }
+
+.fas {
+	margin:3px;
+	font-size: 20px;
+	vertical-align: super;
+	cursor:pointer;
+}
 .columns {
 	margin:5px;
 }

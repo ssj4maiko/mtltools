@@ -43,8 +43,13 @@
                         <a *ngFor="let dictionary of dictionaries" (click)="openGT(chapter,dictionary);">{{dictionary.language}}</a>
                     </td>
 					<td>
+						<i class="fas fa-align-justify is-danger" *ngIf="!chapter.hasText" title="Text is not loaded"></i>
+						<i class="fas fa-align-justify" *ngIf="chapter.hasText" title="Text is loaded"></i>
 						<a (click)="updateChapter(chapter.no)">
 							<i class="has-text-info fas fa-sync" title="Update Chapter"></i>
+						</a>
+						<a href="{{ chapter.urlSource }}" target="_blank">
+							<i class="has-text-info fas fa-external-link-alt" title="Source"></i>
 						</a>
 						<!--a [routerLink]="['/novel/', chapter.idNovel, chapter.no, 'edit']">UPD</a>
 						/

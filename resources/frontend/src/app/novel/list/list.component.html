@@ -20,12 +20,12 @@
 				<th style="text-align:center;">Driver</th>
 				<th style="width:76px;">Status</th>
 				<th>Added By</th>
-				<th style="width:131px;">Actions</th>
+				<th style="width:160px;">Actions</th>
 			</tr>
 		</thead>
 		<tbody>
 			<ng-container *ngFor="let novel of novels" >
-				<tr title="{{ novel.nameOriginal }}" *ngIf="novel.show">
+				<tr title="{{ novel.nameOriginal }}" *ngIf="novel.show" [ngClass]="{'disabled': updating[novel.id] }">
 					<td>{{ novel.id }}</td>
 					<td [routerLink]="['/novel/', novel.id]">{{ novel.code }}</td>
 					<td [routerLink]="['/novel/', novel.id]">{{ novel.nameCustom }}</td>
@@ -40,6 +40,9 @@
 					</td>
 					<td>{{ novel.addedBy }}</td>
 					<td>
+						<a href="{{ novel.urlSource }}" target="_blank">
+							<i class="has-text-info fas fa-external-link-alt" title="Source"></i>
+						</a>
 						<a [routerLink]="['/novel/dictionary', novel.id]">
 							<i class=" fas fa-book-open" title="Dictionaries"></i>
 						</a>

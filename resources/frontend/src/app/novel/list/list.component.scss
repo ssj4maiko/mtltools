@@ -6,6 +6,9 @@
 			text-align:center;
 		}
 	}
+	tr.disabled > td {
+		background-color: rgba($color: #007c10, $alpha: 0.5);
+	}
 	.fas {
 		margin:3px;
 		font-size: 20px;

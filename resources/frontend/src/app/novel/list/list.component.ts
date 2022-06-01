@@ -32,10 +32,13 @@ export class ListComponent implements OnInit {
       });
   }
 
+  updating:boolean[] = [];
   updateChapters(idNovel: number) {
+  this.updating[idNovel] = true;      
     this.api.Chapter.autoUpdate({ idNovel })
         .then(res => {
             console.log('Novel updated', res);
+            delete this.updating[idNovel];
             /**
              * Auto update on the list too
              */
@@ -55,6 +58,10 @@ export class ListComponent implements OnInit {
 
                           });
         }, err => {
+            delete this.updating[idNovel];
+            alert("There was an error on updating, likely due to Timeout.\n\n"+
+                  "The backend may still be working, so you will have to refresh the page to see if it's still updating"+
+                  "If it has stopped and/or it's taking too long, report it to the developer along with the novel, as it will be necessary to reproduce the error.");
             console.log(err);
         });
   }

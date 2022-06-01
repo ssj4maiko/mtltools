@@ -155,9 +155,13 @@ class ImportService
 		/** @var [idNovel:int, no:int, noCode:string, arc:string|null, title:string, dateOriginalPost:string, dateOriginalRevision:string|null][] $ImportedChapters */
 		$ImportedChapters = $driver->importIndex($idNovel);
 
-		// We save the number of chapters only at the end of the process
-		// We are using an array of arrays, meaning, Count won't count correctly all the time. So it's manual counting
-		$numberChapters = 0;
+		/**
+		 * Before we did things in Order, meaning update the first chapters, then insert.
+		 * Kakuyomu disrupted this order, so I will be setting another array with the content.
+		 * 
+		 * First we do the new chapters (insert), then we do all the update checks
+		 * */
+		$Chapters2Check4Update = [];
 		
 		$pointer = $driver->getPointer();
 		/** @var ChapterService $chapterService */
@@ -209,13 +213,13 @@ class ImportService
 			}
 			/** @var [idNovel:int, no:int, noCode:string, arc:string|null, title:string, dateOriginalPost:string, dateOriginalRevision:string|null] $foundChapter */
 			if ($foundChapter) {
-				++$numberChapters;
-				$chapter = $this->updateDatabaseChapter($KnownChapter, $driver, $foundChapter);
+				$Chapters2Check4Update[] = [$KnownChapter, $foundChapter];
 			} else {
 				dd('An already known chapter was not found on the server... Weird...', $counter, $KnownChapter, $ImportedChapters);
 			}
 		}
 		// Because I have been removing from the array already imported chapters, only new ones remain here
+		$numberChapters = count($Chapters2Check4Update);
 		if(!empty($ImportedChapters)){
 			$numberChapters += $this->InsertNewChapters($ImportedChapters, $driver);
 		}
@@ -228,6 +232,10 @@ class ImportService
 		// Same condition as the insert. I want to save the number of chapters before starting this.
 		if(!empty($ImportedChapters)){
 			$this->UpdateAllChaptersWithNoText($novel->id, $driver);
+		}
+		// Finally, we start the updates now.
+		foreach($Chapters2Check4Update as $vector){
+			$chapter = $this->updateDatabaseChapter($vector[0], $driver, $vector[1]);
 		}
 
 		return $novel;
