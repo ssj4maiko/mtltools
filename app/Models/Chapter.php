@@ -23,6 +23,7 @@ class Chapter extends Model
 		 'idNovel'
 		,'no'
 		,'noCode'
+		,'arc'
 		,'title'
 		,'textOriginal'
 		,'dateRevision'

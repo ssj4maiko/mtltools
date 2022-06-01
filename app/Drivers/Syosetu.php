@@ -28,13 +28,13 @@ class Syosetu extends Model implements DriverInterface
 		$this->setR18($R18);
 	}
 
-	public function setCode($code){
+	public function setCode($code):void {
 		$this->currentCode = $code;
 	}
-	public function setChapter($chapter){
+	public function setChapter($chapter = ''):void {
 		$this->currentChapter = $chapter;
 	}
-	public function setR18($R18){
+	public function setR18($R18):void {
 		$this->R18 = $R18;
 	}
 
@@ -104,7 +104,14 @@ class Syosetu extends Model implements DriverInterface
 		}
 		return null;
 	}
-	public function importContent(Chapter $chapter){
+	public function getUpdateMeta(Chapter $chapter): array
+	{
+		return [
+			  'dateOriginalPost'		=>	$chapter->dateOriginalPost
+			, 'dateOriginalRevision'	=>	$chapter->dateOriginalRevision
+		];
+	}
+	public function importContent(Chapter &$chapter) : string{
 		$this->setChapter($chapter->no);
 		$content = $this->callUrl();
 		$this->setChapter('');
@@ -118,15 +125,35 @@ class Syosetu extends Model implements DriverInterface
 	public function getPointer(): string{
 		return $this->pointer;
 	}
+	private $arcs = [];
+	private function parseArcs($html)
+	{
+		$posStart = 0;
+		while ($posStart = strpos($html, 'chapter_title', $posStart)) {
+			$posStart = strpos($html, 'chapter_title">', $posStart) + 15;
+			$posEnd = strpos($html, '</div>', $posStart);
+			$this->arcs[] = [
+				'title'	=>	substr($html, $posStart, $posEnd - $posStart), 'position'	=>	$posStart
+			];
+		}
+		return $this->arcs;
+	}
 	private function parseIndex($html, $idNovel){
 		$Found = true;
 		$posStart = 0;
 
 		$listOfChapters = [];
+		$arcs = $this->parseArcs($html);
+		$nextArc = 0;
 
 		for($index=1; $Found; ++$index){
 			$needle = $this->currentCode.'/'.$index;
 			$posStart = strpos($html, $needle, $posStart);
+			if (isset($arcs[$nextArc])) {
+				if ($posStart > $arcs[$nextArc]['position']) {
+					$nextArc++;
+				}
+			}
 
 			if($posStart>0){
 
@@ -163,6 +190,7 @@ class Syosetu extends Model implements DriverInterface
 				$listOfChapters[$dateOriginalPost][] = [
 					'idNovel'				=>	$idNovel,
 					'no'					=>	$index,
+					'arc'					=>	isset($arcs[$nextArc - 1]) ? $arcs[$nextArc - 1]['title'] : null,
 					'title'					=>	$title,
 					'dateOriginalPost'		=>	$dateOriginalPost,
 					'dateOriginalRevision'	=>	$dateOriginalRevision,
@@ -172,7 +200,6 @@ class Syosetu extends Model implements DriverInterface
 				$Found = false;
 				break;
 			}
-
 		}
 		return $listOfChapters;
 	}

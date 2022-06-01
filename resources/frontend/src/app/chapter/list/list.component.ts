@@ -19,6 +19,8 @@ export class ListComponent implements OnInit {
   novel: Novel;
   idNovel: number;
 
+  updating:boolean[] = [];
+
   constructor(
       private router: Router
     , private route: ActivatedRoute
@@ -41,6 +43,23 @@ export class ListComponent implements OnInit {
                 });
   }
 
+  updateChapter(noChapter: number) {
+    this.updating[noChapter] = true;
+    this.api.Chapter.chapterAutoUpdate({ idNovel:this.idNovel, no: noChapter })
+      .then(res => {
+        console.log('Chapter updated', res);
+        /**
+         * Auto update on the list too
+         */
+        this.api.Chapter.getAll({ idNovel: this.idNovel })
+          .then(chapters => {
+            this.chapters = Object.values(chapters);
+          });
+        delete this.updating[noChapter];
+      }, err => {
+        console.log(err);
+      });
+  }
   openGT(chapter: Chapter, dictionary: Dictionary) {
       let url = `${environment.backendServer}/static/${this.idNovel}/${dictionary.id}/${chapter.no}/1`;
       url = 'https://translate.google.com/translate?sl=auto&tl=en&u=' + url;

@@ -116,6 +116,20 @@ export class ChaptersService extends AjaxService {
         });
     });
   }
+  // Lots of automated services here
+  chapterAutoUpdate(params: { idNovel: number, no: number }): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this._get(this.route + params.idNovel + '/' + params.no + '/updateChapter')
+        .subscribe((item: Chapter) => {
+          if (item) {
+            this.set(params.idNovel, [item]);
+            resolve(item);
+          } else {
+            reject('Error on inserting chapter ' + params.idNovel);
+          }
+        });
+    });
+  }
   /**
    * More complex stuff starting here
    */

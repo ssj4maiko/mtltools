@@ -49,4 +49,7 @@ class ChapterController extends Controller
     public function updateIndex(int $idNovel){
         return $this->importService->updateIndex($idNovel);
     }
+    public function updateChapter(int $idNovel, int $no){
+        return $this->importService->updateChapter($idNovel, $no);
+    }
 }

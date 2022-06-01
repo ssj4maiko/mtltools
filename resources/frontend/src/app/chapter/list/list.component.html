@@ -21,17 +21,20 @@
 		<thead>
 			<tr>
 				<th>Number</th>
+				<th>Arc</th>
 				<th>Title</th>
 				<th>Date Created</th>
 				<th>Date Updated</th>
 				<th>Dictionary<br />Google Translator</th>
+				<th>Actions</th>
 				<!--th>Actions</th-->
 			</tr>
 		</thead>
 		<tbody>
 			<ng-container *ngFor="let chapter of chapters" >
-				<tr title="{{ novel.title }}">
+				<tr title="{{ novel.title }}" [ngClass]="{'disabled': updating && updating[chapter.no]}">
 					<td>{{ chapter.no }}</td>
+					<td [routerLink]="['/novel/', chapter.idNovel, chapter.no]">{{ chapter.arc }}</td>
 					<td [routerLink]="['/novel/', chapter.idNovel, chapter.no]">{{ chapter.title }}</td>
 					<td [routerLink]="['/novel/', chapter.idNovel, chapter.no]">{{ chapter.dateOriginalPost }}</td>
 					<td [routerLink]="['/novel/', chapter.idNovel, chapter.no]">{{ chapter.dateOriginalRevision }}</td>
@@ -39,11 +42,14 @@
                     <td>
                         <a *ngFor="let dictionary of dictionaries" (click)="openGT(chapter,dictionary);">{{dictionary.language}}</a>
                     </td>
-					<!--td>
-						<a [routerLink]="['/novel/', chapter.idNovel, chapter.no, 'edit']">UPD</a>
+					<td>
+						<a (click)="updateChapter(chapter.no)">
+							<i class="has-text-info fas fa-sync" title="Update Chapter"></i>
+						</a>
+						<!--a [routerLink]="['/novel/', chapter.idNovel, chapter.no, 'edit']">UPD</a>
 						/
-						<a [routerLink]="['/novel/', chapter.idNovel, chapter.no, 'del']">DEL</a>
-					</td-->
+						<a [routerLink]="['/novel/', chapter.idNovel, chapter.no, 'del']">DEL</a-->
+					</td>
 					<ng-template #success>
 						<a class='button is-success'>
 							<span class="icon is-small">

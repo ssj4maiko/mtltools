@@ -42,6 +42,7 @@ Route::middleware(['cors'])->group(function(){
 		Route::get(		'/autoUpdate/{idNovel}',					[ChapterController::class, 'updateIndex']);
 		Route::get(		'/{idNovel}',								[ChapterController::class, 'getAll']);
 		Route::get(		'/{idNovel}/{no}',							[ChapterController::class, 'get']);
+		Route::get(		'/{idNovel}/{no}/updateChapter',			[ChapterController::class, 'updateChapter']);
 		Route::post(	'/{idNovel}',								[ChapterController::class, 'insert']);
 		Route::put(		'/{idNovel}/{no}',							[ChapterController::class, 'update']);
 		Route::delete(	'/{idNovel}/{no}',							[ChapterController::class, 'delete']);

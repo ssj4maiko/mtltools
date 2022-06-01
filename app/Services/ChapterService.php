@@ -8,7 +8,7 @@ class ChapterService {
 	public function getAll($idNovel, $search = [])
 	{
 		/** @var Chapter $chapter */
-		$chapter = Chapter::select('idNovel', 'no', 'title', 'dateCreated', 'dateRevision', 'dateOriginalPost', 'dateOriginalRevision')
+		$chapter = Chapter::select('idNovel', 'noCode', 'arc', 'no', 'title', 'dateCreated', 'dateRevision', 'dateOriginalPost', 'dateOriginalRevision')
 			->addSelect(DB::raw('(textOriginal IS NOT NULL) as hasText'))
 			->where(['idNovel' => $idNovel]);
 		if(!empty($search)){
