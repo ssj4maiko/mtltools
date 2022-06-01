@@ -12,15 +12,45 @@
 	<table class='table is-striped is-hoverable is-fullwidth'>
 		<thead>
 			<tr>
-				<th>ID</th>
-				<th>Code</th>
-				<th>Name</th>
-				<th>Name Japanese</th>
-				<th>Chapters</th>
-				<th style="text-align:center;">Driver</th>
-				<th style="width:76px;">Status</th>
-				<th>Added By</th>
-				<th style="width:160px;">Actions</th>
+				<th [ngClass]="{'orderedBy': currentSort.by == 'id'}" style="width:65px;">
+					ID
+					<i class="fas fa-sort-numeric-down" *ngIf="currentSort.by != 'id' || currentSort.dir != '-'" (click)="sort('id', '-')"></i>
+					<i class="fas fa-sort-numeric-up" *ngIf="currentSort.by == 'id' && currentSort.dir == '-'" (click)="sort('id', '+')"></i>
+				</th>
+				<th>
+					Code
+				</th>
+				<th [ngClass]="{'orderedBy': currentSort.by == 'name'}">
+					Name
+					<i class="fas fa-sort-alpha-down" *ngIf="currentSort.by != 'name' || currentSort.dir != '-'" (click)="sort('name', '-')"></i>
+					<i class="fas fa-sort-alpha-up" *ngIf="currentSort.by == 'name' && currentSort.dir == '-'" (click)="sort('name', '+')"></i>
+				</th>
+				<th [ngClass]="{'orderedBy': currentSort.by == 'nameJP'}">
+					Name Japanese
+					<i class="fas fa-sort-alpha-down" *ngIf="currentSort.by != 'nameJP' || currentSort.dir != '-'" (click)="sort('nameJP', '-')"></i>
+					<i class="fas fa-sort-alpha-up" *ngIf="currentSort.by == 'nameJP' && currentSort.dir == '-'" (click)="sort('nameJP', '+')"></i>
+				</th>
+				<th [ngClass]="{'orderedBy': currentSort.by == 'chapters'}" style="width:120px;">
+					Chapters
+					<i class="fas fa-sort-numeric-down" *ngIf="currentSort.by != 'chapters' || currentSort.dir != '-'" (click)="sort('chapters', '-')"></i>
+					<i class="fas fa-sort-numeric-up" *ngIf="currentSort.by == 'chapters' && currentSort.dir == '-'" (click)="sort('chapters', '+')"></i>
+				</th>
+				<th [ngClass]="{'orderedBy': currentSort.by == 'driver'}" style="text-align:center;width:100px;">
+					Driver
+					<i class="fas fa-sort-alpha-down" *ngIf="currentSort.by != 'driver' || currentSort.dir != '-'" (click)="sort('driver', '-')"></i>
+					<i class="fas fa-sort-alpha-up" *ngIf="currentSort.by == 'driver' && currentSort.dir == '-'" (click)="sort('driver', '+')"></i>
+				</th>
+				<th style="width:76px;">
+					Status
+				</th>
+				<th [ngClass]="{'orderedBy': currentSort.by == 'added'}" style="width:125px;">
+					Added By
+					<i class="fas fa-sort-alpha-down" *ngIf="currentSort.by != 'added' || currentSort.dir != '-'" (click)="sort('added', '-')"></i>
+					<i class="fas fa-sort-alpha-up" *ngIf="currentSort.by == 'added' && currentSort.dir == '-'" (click)="sort('added', '+')"></i>
+				</th>
+				<th style="text-align:center;width:160px;">
+					Actions
+				</th>
 			</tr>
 		</thead>
 		<tbody>

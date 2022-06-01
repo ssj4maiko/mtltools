@@ -15,9 +15,9 @@ export class ListComponent implements OnInit {
   idNovel: number = null;
 
   constructor(
-      private router: Router
-    , private route: ActivatedRoute
-    , private api: ApiService
+      protected router: Router
+    , protected route: ActivatedRoute
+    , protected api: ApiService
     ) { }
 
   ngOnInit() {

@@ -1,4 +1,12 @@
 .table {
+	.orderedBy {
+		color:white;
+		background-color: rgba($color: #fff, $alpha: 0.3);
+	}
+	th .fas {
+		display:block;
+		float:right;
+	}
 	& tr {
 		td:nth-child(5),
 		td:nth-child(6),

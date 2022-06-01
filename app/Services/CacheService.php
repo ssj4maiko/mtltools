@@ -12,7 +12,7 @@ class CacheService
 		$cache = new CacheDictionary($idDictionary);
 		return response($cache->get())->header('Content-Type', 'application/json');
 	}
-	public function createDictionary($idDictionary)
+	public function createDictionary($idDictionary): Response
 	{
 		$cache = new CacheDictionary($idDictionary, true);
 		$filepath = $cache->create();

@@ -13,7 +13,7 @@ export class ListComponent implements OnInit {
   novels: Novel[] = [];
 
   constructor(
-      private api: ApiService,
+      protected api: ApiService,
       // private cacheService: CacheService
   ) {}
 
@@ -27,9 +27,57 @@ export class ListComponent implements OnInit {
       .then((novels) => {
         // this.novels = [novels];
         this.novels = Object.values(novels);
+        this.sort(this.currentSort.by, this.currentSort.dir);
       }, (error) => {
         console.log(error);
       });
+  }
+  sortingAlg = {
+    idAsc: (a: Novel, b: Novel) => {
+      return a.id > b.id;
+    },
+    nameAsc: (a: Novel, b: Novel) => {
+      return a.nameCustom > b.nameCustom;
+    },
+    nameJPAsc: (a: Novel, b: Novel) => {
+      return a.nameOriginal > b.nameOriginal;
+    },
+    chaptersAsc: (a: Novel, b: Novel) => {
+      return a.numberChapters > b.numberChapters;
+    },
+    driverAsc: (a: Novel, b: Novel) => {
+      return a.driver > b.driver;
+    },
+    addedAsc: (a: Novel, b: Novel) => {
+      return a.addedBy > b.addedBy;
+    },
+    idDesc: (a: Novel, b: Novel) => {
+      return a.id < b.id;
+    },
+    nameDesc: (a: Novel, b: Novel) => {
+      return a.nameCustom < b.nameCustom;
+    },
+    nameJPDesc: (a: Novel, b: Novel) => {
+      return a.nameOriginal < b.nameOriginal;
+    },
+    chaptersDesc: (a: Novel, b: Novel) => {
+      return a.numberChapters < b.numberChapters;
+    },
+    driverDesc: (a: Novel, b: Novel) => {
+      return a.driver < b.driver;
+    },
+    addedDesc: (a: Novel, b: Novel) => {
+      return a.addedBy < b.addedBy;
+    },
+  }
+  currentSort = {
+    by: 'id',
+    dir: '+'
+  }
+  sort(sortAlg: string, dir: string) {
+    this.currentSort.by = sortAlg;
+    this.currentSort.dir = dir;
+    this.novels.sort(this.sortingAlg[this.currentSort.by + (dir == '+' ? 'Asc' : 'Desc')]);
   }
 
   updating:boolean[] = [];

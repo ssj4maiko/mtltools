@@ -27,6 +27,42 @@ export class ListComponent implements OnInit {
     , private api: ApiService
     ) { }
 
+  sortingAlg = {
+    numberAsc: (a: Chapter, b: Chapter) => {
+      return a.no > b.no;
+    },
+    titleAsc: (a: Chapter, b: Chapter) => {
+      return a.title > b.title;
+    },
+    createdAsc: (a: Chapter, b: Chapter) => {
+      return a.dateCreated > b.dateCreated;
+    },
+    updatedAsc: (a: Chapter, b: Chapter) => {
+      return (a.dateRevision ?? a.dateCreated) > (b.dateRevision ?? b.dateCreated);
+    },
+    numberDesc: (a: Chapter, b: Chapter) => {
+      return a.no < b.no;
+    },
+    titleDesc: (a: Chapter, b: Chapter) => {
+      return a.title < b.title;
+    },
+    createdDesc: (a: Chapter, b: Chapter) => {
+      return a.dateCreated < b.dateCreated;
+    },
+    updatedDesc: (a: Chapter, b: Chapter) => {
+      return (a.dateRevision ?? a.dateCreated) < (b.dateRevision ?? b.dateCreated);
+    },
+  }
+  currentSort = {
+    by: 'number',
+    dir: '-'
+  }
+  sort(sortAlg:string, dir:string) {
+    this.currentSort.by = sortAlg;
+    this.currentSort.dir = dir;
+    this.chapters.sort(this.sortingAlg[this.currentSort.by + (dir == '+' ? 'Asc' : 'Desc' ) ] );
+  }
+
   ngOnInit() {
     this.idNovel = this.route.snapshot.params.idNovel;
     this.api.Novel.get({id: this.idNovel})
@@ -38,27 +74,43 @@ export class ListComponent implements OnInit {
                             this.api.Chapter.getAll({idNovel: this.idNovel})
                                             .then(chapters => {
                                               this.chapters = Object.values(chapters);
+                                              this.sort(this.currentSort.by, this.currentSort.dir);
                                             });
                           });
                 });
   }
-
-  updateChapter(noChapter: number) {
+  disableupdate:number = 0;
+  async updateChapter(noChapter: number) {
     this.updating[noChapter] = true;
-    this.api.Chapter.chapterAutoUpdate({ idNovel:this.idNovel, no: noChapter })
+    this.disableupdate++;
+    return this.api.Chapter.chapterAutoUpdate({ idNovel:this.idNovel, no: noChapter })
       .then(res => {
         console.log('Chapter updated', res);
+        --this.disableupdate;
         /**
          * Auto update on the list too
          */
         this.api.Chapter.getAll({ idNovel: this.idNovel })
           .then(chapters => {
             this.chapters = Object.values(chapters);
+            this.sort(this.currentSort.by, this.currentSort.dir);
           });
         delete this.updating[noChapter];
       }, err => {
         console.log(err);
       });
+  }
+  async updateAllChapters(){
+    if(this.disableupdate == 0){
+      for(let i=0; i<this.chapters.length; ++i){
+        await (new Promise((resolve) => {
+          this.updateChapter(this.chapters[i].no)
+              .then(() => {
+                resolve(true);
+              });
+        }))
+      }
+    }
   }
   openGT(chapter: Chapter, dictionary: Dictionary) {
       let url = `${environment.backendServer}/static/${this.idNovel}/${dictionary.id}/${chapter.no}/1`;
@@ -67,14 +119,17 @@ export class ListComponent implements OnInit {
   }
 
   updateChapters() {
+    this.disableupdate++;
     this.api.Chapter.autoUpdate({ idNovel : this.idNovel })
       .then(res => {
         /**
          * Update the list too
          */
+        --this.disableupdate;
         this.api.Chapter.getAll({ idNovel: this.idNovel })
                       .then(chapters => {
                         this.chapters = Object.values(chapters);
+                        this.sort(this.currentSort.by, this.currentSort.dir);
                       });
       }, err => {
         console.log(err);

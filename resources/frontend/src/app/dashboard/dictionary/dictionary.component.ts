@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { ListComponent } from 'src/app/dictionary/list/list.component';
 import { ApiService } from '../../api';
 
 import { Dictionary } from '../../_models/dictionary';
@@ -9,30 +10,17 @@ import { Novel } from '../../_models/novel';
 @Component({
   selector: 'app-dashboard-dictionary',
   templateUrl: './dictionary.component.html',
-  styleUrls: ['./dictionary.component.scss']
+  styleUrls: ['../../dictionary/list/list.component.scss']
 })
-export class DictionaryComponent implements OnInit {
+export class DictionaryComponent extends ListComponent {
 
   dictionaries: Dictionary[] = [];
 
   constructor(
-      private router: Router
-    , private route: ActivatedRoute
-    , private api: ApiService
-  ) { }
-
-  ngOnInit() {
-    this.dictionaryList();
+      router: Router
+    , route: ActivatedRoute
+    , api: ApiService
+  ) {
+    super(router,route,api);
   }
-  private dictionaryList() {
-    this.api.Dictionary.getAll()
-      .then(dictionaries => {
-        if (dictionaries) {
-          this.dictionaries = Object.values(dictionaries);
-        }
-      }, err => {
-        console.log(err);
-      });
-  }
-
 }

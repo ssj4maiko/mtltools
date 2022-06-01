@@ -2,10 +2,18 @@
 	<table class='table is-striped is-hoverable is-fullwidth'>
 		<thead>
 			<tr>
-				<th>Name</th>
-				<th>Chapters</th>
-				<th width="60px">Status</th>
-				<th width="60px">Actions</th>
+				<th [ngClass]="{'orderedBy': currentSort.by == 'name'}">
+					Name
+					<i class="fas fa-sort-alpha-down" *ngIf="currentSort.by != 'name' || currentSort.dir != '-'" (click)="sort('name', '-')"></i>
+					<i class="fas fa-sort-alpha-up" *ngIf="currentSort.by == 'name' && currentSort.dir == '-'" (click)="sort('name', '+')"></i>
+				</th>
+				<th [ngClass]="{'orderedBy': currentSort.by == 'chapters'}" style="width:120px;">
+					Chapters
+					<i class="fas fa-sort-numeric-down" *ngIf="currentSort.by != 'chapters' || currentSort.dir != '-'" (click)="sort('chapters', '-')"></i>
+					<i class="fas fa-sort-numeric-up" *ngIf="currentSort.by == 'chapters' && currentSort.dir == '-'" (click)="sort('chapters', '+')"></i>
+				</th>
+				<th style="width:75px">Status</th>
+				<th style="width:75px">Actions</th>
 			</tr>
 		</thead>
 		<tbody>
