@@ -2,11 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Services\CacheService;
-
-use App\Models\CacheChapters;
-use App\Models\CacheDictionary;
 
 class CacheController extends Controller
 {

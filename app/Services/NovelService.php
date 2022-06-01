@@ -1,17 +1,22 @@
 <?php
 namespace App\Services;
 
-use App\Models\CacheChapters;
-use App\Models\CacheDictionary;
 use App\Models\Novel;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 use Illuminate\Support\Facades\DB;
 
 class NovelService
 {
-	public function getAll($search = [])
-	{
+	/**
+	 * Get All Novels. Optional Search parameters
+	 *
+	 * @param [search:string] $search
+	 * @return Collection<Novel>
+	 * 
+	 */
+	public function getAll($search = []){
 		if(empty($search)){
 			$novel = Novel::all();
 		} else {
@@ -21,7 +26,7 @@ class NovelService
 		}
 		return $novel;
 	}
-	public function get(int $id)
+	public function get(int $id):Novel
 	{
 		return Novel::with('dictionary', 'dictionary.countCategories')->find($id);
 	}
@@ -31,7 +36,7 @@ class NovelService
 			$query->where('idDictionary', $idDictionary);
 		})->get();
 	}
-	public function insert($data)
+	public function insert($data): Novel
 	{
 		$data['novel'] = Novel::prepare($data['novel']);
 		/** @var Novel $novel */
@@ -42,7 +47,7 @@ class NovelService
 
 		return $novel->load('dictionary');
 	}
-	public function update($data, $id)
+	public function update($data, $id): Novel
 	{
 		/** @var Novel $novel */
 		$novel = Novel::findOrFail($id);
@@ -53,7 +58,7 @@ class NovelService
 		}
 		return $novel->load('dictionary');
 	}
-	public function delete($id)
+	public function delete($id): bool
 	{
 		$novel = Novel::find($id);
 		$novel->dictionary()->detach();

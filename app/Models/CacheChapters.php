@@ -23,15 +23,15 @@ class CacheChapters extends Model
         $this->URLGenerator = app(UrlGenerator::class);
         $this->forceCache = $forceCache;
     }
-    public function setIdNovel(int $idNovel)
+    public function setIdNovel(int $idNovel):void
     {
         $this->idNovel = $idNovel;
     }
-    public function setNoChapter(int $noChapter)
+    public function setNoChapter(int $noChapter): void
     {
         $this->noChapter = $noChapter;
     }
-    public function setIdDictionary(int $idDictionary)
+    public function setIdDictionary(int $idDictionary): void
     {
         $this->idDictionary = $idDictionary;
     }
@@ -39,21 +39,27 @@ class CacheChapters extends Model
     private const CACHEFOLDER = 'public/chapters/';
     private const AVERAGE_CHAR_COUNT = 25000;
     private $forceCache = false;
-    public function Lock(string $key)
+    public function Lock(string $key):bool
     {
         return Storage::put(self::CACHEFOLDER . '/lock/' . $key . '.lock', 1);
     }
-    public function checkLock(string $key)
+    public function checkLock(string $key): bool
     {
         return false;
         return Storage::exists(self::CACHEFOLDER . '/lock/' . $key . '.lock');
     }
-    public function Unlock(string $key)
+    public function Unlock(string $key): bool
     {
         return Storage::delete(self::CACHEFOLDER . '/lock/' . $key . '.lock');
     }
-
-    public function get(int $part)
+    /**
+     * Returns the cache page or creates it on the fly.
+     * Because Novel, Chapter and Dictionary are set on construction, we just have to pass the part if it's divided, otherwise, always 1
+     *
+     * @param integer $part
+     * @return [view:string,status:bool]
+     */
+    public function get(int $part = 1):array
     {
         if($this->idNovel === 0) {
             throw new \Exception("There is no novel, you are doing something wrong.", 404);
@@ -73,7 +79,17 @@ class CacheChapters extends Model
             ];
         }
     }
-    private function UrlCreator(Novel $novel, int $noChapter, int $part, int $total, string $direction = '=')
+    /**
+     * Returns the String for the static URL relative to the values inserted
+     *
+     * @param Novel $novel
+     * @param integer $noChapter
+     * @param integer $part
+     * @param integer $total
+     * @param string $direction = '-'|'+'|'='
+     * @return string
+     */
+    private function UrlCreator(Novel $novel, int $noChapter, int $part, int $total, string $direction = '='):string
     {
         // URL::current();
         switch ($direction) {
@@ -96,7 +112,12 @@ class CacheChapters extends Model
         $array = [$novel->id, $this->idDictionary, $noChapter, $part + 1];
         return $this->URLGenerator->to('/static/' . implode('/', $array));
     }
-    public function create()
+    /**
+     * Creation of the cache
+     *
+     * @return [view:string,status:bool]
+     */
+    public function create():array
     {
         if ($this->idNovel === 0) {
             throw new \Throwable("There is no novel, you are doing something wrong.", 404);
@@ -190,6 +211,12 @@ class CacheChapters extends Model
             'status' => $status
         ];
     }
+    /**
+     * Delete all caches related to Dictionary, or related to chapter number (A reminder that some chapters used to have multiple parts)
+     *
+     * @param boolean $noChapter
+     * @return void
+     */
     public function del($noChapter = false)
     {
         if (!$noChapter) {

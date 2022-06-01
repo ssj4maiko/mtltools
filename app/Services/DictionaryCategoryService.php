@@ -1,16 +1,12 @@
 <?php
 namespace App\Services;
 
-use App\Models\CacheChapters;
-use App\Models\CacheDictionary;
 use App\Models\DictionaryCategory;
-
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Collection;
 
 class DictionaryCategoryService
 {
-	public function getAll($idDictionary, $idCategories = [])
-	{
+	public function getAll($idDictionary, $idCategories = []): Collection {
 		$cats = DictionaryCategory::where(['idDictionary' => $idDictionary])
 			->with('countEntries');
 		if(!empty($idCategories)){
@@ -18,28 +14,25 @@ class DictionaryCategoryService
 		}
 		return $cats->get();
 	}
-	public function get($idDictionary, $id)
-	{
+	public function get($idDictionary, $id): DictionaryCategory {
 		return DictionaryCategory::where(['idDictionary' => $idDictionary, 'id' => $id])
 			->with('countEntries')
 			->limit(1)
 			->first();
 	}
-	public function insert($data, $idDictionary){
+	public function insert($data, $idDictionary): DictionaryCategory {
 		$data['idDictionary'] = $idDictionary;
 		$category = DictionaryCategory::create($data);
 		return $category->load('countEntries');
 	}
-	public function update($data, $idDictionary, $id)
-	{
+	public function update($data, $idDictionary, $id): DictionaryCategory {
 		$category = DictionaryCategory::findOrFail($id);
 		$data = DictionaryCategory::prepare($data);
 		$category->update($data);
 
 		return $category->load('countEntries');
 	}
-	public function delete($idDictionary, $id = null)
-	{
+	public function delete($idDictionary, $id = null): bool {
 		$cats = DictionaryCategory::where(['idDictionary' => $idDictionary]);
 		if($id){
 			$cats->where('id',$id);

@@ -6,11 +6,11 @@ use App\Models\Novel;
 
 class MetaService
 {
-	public function drivers()
+	public function drivers():array
 	{
 		return Novel::getDrivers();
 	}
-	public function languages() {
+	public function languages():array {
 		return [
 			'english'	=>	'English'
 		];

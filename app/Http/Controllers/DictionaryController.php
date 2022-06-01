@@ -4,18 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Models\Novel;
 use App\Models\Dictionary;
-use App\Models\DictionaryEntry;
 use App\Services\DictionaryService;
 use App\Services\MassDictionaryService;
-use App\Http\Controllers\DictionaryCategoryController;
-use App\Http\Controllers\DictionaryEntryController;
-use App\Http\Controllers\ChapterController;
-
-use Illuminate\Contracts\Routing\UrlGenerator;
-
-use Illuminate\Support\Facades\Storage;
+use App\Transformers\DictionaryTransformer;
+use League\Fractal\Serializer\ArraySerializer;
 
 class DictionaryController extends Controller
 {
@@ -25,21 +18,41 @@ class DictionaryController extends Controller
         $this->dictionaryService = $dictionaryService;
         $this->MassDictionaryService = $MassDictionaryService;
     }
+
+
+    private function returnSingle(Dictionary $item)
+    {
+        return \fractal($item, new DictionaryTransformer());
+    }
+    private function returnMultiple($items)
+    {
+        return \fractal()
+        ->collection($items, new DictionaryTransformer())
+        ->serializeWith(new ArraySerializer)
+        ->toArray()['data'];
+    }
+
+
 	public function getAll(){
-        return $this->dictionaryService->getAll();
+        $dictionary = $this->dictionaryService->getAll();
+        return $this->returnMultiple($dictionary);
 	}
 	public function get($id){
-        return $this->dictionaryService->get($id);
+        $dictionary = $this->dictionaryService->get($id);
+        return $this->returnSingle($dictionary);
     }
     public function getByNovel($idNovel){
-        return $this->dictionaryService->getByNovel($idNovel);
+        $dictionary = $this->dictionaryService->getByNovel($idNovel);
+        return $this->returnMultiple($dictionary);
     }
 	public function insert(Request $request) {
-        return $this->dictionaryService->insert($request->json()->all());
+        $dictionary = $this->dictionaryService->insert($request->json()->all());
+        return $this->returnSingle($dictionary);
 	}
 	public function update(Request $request, $id)
     {
-        return $this->dictionaryService->update($request->json()->all(),$id);
+        $dictionary = $this->dictionaryService->update($request->json()->all(),$id);
+        return $this->returnSingle($dictionary);
 	}
 	public function delete($id)
     {

@@ -3,14 +3,11 @@ namespace App\Services;
 
 use App\Models\CacheChapters;
 use App\Models\CacheDictionary;
-use App\Models\Dictionary;
-
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Response;
 
 class CacheService
 {
-	public function getDictionary($idDictionary)
+	public function getDictionary($idDictionary):Response
 	{
 		$cache = new CacheDictionary($idDictionary);
 		return response($cache->get())->header('Content-Type', 'application/json');

@@ -1,18 +1,13 @@
 <?php
 namespace App\Services;
 
-use App\Models\CacheChapters;
-use App\Models\CacheDictionary;
-use App\Models\DictionaryCategory;
-use App\Models\DictionaryEntry;
 use App\Models\Dictionary;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Collection;
 
 class DictionaryService
 {
-	public function getAll($search = [])
-	{
+	public function getAll($search = []):Collection {
 		$dicts = Dictionary::with(['countCategories']);
 		if (empty($search)) {
 			$result = $dicts->get();
@@ -22,17 +17,17 @@ class DictionaryService
 		}
 		return $result;
 	}
-	public function get($id){
+	public function get($id):Dictionary {
 		return Dictionary::with('novel', 'countCategories')->find($id);
 	}
-	public function getByNovel($idNovel){
+	public function getByNovel($idNovel):Collection {
 		return Dictionary::whereHas('novel',function(Builder $query) use ($idNovel){
 			$query->where('idNovel', $idNovel);
 		})
 		->with('countCategories')
 		->get();
 	}
-	public function insert($data){
+	public function insert($data):Dictionary {
 		$Dictionary = Dictionary::create($data['dictionary']);
 		if (isset($data['novels'])) {
 			$Dictionary->setNovels($data['novels']);
@@ -45,8 +40,7 @@ class DictionaryService
 
 		return $Dictionary->load('novel','countCategories');
 	}
-	public function update($data, $id)
-	{
+	public function update($data, $id): Dictionary {
 		$Dictionary = Dictionary::findOrFail($id);
 		$data['dictionary'] = Dictionary::prepare($data['dictionary']);
 		$Dictionary->update($data['dictionary']);
@@ -55,8 +49,7 @@ class DictionaryService
 		}
 		return $Dictionary->load('novel','countCategories');
 	}
-	public function delete($id)
-	{
+	public function delete($id): bool {
 		$dict = Dictionary::find($id);
 		/** @var DictionaryCategoryService $DictionaryCategoryService */
 		$DictionaryCategoryService = app(DictionaryCategoryService::class);

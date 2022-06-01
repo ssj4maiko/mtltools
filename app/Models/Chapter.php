@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Drivers\DriverInterface;
 use Dotenv\Parser\Entry;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -31,8 +32,10 @@ class Chapter extends Model
 		,'dateOriginalPost'
 		,'dateOriginalRevision'
 	];
+    public function novel(){
+        return $this->hasOne(Novel::class, 'id', 'idNovel');
+    }
 	public static function prepare($data){
-
 		return $data;
     }
     public function translateText($text, $dictionary):string{
@@ -95,5 +98,8 @@ class Chapter extends Model
 
         return $query;
     }
-    
+    public function getUrlSource(DriverInterface $driver){
+        $driver->setChapter($this);
+        return $driver->prepareUrl();
+    }
 }

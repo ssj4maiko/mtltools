@@ -4,9 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Models\Novel;
-use App\Models\Dictionary;
-use App\Models\DictionaryCategory;
 use App\Services\DictionaryCategoryService;
 
 class DictionaryCategoryController extends Controller

@@ -9,15 +9,15 @@ use GuzzleHttp\Client;
 
 class Kakuyomu extends Model implements DriverInterface
 {
-	private $url = ['https://kakuyomu.jp/works/{{code}}','/episodes/{{chapter}}'];
+	private static $url = ['https://kakuyomu.jp/works/{{code}}','/episodes/{{chapter}}'];
 	private $currentCode = null;
 	private $currentChapter = '';
 	private $R18 = false;
 	private $pointer = 'noCode';
 	public function prepareUrl($update_information = false) : string{
-		$link = str_replace('{{code}}', $this->currentCode, $this->url[0]);
+		$link = str_replace('{{code}}', $this->currentCode, self::$url[0]);
 		if($this->currentChapter){
-			$link .= str_replace('{{chapter}}', $this->currentChapter, $this->url[1]);
+			$link .= str_replace('{{chapter}}', $this->currentChapter, self::$url[1]);
 			if($update_information) {
 				$link .= '/episode_sidebar';
 			}
@@ -25,21 +25,35 @@ class Kakuyomu extends Model implements DriverInterface
 		return $link;
 	}
 
+	public static function getSourceUrl($code, $R18 = false, $no = ''): string
+	{
+		$link = str_replace('{{code}}', $code, self::$url[0]);
+		if ($no) {
+			$link .= str_replace('{{chapter}}', $no, self::$url[1]);
+		}
+		return $link;
+	}
+
 	public function __construct($code, $R18, $chapter = ''){
 		$this->setCode($code);
-		$this->setChapter($chapter);
+		$this->currentChapter = $chapter;
 		$this->setR18($R18);
 	}
 
 	public function setCode($code):void {
 		$this->currentCode = $code;
 	}
-	public function setChapter($chapter):void {
-		$this->currentChapter = $chapter;
+	public function setChapter(?Chapter $chapter):void
+	{
+		if ($chapter)
+			$this->currentChapter = $chapter->noCode;
+		else
+			$this->currentChapter = '';
 	}
 	public function setR18($R18):void {
 		$this->R18 = $R18;
 	}
+	
 
 	private function getSidebar(){
 		$extra = [];
@@ -114,7 +128,7 @@ class Kakuyomu extends Model implements DriverInterface
 	}
 	public function getUpdateMeta(Chapter $chapter) : array
 	{
-		$this->setChapter($chapter->noCode);
+		$this->setChapter($chapter);
 
         if (!isset($this->chapterMetadata[$this->currentChapter])) {
             $sidebar = $this->getSidebar();

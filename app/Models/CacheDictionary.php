@@ -19,8 +19,12 @@ class CacheDictionary extends Model
     private const CACHEFOLDER = 'public/cache/';
     private $forceCache = false;
 
-    public function create()
-    {
+    /**
+     * Creates Cache of Dictionary. Returns the URL of the cache file for direct access
+     *
+     * @return string
+     */
+    public function create():string {
         $dictionary = Dictionary::find($this->idDictionary);
         if ($dictionary) {
             $files = Storage::files(self::CACHEFOLDER);
@@ -52,7 +56,12 @@ class CacheDictionary extends Model
         throw new \Throwable("No Dictionary found", 1);
     }
 
-    public function get()
+    /**
+     * Returns the content string of the cached Dictionary. Creates if doesn't exist
+     *
+     * @return string
+     */
+    public function get():string
     {
         $cacheName = self::CACHEFOLDER . $this->idDictionary . '.json';
         if (Storage::exists($cacheName)) {
@@ -63,11 +72,16 @@ class CacheDictionary extends Model
             return Storage::get($cacheName);
         }
     }
-    public function del()
+    /**
+     * Cleans a cache for an specific dicitonary, and all related cached chapters too
+     *
+     * @return bool
+     */
+    public function del():bool
     {
         $cacheName = self::CACHEFOLDER . $this->idDictionary . '.json';
         $CacheChapters = new CacheChapters($this->idDictionary);
-        $CacheChapters->del($this->idDictionary);
+        $CacheChapters->del();
         return Storage::delete($cacheName);
     }
 }

@@ -35,17 +35,36 @@ class Novel extends Model
 		'kakuyomu'		=>	'Kakuyomu / カクヨム',
 		//'alphapolis'	=>	'Alphapolis / アルファポリス',
 	];
-	public static function getDrivers(){
+	public static function getDrivers():array{
 		return self::$drivers;
 	}
-	public function startDriver($no = 0) : DriverInterface{
-		switch($this->driver){
-			case 'syosetu':
-				return new Syosetu($this->code, $this->flagR18, $no);
-			case 'kakuyomu':
-				return new Kakuyomu($this->code, $this->flagR18, $no);
+	private ?DriverInterface $DRIVER = null;
+	public function startDriver($no = 0) : ?DriverInterface {
+        if (!$this->DRIVER) {
+            switch ($this->driver) {
+				case 'syosetu':
+					$this->DRIVER = new Syosetu($this->code, $this->flagR18, $no);
+					break;
+				case 'kakuyomu':
+					$this->DRIVER = new Kakuyomu($this->code, $this->flagR18, $no);
+					break;
+			}
+        }
+		return $this->DRIVER;
+	}
+	public function getUrlSource(): string
+	{
+		if (!$this->DRIVER) {
+			switch ($this->driver) {
+				case 'syosetu':
+					return Syosetu::getSourceUrl($this->code, $this->flagR18);
+					break;
+				case 'kakuyomu':
+					return Kakuyomu::getSourceUrl($this->code, $this->flagR18);
+					break;
+			}
 		}
-		return null;
+		return '';
 	}
 
 	public static function prepare($data){

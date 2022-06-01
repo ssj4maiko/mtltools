@@ -4,14 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Models\Novel;
-use App\Models\Dictionary;
-use App\Models\DictionaryCategory;
-use App\Models\DictionaryEntry;
-use App\Http\Controllers\DictionaryController;
-
-use Illuminate\Contracts\Routing\UrlGenerator;
-
 use App\Services\DictionaryEntryService;
 use App\Services\MassDictionaryService;
 use App\Services\DictionaryCategoryService;

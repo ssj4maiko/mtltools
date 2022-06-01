@@ -1,7 +1,6 @@
 <?php
 namespace App\Services;
 
-use App\Models\CacheChapters;
 use App\Models\CacheDictionary;
 use App\Models\DictionaryCategory;
 use App\Models\DictionaryEntry;

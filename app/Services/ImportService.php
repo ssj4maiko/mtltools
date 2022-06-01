@@ -1,37 +1,53 @@
 <?php
 namespace App\Services;
 
-use App\Models\CacheChapters;
-use App\Models\CacheDictionary;
 use App\Models\Chapter;
 use App\Models\Novel;
+use App\Drivers\DriverInterface;
 
-use Illuminate\Support\Facades\DB;
-use App\Drivers\Syosetu;
-
+/**
+ * This service only exists for online novels, not when importing from files.
+ */
 class ImportService
 {
 	private ?NovelService $novelService = null;
-	// This function only exists for online novels, not when importing from files.
-	private function loadServiceNovel(){
+	private function loadServiceNovel():void {
 		if(!$this->novelService){
 			$this->novelService = app(NovelService::class);
 		}
 	}
 	private ?ChapterService $chapterService = null;
-	private function loadServiceChapter(){
+	private function loadServiceChapter(): void {
 		if(!$this->chapterService){
 			$this->chapterService = app(ChapterService::class);
 		}
 	}
-	private function getNovel($idNovel){
+	/**
+	 * Gets Novel from DB
+	 *
+	 * @param int $idNovel
+	 * @return Novel
+	 */
+	private function getNovel(int $idNovel):Novel {
 		$this->loadServiceNovel();
 		return $this->novelService->get($idNovel);
 	}
-	private function getChapter($idNovel, $no){
+	/**
+	 * Gets Chapter from DB
+	 *
+	 * @param integer $idNovel
+	 * @param integer $no
+	 * @return Chapter
+	 */
+	private function getChapter(int $idNovel, int $no):Chapter {
 		$this->loadServiceChapter();
 		return $this->chapterService->get($idNovel, $no);
 	}
+	/**
+	 * The intention was to import the next Chapter dynamically. It didn't work as expected, and I have found no use for it since then
+	 *
+	 * @param integer $idNovel
+	 */
 	public function importNext(int $idNovel): void
 	{
 		/** @var Novel $novel */
@@ -39,7 +55,7 @@ class ImportService
 		//if (!$novel->driver) {
 		//	return null;
 		//}
-		/** @var \App\Drivers\DriverInterface $driver */
+		/** @var DriverInterface $driver */
 		//$driver = $novel->startDriver($novel->numberChapters + 1);
 		//
 		//$chapter = $driver->importChapter();
@@ -55,8 +71,15 @@ class ImportService
 		//
 		//return ['chapter' => $chapter, 'novel' => $novel];
 	}
-	private function updateDatabaseChapter(Chapter $KnownChapter, \App\Drivers\DriverInterface $driver, array $foundChapter = [])
-	{
+	/**
+	 * Update a Single Chapter. contains the logic to decide if text should be updated, and what has to be updated
+	 *
+	 * @param Chapter $KnownChapter
+	 * @param DriverInterface $driver
+	 * @param array $foundChapter
+	 * @return Chapter
+	 */
+	private function updateDatabaseChapter(Chapter $KnownChapter, DriverInterface $driver, array $foundChapter = []):Chapter {
 		$update = false;
 		$updateMeta = $driver->getUpdateMeta($KnownChapter);
 		if (isset($foundChapter['arc']) && $foundChapter['arc'] != $KnownChapter->arc) {
@@ -94,29 +117,39 @@ class ImportService
 		return $KnownChapter;
 	}
 
-
-	public function importIndex(int $idNovel)
+	/**
+	 * Gets the Index from the External Source. Nothing from Database, nor chapter text
+	 *
+	 * @param integer $idNovel
+	 * @return Array
+	 */
+	public function importIndex(int $idNovel):Array
 	{
 		/** @var Novel $novel */
 		$novel = $this->getNovel($idNovel);
 		if (!$novel->driver) {
 			return null;
 		}
-		/** @var \App\Drivers\DriverInterface $driver */
+		/** @var DriverInterface $driver */
 		$driver = $novel->startDriver();
 		$chapters = $driver->importIndex($idNovel);
 
 		return $chapters;
 	}
-
-	public function updateIndex(int $idNovel)
+	/**
+	 * Actively updates new chapters and fills them up
+	 *
+	 * @param integer $idNovel
+	 * @return Novel
+	 */
+	public function updateIndex(int $idNovel):Novel
 	{
 		/** @var Novel $novel */
 		$novel = $this->getNovel($idNovel);
 		if (!$novel->driver) {
 			return null;
 		}
-		/** @var \App\Drivers\DriverInterface $driver */
+		/** @var DriverInterface $driver */
 		$driver = $novel->startDriver();
 
 		/** @var [idNovel:int, no:int, noCode:string, arc:string|null, title:string, dateOriginalPost:string, dateOriginalRevision:string|null][] $ImportedChapters */
@@ -184,43 +217,83 @@ class ImportService
 		}
 		// Because I have been removing from the array already imported chapters, only new ones remain here
 		if(!empty($ImportedChapters)){
-			$chapters = [];
-			foreach ($ImportedChapters as $importedChapterSub) {
-				foreach($importedChapterSub as $importedChapter){
-					$tmp = [
-						'idNovel' => $importedChapter['idNovel'],
-						'no' => $importedChapter['no'],
-						'noCode' => isset($importedChapter['noCode']) ? $importedChapter['noCode'] : null,
-						'arc' => $importedChapter['arc'],
-						'title' => $importedChapter['title'],
-						'dateOriginalPost' => $importedChapter['dateOriginalPost'],
-						'dateOriginalRevision' => $importedChapter['dateOriginalRevision'],
-					];
-					$chapter = new Chapter($tmp);
-					if(!$tmp['dateOriginalRevision']){
-						// Because of Kakuyomu, makes an extra external access. Syosetsu works straight
-						$updateMeta = $driver->getUpdateMeta($chapter);
-						$tmp['dateOriginalPost'] = $updateMeta['dateOriginalPost'];
-						$tmp['dateOriginalRevision'] = $updateMeta['dateOriginalRevision'];
-					}
-					$tmp['textOriginal'] = $driver->importContent($chapter);
-
-					$chapters[] = $tmp;
-					++$numberChapters;
-				}
-			}
-			Chapter::insert($chapters);
+			$numberChapters += $this->InsertNewChapters($ImportedChapters, $driver);
 		}
-		if($numberChapters != $novel->numberChapters){
+		// Yeah, Do not update if it's just deleted content for now
+		if($numberChapters > $novel->numberChapters){
 			$novel->numberChapters = $numberChapters;
 			// Save Number of Chapters
 			$novel->save();
 		}
+		// Same condition as the insert. I want to save the number of chapters before starting this.
+		if(!empty($ImportedChapters)){
+			$this->UpdateAllChaptersWithNoText($novel->id, $driver);
+		}
 
 		return $novel;
 	}
+	/**
+	 * Inserts an Array of Arrays (The type that is returned from the Index Importer) of Chapters to the DB.
+	 * The original behavior was to add the text at the same time, but the new behavior is to add all missing Text later
+	 * 
+	 * This change of behavior is due to some hosts ending in Timeout, so I want a want to be able to "resume from where it stopped"
+	 *
+	 * @param array[array] $ImportedChapters
+	 * @param DriverInterface $driver
+	 * @return integer
+	 */
+	private function InsertNewChapters(array $ImportedChapters, DriverInterface $driver):int {
+		$numberChapters = 0;
+		$chapters = [];
+		foreach ($ImportedChapters as $importedChapterSub) {
+			foreach ($importedChapterSub as $importedChapter) {
+				$tmp = [
+					'idNovel' => $importedChapter['idNovel'],
+					'no' => $importedChapter['no'],
+					'noCode' => isset($importedChapter['noCode']) ? $importedChapter['noCode'] : null,
+					'arc' => $importedChapter['arc'],
+					'title' => $importedChapter['title'],
+					'dateOriginalPost' => $importedChapter['dateOriginalPost'],
+					'dateOriginalRevision' => $importedChapter['dateOriginalRevision'],
+				];
+				
+				/**
+				 * Once I removed adding the Content for the sake of improving speed,
+				 * because of Kakuyomu, I will also remove the date part now, because there would be conflicts later.
+				 */
 
-	public function updateChapter(int $idNovel, int $no)
+				//$chapter = new Chapter($tmp);
+				//if (!$tmp['dateOriginalRevision']) {
+				//	// Because of Kakuyomu, makes an extra external access. Syosetsu works straight
+				//	$updateMeta = $driver->getUpdateMeta($chapter);
+				//	$tmp['dateOriginalPost'] = $updateMeta['dateOriginalPost'];
+				//	$tmp['dateOriginalRevision'] = $updateMeta['dateOriginalRevision'];
+				//}
+				//$tmp['textOriginal'] = $driver->importContent($chapter);
+
+				$chapters[] = $tmp;
+				++$numberChapters;
+			}
+		}
+		Chapter::insert($chapters);
+		return $numberChapters;
+	}
+	public function UpdateAllChaptersWithNoText(int $idNovel, DriverInterface $driver):void {
+		$this->loadServiceChapter();
+		$chapters = $this->chapterService->getAllWithNoText($idNovel);
+		foreach($chapters as $chapter) {
+			if (!$chapter->dateOriginalRevision) {
+				// Because of Kakuyomu, makes an extra external access. Syosetsu works straight
+				$updateMeta = $driver->getUpdateMeta($chapter);
+				$chapter->dateOriginalPost = $updateMeta['dateOriginalPost'];
+				$chapter->dateOriginalRevision = $updateMeta['dateOriginalRevision'];
+			}
+			$chapter->textOriginal = $driver->importContent($chapter);
+			$chapter->save();
+		}
+	}
+
+	public function updateChapter(int $idNovel, int $no): Chapter
 	{
 		/** @var Novel $novel */
 		$novel = $this->getNovel($idNovel);
@@ -229,7 +302,7 @@ class ImportService
 		}
 		/** @var Chapter $chapter */
 		$chapter = $this->getChapter($idNovel, $no);
-		/** @var \App\Drivers\DriverInterface $driver */
+		/** @var DriverInterface $driver */
 		$driver = $novel->startDriver();
 		
 		$chapter = $this->updateDatabaseChapter($chapter, $driver, $driver->getUpdateMeta($chapter));

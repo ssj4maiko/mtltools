@@ -17,7 +17,7 @@ interface DriverInterface {
 	 * @param string|int $chapterNumber
 	 * @return void
 	 */
-	public function setChapter(string $chapterNumber):void;
+	public  function setChapter(?Chapter $chapter):void;
 	/**
 	 * Optional. If the driver has R18 support, it will change the URL accordingly.
 	 *
@@ -32,6 +32,14 @@ interface DriverInterface {
 	 * @return string
 	 */
 	public function prepareUrl() : string;
+	/**
+	 * Returns the base URL of the novel without creating an Object, hence it's static. Use it when you need something outside
+	 *
+	 * @param string $code
+	 * @param boolean $R18
+	 * @return string
+	 */
+	public static function getSourceUrl(string $code, bool $R18 = false, string $no = ''): string;
 	/**
 	 * Returns the insert and update Date from the Chapter, Syosetsu has them on the Index on the chapter itself, but Kakuyomu requires external connection
 	 *

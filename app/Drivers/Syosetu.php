@@ -9,7 +9,7 @@ use GuzzleHttp\Client;
 
 class Syosetu extends Model implements DriverInterface
 {
-	private $url = 'https://{{R18}}.syosetu.com/{{code}}/{{chapter}}';
+	private static $url = 'https://{{R18}}.syosetu.com/{{code}}/{{chapter}}';
 	private $currentCode = null;
 	private $currentChapter = '';
 	private $R18 = false;
@@ -17,22 +17,37 @@ class Syosetu extends Model implements DriverInterface
 	public function prepareUrl() : string{
 		return str_replace('{{R18}}', ($this->R18 ? 'novel18' : 'ncode'), 
 			str_replace('{{code}}', $this->currentCode,
-				str_replace('{{chapter}}', $this->currentChapter > 0 ? $this->currentChapter : '', $this->url)
+				str_replace('{{chapter}}', $this->currentChapter > 0 ? $this->currentChapter : '', self::$url)
+			)
+		);
+	}
+	public static function getSourceUrl($code, $R18 = false, $no = ''): string
+	{
+		return str_replace(
+			'{{R18}}',
+			($R18 ? 'novel18' : 'ncode'),
+			str_replace(
+				'{{code}}',
+				$code,
+				str_replace('{{chapter}}', $no > 0 ? $no : '', self::$url)
 			)
 		);
 	}
 
 	public function __construct($code, $R18, $chapter = ''){
 		$this->setCode($code);
-		$this->setChapter($chapter);
+		$this->currentChapter = $chapter;
 		$this->setR18($R18);
 	}
 
 	public function setCode($code):void {
 		$this->currentCode = $code;
 	}
-	public function setChapter($chapter = ''):void {
-		$this->currentChapter = $chapter;
+	public function setChapter(?Chapter $chapter):void {
+		if($chapter)
+			$this->currentChapter = $chapter->no;
+		else
+			$this->currentChapter = '';
 	}
 	public function setR18($R18):void {
 		$this->R18 = $R18;
@@ -112,9 +127,9 @@ class Syosetu extends Model implements DriverInterface
 		];
 	}
 	public function importContent(Chapter &$chapter) : string{
-		$this->setChapter($chapter->no);
+		$this->setChapter($chapter);
 		$content = $this->callUrl();
-		$this->setChapter('');
+		$this->setChapter(null);
 
 		if($content){
 			return $this->HTMLgetContent($content);
