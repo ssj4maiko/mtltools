@@ -123,18 +123,67 @@ class ImportService
 	 * @param integer $idNovel
 	 * @return Array
 	 */
-	public function importIndex(int $idNovel):Array
+	public function importIndex(Novel $novel):Array
 	{
 		/** @var Novel $novel */
-		$novel = $this->getNovel($idNovel);
 		if (!$novel->driver) {
 			return null;
 		}
 		/** @var DriverInterface $driver */
 		$driver = $novel->startDriver();
-		$chapters = $driver->importIndex($idNovel);
+		$chapters = $driver->importIndex($novel->id);
 
 		return $chapters;
+	}
+	/**
+	 * From the Imported Index, returns the array related to the chapter
+	 *
+	 * @param array $ImportedChapters
+	 * @param Chapter $KnownChapter
+	 * @param string $counter
+	 * @return array|null
+	 */
+	private function getChapterFromIndex(&$ImportedChapters, Chapter &$KnownChapter, string $counter) {
+		$foundChapter = null;
+		if (count($ImportedChapters[$counter]) == 1) {
+			$foundChapter = $ImportedChapters[$counter][0];
+			unset($ImportedChapters[$counter]);
+		}
+		// If there are more, check with no.
+		// In Syosetu, there are cases of chapters released at the same time, and as we use Creation time as the sole constant, this is to deal with that.
+		// Most of the time it will go through the above if
+		else {
+			for ($i = 0; $i < count($ImportedChapters[$counter]); ++$i) {
+				if ($ImportedChapters[$counter][$i]['no'] == $KnownChapter->no) {
+					$foundChapter = array_splice($ImportedChapters[$counter], $i, 1)[0];
+					break;
+				}
+			}
+		}
+		return $foundChapter;
+	}
+	/**
+	 * Check trough the counter if there is a chapter that may have been deleted for some reason
+	 *
+	 * @param array $ImportedChapters
+	 * @param Chapter $KnownChapter
+	 * @return array|null
+	 */
+	private function checkIfAChapterWasDeleted(&$ImportedChapters, Chapter &$KnownChapter)
+	{
+		foreach ($ImportedChapters as $idx1 => $importedChaptersSub) {
+			foreach ($importedChaptersSub as $idx2 => $importedChapter) {
+				if ($importedChapter['no'] == $KnownChapter->no) {
+					$foundChapter = $importedChapter;
+					unset($ImportedChapters[$idx1][$idx2]);
+					if (count($ImportedChapters[$idx1]) == 0) {
+						unset($ImportedChapters[$idx1]);
+					}
+					return $foundChapter;
+				}
+			}
+		}
+		return null;
 	}
 	/**
 	 * Actively updates new chapters and fills them up
@@ -182,34 +231,13 @@ class ImportService
 				/**
 				 * The chapter was deleted, and reposted, thus earning a new post date
 				 */
-				foreach($ImportedChapters as $idx1 => $importedChaptersSub){
-					foreach($importedChaptersSub as $idx2 => $importedChapter){
-						if($importedChapter['no'] == $KnownChapter->no){
-							$foundChapter = $importedChapter;
-							$pass = true;
-							unset($ImportedChapters[$idx1][$idx2]);
-							if(count($ImportedChapters[$idx1]) == 0){
-								unset($ImportedChapters[$idx1]);
-							}
-							break;
-						}
-					}
+				$foundChapter = $this->checkIfAChapterWasDeleted($ImportedChapters, $KnownChapter);
+				if($foundChapter){
+					$pass = true;
 				}
 			}
 			if($pass && !$foundChapter){
-				// If there is only one chapter at this specific time, just get it
-				if(count($ImportedChapters[$counter]) == 1){
-					$foundChapter = $ImportedChapters[$counter][0];
-					unset($ImportedChapters[$counter]);
-				}
-				// If there are more, check with no
-				else {
-					for($i=0; $i < count($ImportedChapters[$counter]); ++$i) {
-						if ($ImportedChapters[$counter][$i]['no'] == $KnownChapter->no) {
-							$foundChapter = array_splice($ImportedChapters[$counter],$i,1)[0];
-						}
-					}
-				}
+				$foundChapter = $this->getChapterFromIndex($importedChapter, $KnownChapter, $counter);
 			}
 			/** @var [idNovel:int, no:int, noCode:string, arc:string|null, title:string, dateOriginalPost:string, dateOriginalRevision:string|null] $foundChapter */
 			if ($foundChapter) {
@@ -311,8 +339,17 @@ class ImportService
 		$chapter = $this->getChapter($novel->id, $no);
 		/** @var DriverInterface $driver */
 		$driver = $novel->startDriver();
+		$pointer = $driver->getPointer();
 		
-		$chapter = $this->updateDatabaseChapter($chapter, $driver, $driver->getUpdateMeta($chapter));
+		$importedChapters = $this->importIndex($novel);
+		$foundChapter = $this->getChapterFromIndex($importedChapters, $chapter, $chapter->$pointer);
+
+		$meta = $driver->getUpdateMeta($chapter);
+		if($foundChapter){
+			$meta = array_merge($foundChapter, $meta);
+		}
+
+		$chapter = $this->updateDatabaseChapter($chapter, $driver, $meta);
 		return $chapter;
 	}
 }

@@ -55,8 +55,10 @@ class ChapterController extends Controller
      * @param integer $idNovel
      * @return void
      */
-    public function importIndex(int $idNovel){
-        return $this->importService->importIndex($idNovel);
+    public function importIndex(int $idNovel)
+    {
+        $novel = $this->importService->updateIndex($idNovel);
+        return $this->importService->importIndex($novel);
     }
     public function updateIndex(int $idNovel){
         $novel = $this->importService->updateIndex($idNovel);
