@@ -173,7 +173,7 @@ class Kakuyomu extends Model implements DriverInterface
 		}
 		return $this->arcs;
 	}
-	private function parseIndex($html, $idNovel){
+	private function parseIndex($html, $idNovel):Array{
 		$Found = true;
 		$posStart = 0;
 

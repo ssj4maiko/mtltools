@@ -23,7 +23,7 @@
 		<tbody class="clickable-table">
 			<tr *ngFor="let category of categories">
 				<td (click)="LINK(category.id);">{{ category.name }}</td>
-				<td (click)="LINK(category.id);">{{ category.count_entries[0] ? category.count_entries[0].count : "-" }}</td>
+				<td (click)="LINK(category.id);">{{ category.count_entries ? category.count_entries : "-" }}</td>
 				<td>
                     <a  (click)="LINK(category.id,'edit');" class="icon has-text-success">
                         <i class="fas fa-info-circle"></i>

@@ -10,20 +10,35 @@ use Illuminate\Support\Facades\DB;
 
 class MassDictionaryService
 {
-	
-	public function internalCategoryUpdate($idDictionary, $id, $data)
-	{
-		$category = DictionaryCategory::findOrFail($id);
-		$data = DictionaryCategory::prepare($data);
-		return $category->update($data);
-	}
-	public function internalCategoryInsert($idDictionary, $data)
+	/**
+	 * When doing a Full Save, you have to insert new Categories and getting their Id so as to use it on the entries
+	 *
+	 * @param int $idDictionary
+	 * @param int $id
+	 * @param array $data
+	 * @return int
+	 */	
+	public function internalCategoryInsert($idDictionary, $data):int
 	{
 		$data = DictionaryCategory::prepare($data);
 		$data['idDictionary'] = $idDictionary;
 		$category = DictionaryCategory::create($data);
 
 		return $category->id;
+	}
+	/**
+	 * Updating categories during Full Save.
+	 *
+	 * @param int $idDictionary
+	 * @param int $id
+	 * @param array $data
+	 * @return bool
+	 */
+	public function internalCategoryUpdate($idDictionary, $id, $data):bool
+	{
+		$category = DictionaryCategory::findOrFail($id);
+		$data = DictionaryCategory::prepare($data);
+		return $category->update($data);
 	}
 
 	private $insert = [];
@@ -57,9 +72,18 @@ class MassDictionaryService
 		}
 		return false;
 	}
-	public function prepareCategory($data, $idDictionary, $idCategory = null)
+	/**
+	 * Fills in the mass Insert, Update and Delte arrays. It works in 2 contexts: Full Save and per Category.
+	 * Per Category allows to move an entry to another category/ It retuns the same $entries. There is no real reason for that though.
+	 *
+	 * @param array $entries
+	 * @param int $idDictionary
+	 * @param int $idCategory
+	 * @return array
+	 */
+	public function prepareCategory(array $entries, $idDictionary, $idCategory = null):void
 	{
-		foreach ($data as $v) {
+		foreach ($entries as $v) {
 			// Insert cases
 			if (!isset($v['id'])) {
 				if (isset($v['entryOriginal']) || isset($v['entryTranslation'])) {
@@ -97,12 +121,19 @@ class MassDictionaryService
 				}
 			}
 		}
-
-		return $data;
 	}
-	public function updateAllEntries(array $data, $idDictionary, $idCategory)
+	/**
+	 * Mass Insert/Update/Delete of everything. And deletes Dicitonary Cache is something is done.
+	 * Returns the categories with entries affected. The value is not really used, but it is used to determine if there was any change in the first place.
+	 *
+	 * @param array $entries
+	 * @param integer $idDictionary
+	 * @param integer $idCategory
+	 * @return array
+	 */
+	public function updateAllEntries(array $entries, $idDictionary, $idCategory):array
 	{
-		$this->prepareCategory($data, $idDictionary, $idCategory);
+		$this->prepareCategory($entries, $idDictionary, $idCategory);
 		$changes = [];
 		$changes[] = $this->massInsert();
 		$changes[] = $this->massUpdate();
@@ -120,7 +151,14 @@ class MassDictionaryService
 		return array_keys($this->affectedCategories);
 	}
 	private $clearCache = false;
-	public function fullSave(array $categories, string $idDictionary){
+	/**
+	 * Saves all Categories and Entries passed. Structure is dictated by the frontend
+	 *
+	 * @param array $categories
+	 * @param string $idDictionary
+	 * @return [changes:bool, ?dateRevision:string]
+	 */
+	public function fullSave(array $categories, string $idDictionary):array{
 		foreach ($categories as $idx => $category) {
 			if (!isset($category['id'])) {
 				$this->clearCache = true;

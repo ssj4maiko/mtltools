@@ -4,55 +4,46 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Models\Dictionary;
 use App\Services\DictionaryService;
 use App\Services\MassDictionaryService;
-use App\Transformers\DictionaryTransformer;
-use League\Fractal\Serializer\ArraySerializer;
+use App\Services\TransformerService;
 
 class DictionaryController extends Controller
 {
-    private $dictionaryService = null;
-    private $MassDictionaryService = null;
-    public function __construct(DictionaryService $dictionaryService, MassDictionaryService $MassDictionaryService){
+    private TransformerService $TransformerService;
+    private DictionaryService $dictionaryService;
+    private MassDictionaryService $MassDictionaryService;
+
+    public function __construct(
+        TransformerService $TransformerService,
+        DictionaryService $dictionaryService,
+        MassDictionaryService $MassDictionaryService
+    ) {
+        $this->TransformerService = $TransformerService;
         $this->dictionaryService = $dictionaryService;
         $this->MassDictionaryService = $MassDictionaryService;
     }
 
-
-    private function returnSingle(Dictionary $item)
-    {
-        return \fractal($item, new DictionaryTransformer());
-    }
-    private function returnMultiple($items)
-    {
-        return \fractal()
-        ->collection($items, new DictionaryTransformer())
-        ->serializeWith(new ArraySerializer)
-        ->toArray()['data'];
-    }
-
-
 	public function getAll(){
         $dictionary = $this->dictionaryService->getAll();
-        return $this->returnMultiple($dictionary);
+        return $this->TransformerService->returnMultipleDictionary($dictionary);
 	}
 	public function get($id){
         $dictionary = $this->dictionaryService->get($id);
-        return $this->returnSingle($dictionary);
+        return $this->TransformerService->returnSingleDictionary($dictionary);
     }
     public function getByNovel($idNovel){
         $dictionary = $this->dictionaryService->getByNovel($idNovel);
-        return $this->returnMultiple($dictionary);
+        return $this->TransformerService->returnMultipleDictionary($dictionary);
     }
 	public function insert(Request $request) {
         $dictionary = $this->dictionaryService->insert($request->json()->all());
-        return $this->returnSingle($dictionary);
+        return $this->TransformerService->returnSingleDictionary($dictionary);
 	}
 	public function update(Request $request, $id)
     {
         $dictionary = $this->dictionaryService->update($request->json()->all(),$id);
-        return $this->returnSingle($dictionary);
+        return $this->TransformerService->returnSingleDictionary($dictionary);
 	}
 	public function delete($id)
     {

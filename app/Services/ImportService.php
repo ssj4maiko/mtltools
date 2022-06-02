@@ -301,15 +301,14 @@ class ImportService
 		}
 	}
 
-	public function updateChapter(int $idNovel, int $no): Chapter
+	public function updateChapter(Novel $novel, int $no): Chapter
 	{
 		/** @var Novel $novel */
-		$novel = $this->getNovel($idNovel);
 		if (!$novel->driver) {
 			return null;
 		}
 		/** @var Chapter $chapter */
-		$chapter = $this->getChapter($idNovel, $no);
+		$chapter = $this->getChapter($novel->id, $no);
 		/** @var DriverInterface $driver */
 		$driver = $novel->startDriver();
 		

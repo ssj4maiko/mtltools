@@ -6,11 +6,14 @@ use App\Services\CacheService;
 
 class CacheController extends Controller
 {
-    private $cacheService;
-    public function __construct(CacheService $cacheService)
-    {
+    private CacheService $cacheService;
+
+    public function __construct(
+        CacheService $cacheService
+    ) {
         $this->cacheService = $cacheService;
     }
+    
     public function getDictionary($idDictionary){
         return $this->cacheService->getDictionary($idDictionary);
     }

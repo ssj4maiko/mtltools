@@ -6,10 +6,13 @@ use App\Services\MetaService;
 
 class MetaController extends Controller
 {
-    private $metaService = null;
-    public function __construct(MetaService $MetaService){
-        $this->metaService = $MetaService;
+    private MetaService $MetaService;
+    public function __construct(
+        MetaService $MetaService
+    ) {
+        $this->MetaService = $MetaService;
     }
+
 	public function getMeta(Request $request){
         $requests = $request->json()->get('meta');
         $vessel = [];
