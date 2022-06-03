@@ -16,4 +16,13 @@ RUN if [ "$development" = "true" ]; then \
     echo "catch_workers_output = yes" >> /usr/local/etc/php-fpm.d/zz-dev.conf; \
     fi
 
+# xdebug
+RUN yes | pecl install xdebug \
+    && echo "zend_extension=xdebug.so" >> /usr/local/etc/php/conf.d/xdebug.ini \
+    && echo "xdebug.mode=debug" >> /usr/local/etc/php/conf.d/xdebug.ini \
+    && echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/xdebug.ini \
+    && echo "xdebug.client_host=host.docker.internal" >> /usr/local/etc/php/conf.d/xdebug.ini \
+    && echo "xdebug.client_port=9003" >> /usr/local/etc/php/conf.d/xdebug.ini \
+    && echo "xdebug.idekey=\"VSCODE\"" >> /usr/local/etc/php/conf.d/xdebug.ini
+
 COPY opcache.ini /etc/php-custom.d/opcache.ini
