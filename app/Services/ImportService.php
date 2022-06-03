@@ -237,7 +237,7 @@ class ImportService
 				}
 			}
 			if($pass && !$foundChapter){
-				$foundChapter = $this->getChapterFromIndex($importedChapter, $KnownChapter, $counter);
+				$foundChapter = $this->getChapterFromIndex($ImportedChapters, $KnownChapter, $counter);
 			}
 			/** @var [idNovel:int, no:int, noCode:string, arc:string|null, title:string, dateOriginalPost:string, dateOriginalRevision:string|null] $foundChapter */
 			if ($foundChapter) {
