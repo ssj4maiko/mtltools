@@ -18,7 +18,7 @@
 		</thead>
 		<tbody>
 			<ng-container *ngFor="let novel of novels" >
-				<tr title="{{ novel.nameOriginal }}" *ngIf="novel.show">
+				<tr title="{{ novel.nameOriginal }}" *ngIf="novel.show" [ngClass]="{'disabled': updating[novel.id] }">
 					<td [routerLink]="['/novel/', novel.id]">{{ novel.nameCustom }}</td>
 					<td class="noChapters">{{ novel.numberChapters }}</td>
 					<td class="status">
