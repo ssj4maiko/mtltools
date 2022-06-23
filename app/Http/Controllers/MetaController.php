@@ -18,7 +18,7 @@ class MetaController extends Controller
         $vessel = [];
         if($requests)
             foreach($requests as $request){
-                $vessel[ $request ] = $this->metaService->$request();
+                $vessel[ $request ] = $this->MetaService->$request();
             }
 		return $vessel;
 	}
