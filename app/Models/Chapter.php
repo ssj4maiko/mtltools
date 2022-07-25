@@ -98,7 +98,10 @@ class Chapter extends Model
 
         return $query;
     }
-    public function getUrlSource(DriverInterface $driver){
+    {
+        if (!$driver) {
+            return null;
+        }
         $driver->setChapter($this);
         return $driver->prepareUrl();
     }
