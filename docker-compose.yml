@@ -50,6 +50,38 @@ services:
       - "api.mtltools.docker:192.168.66.66"
       - "mtltools.docker:192.168.66.66"
 
+  db:
+    image: mariadb
+    restart: "unless-stopped"
+    networks:
+      - mtltools
+    volumes:
+      - /var/lib/mysql/
+    ports:
+      - 33061:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: dbpass
+      MARIADB_DATABASE: db
+
+  php-startup:
+    build:
+      context: ./.docker/php
+    working_dir: /var/www/api
+    user: ${CURRENT_UID}
+    env_file: .env
+    entrypoint: bash -c "composer install; php artisan migrate;"
+    depends_on:
+      - db
+    networks:
+      mtltools:
+        ipv4_address: 192.168.66.57
+    volumes:
+      - ./:/var/www/api
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "api.mtltools.docker:192.168.66.66"
+      - "mtltools.docker:192.168.66.66"
+
 
 networks:
   mtltools:

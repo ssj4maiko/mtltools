@@ -1,7 +1,7 @@
 {
-    "name": "laravel/laravel",
+    "name": "ssj4maiko/mtltools",
     "type": "project",
-    "description": "The Laravel Framework.",
+    "description": "A tool to aide in partial translations of webnovels, easing the process of Machine Translation Services, such as Google Translate.",
     "keywords": [
         "framework",
         "laravel"

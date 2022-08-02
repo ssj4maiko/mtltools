@@ -30,7 +30,7 @@
     "@ngtools/webpack": "^13.2.2",
     "core-js": "^2.6.9",
     "dotenv": "^16.0.0",
-    "ng-keyboard-shortcuts": "^13.0.6",
+    "ng-keyboard-shortcuts": "^13.0.7",
     "ng-packagr": "^13.2.1",
     "ngx-papaparse": "^5.0.0",
     "rxjs": "^6.5.2",
