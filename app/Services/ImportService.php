@@ -4,6 +4,7 @@ namespace App\Services;
 use App\Models\Chapter;
 use App\Models\Novel;
 use App\Drivers\DriverInterface;
+use Illuminate\Support\Facades\DB;
 
 /**
  * This service only exists for online novels, not when importing from files.
@@ -186,6 +187,26 @@ class ImportService
 		return null;
 	}
 	/**
+	 * Returns an array with any chapter that may appear in the middle. Empty array otherwise.
+	 * The Index is the "no" value
+	 * 
+	 * @param array $ImportedChapters
+	 * @param int $totalChapters
+	 * @return array
+	 */
+	private function detectIfChapterInsertedMidway(array $ImportedChapters, int $totalChapters): array
+	{
+		$spaces = [];
+		foreach($ImportedChapters as $creationDate => $ChapterArray){
+			foreach($ChapterArray as $Chapter){
+				if($Chapter['no'] < $totalChapters){
+					$spaces[$Chapter['no']] = $Chapter;
+				}
+			}
+		}
+		return $spaces;
+	}
+	/**
 	 * Actively updates new chapters and fills them up
 	 *
 	 * @param integer $idNovel
@@ -246,6 +267,22 @@ class ImportService
 				dd('An already known chapter was not found on the server... Weird...', $counter, $KnownChapter, $ImportedChapters);
 			}
 		}
+		$spaces = $this->detectIfChapterInsertedMidway($ImportedChapters, $novel->numberChapters);
+		
+		if(!empty($spaces)){
+			DB::beginTransaction();
+			foreach($spaces as $index => $chapter){
+				DB::table('chapters')
+				  ->where('no', '>=', $index)
+				  ->where('idNovel', $novel->id)
+				  ->orderBy('no', 'DESC')
+				  ->update(['no' => DB::raw('no + 1')]);
+			}
+
+			DB::commit();
+			$KnownChapters = $chapterService->getAll($idNovel);
+		}
+
 		// Because I have been removing from the array already imported chapters, only new ones remain here
 		$numberChapters = count($Chapters2Check4Update);
 		if(!empty($ImportedChapters)){
