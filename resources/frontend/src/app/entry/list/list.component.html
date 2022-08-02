@@ -1,7 +1,7 @@
 <!--
     This view contains: 2 modals, 2 buttom-rows and 1 list/form down below.
 -->
-<jw-modal id="import-list">
+<!--jw-modal id="import-list">
     <h1 class='h1'>Importing a file</h1>
     <p ><b>File type</b>: CSV</p>
     <p ><b>Columns</b>: "Original";"Translated";"Description"</p>
@@ -21,8 +21,8 @@
             <button (click)="closeModal('import-list');" class="button is-danger">Close</button>
         </div>
     </div>
-</jw-modal>
-<jw-modal id="confirm-import">
+</jw-modal-->
+<!--jw-modal id="confirm-import">
     <h1>Is this what you were looking for?</h1>
     <table class="table" *ngIf="tmpResult.length">
         <thead>
@@ -48,12 +48,12 @@
             <button (click)="cancelImport();" class="button is-danger">No</button>
         </div>
     </div>
-</jw-modal >
+</jw-modal-->
 
 <ng-template #actionButtons>
 	<div class="columns actionButtons">
 		<div class="column">
-			<a (click)="openModal('import-list');" class="button is-info">Import List</a>
+			<!--a (click)="openModal('import-list');" class="button is-info">Import List</a-->
 		</div>
 	</div>
 </ng-template>
@@ -69,58 +69,91 @@
 	</div>
 </ng-template>
 
-<ng-container *ngTemplateOutlet="actionButtons"></ng-container>
+<ng-container *ngTemplateOutlet="footerButtons"></ng-container>
 
 <div>
-	<form [formGroup]="entryForm" (submit)="submitForm()" id="entryForm">
-		<input type="hidden" formControlName="idCategory" />
+	<form (submit)="submitForm()" id="formGroup">
+		<input type="hidden" name="idDictionary" [(ngModel)]="idDictionary" />
+		<input type="hidden" name="idCategory" [(ngModel)]="idCategory" />
 		<table class='table is-stripede is-fullwidth'>
 			<thead>
 				<tr>
 					<th>Category</th>
 					<th>Original</th>
+					<th>Suffix</th>
 					<th>Translated</th>
+					<th>Prefix</th>
 					<th>Description</th>
-					<th>Reset</th>
-					<th>Delete</th>
+					<th>Actions</th>
 				</tr>
 			</thead>
-			<tbody class="tableContent" formArrayName="entries" >
-                <ng-container *ngFor="let entry of entryForm.get('entries')['controls']; let i = index">
-                    <tr [formGroupName]="i"
-                        [ngClass]="{
-                                'new': entry.controls.id.value == 0,
-                                'deleted': entry.controls.delete.value == true,
-                                'changed': entry.controls.update.value == true }"
+			<tbody class="tableContent">
+                <ng-container *ngFor="let entry of formEntries; let i = index">
+                    <tr [ngClass]="{
+                            'new': entry.id == null,
+                            'deleted': entry.delete == true,
+                            'changed': entry.update == true }"
                         >
                         <td>
-                            <select formControlName="idCategory">
+                            <select (change)="onChange(entry,i);"
+                                    name="formEntries[{{i}}].idCategory" 
+                                    [(ngModel)]="entry.idCategory">
                                 <option *ngFor="let category of categories" value="{{category.id}}">{{category.name}}</option>
                             </select>
                         </td>
 						<td>
-							<input formControlName="id" type="hidden" />
-                            <input formControlName="update" type="hidden" />
-							<input formControlName="entryOriginal" class="input" type="text" />
+							<input (change)="onChange(entry,i);"
+                                    name="formEntries[{{i}}].id" 
+                                    [(ngModel)]="entry.id"
+                                    type="hidden" />
+                            <input (change)="onChange(entry,i);"
+                                    name="formEntries[{{i}}].update" 
+                                    [(ngModel)]="entry.update"
+                                    type="hidden" />
+							<input (change)="onChange(entry,i);"
+                                    name="formEntries[{{i}}].entryOriginal" 
+                                    [(ngModel)]="entry.entryOriginal"
+                                    class="input" type="text" />
 						</td>
+                        <td>
+                            <select (change)="onChange(entry,i);" name="formEntries[{{i}}].sufix" [(ngModel)]="entry.sufix">
+                                <option value="null">Not a Sufix</option>
+                                <option *ngFor="let category of categories" value="{{category.id}}">{{category.name}}</option>
+                            </select>
+                        </td>
 						<td>
-							<input formControlName="entryTranslation" class="input" type="text" />
-						</td>
+							<input (change)="onChange(entry,i);"
+                                    name="formEntries[{{i}}].entryTranslation" 
+                                    [(ngModel)]="entry.entryTranslation"
+                                    class="input" type="text" />
+						</td><td>
+                            <select (change)="onChange(entry,i);" name="formEntries[{{i}}].prefix" [(ngModel)]="entry.prefix">
+                                <option value="null">Not a Prefix</option>
+                                <option *ngFor="let category of categories" value="{{category.id}}">{{category.name}}</option>
+                            </select>
+                        </td>
 						<td>
-							<textarea formControlName="description" class="textarea" rows="1"></textarea>
+							<textarea (change)="onChange(entry,i);"
+                                    name="formEntries[{{i}}].description" 
+                                    [(ngModel)]="entry.description"
+                                    class="textarea" rows="1"></textarea>
                         </td>
                         <td>
-                            <label class="icon  is-large">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                <input formControlName="reset" class='hidden' type="checkbox" />
+                            <label class="icon is-large" title="Reset Entry">
+                                <i class="fas fa-exclamation-triangle has-text-success"></i>
+                                <input (change)="onChange(entry,i);"
+                                        name="formEntries[{{i}}].reset" 
+                                        [(ngModel)]="entry.reset"
+                                        class='hidden' type="checkbox" value='1' />
+                            </label>
+                            <label class="icon is-large" title="Delete Entry">
+                                <i class="fas fa-times has-text-danger"></i>
+                                <input (change)="onChange(entry,i);"
+                                        name="formEntries[{{i}}].delete" 
+                                        [(ngModel)]="entry.delete"
+                                        class='hidden' type="checkbox" value='1' />
                             </label>
                         </td>
-						<td>
-                            <label class="icon is-large">
-                                <i class="fas fa-times"></i>
-                                <input formControlName="delete" class='hidden' type="checkbox" />
-                            </label>
-						</td>
                     </tr>
                 </ng-container>
 			</tbody>

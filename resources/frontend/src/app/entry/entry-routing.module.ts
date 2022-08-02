@@ -7,15 +7,15 @@ import { ListComponent } from './list/list.component';
 
 
 const routes: Routes = [
-	{
-		 path: ''
-		,component: ListComponent
-		,data: { title: 'List Entries' }
-	},
-	{
-		 path: '**'
-		,redirectTo: ''
-	}
+  {
+     path: ''
+    , component: ListComponent
+    , data: { title: 'List Entries' }
+  },
+  {
+     path: '**'
+    , redirectTo: ''
+  }
 ];
 
 

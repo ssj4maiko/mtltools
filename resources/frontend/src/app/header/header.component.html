@@ -1,12 +1,12 @@
 <header>
 	<img src="assets/mtl_tools.png" class='appName'  routerLink="/" />
 	<ul>
-        <li routerLink="/novel/list" routerLinkActive="router-link-active">
-            <a class='button is-primary is-inverted is-outlined'>Novel List</a>
+        <li routerLink="/dashboard" routerLinkActive="router-link-active">
+            <a>Dashboard</a>
         </li>
         <ng-container  *ngFor="let breadcrumb of breadcrumbs">
             <li [routerLink]="breadcrumb.url" routerLinkActive="router-link-active">
-                <a class='button is-primary is-inverted is-outlined'>{{ breadcrumb.label }}</a>
+                <a>/ {{ breadcrumb.label }}</a>
             </li>
         </ng-container>
 	</ul>

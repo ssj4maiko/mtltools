@@ -4,58 +4,45 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Novel;
-use App\Dictionary;
-use App\DictionaryCategory;
+use App\Services\DictionaryCategoryService;
+use App\Services\TransformerService;
 
 class DictionaryCategoryController extends Controller
 {
+	private TransformerService $TransformerService;
+	private DictionaryCategoryService $dictionaryCategoryService;
+
+	public function __construct(
+		TransformerService $TransformerService,
+		DictionaryCategoryService $dictionaryCategoryService
+	) {
+		$this->TransformerService = $TransformerService;
+		$this->dictionaryCategoryService = $dictionaryCategoryService;
+	}
+
 	public function getAll($idDictionary){
-		return DictionaryCategory::where(['idDictionary' => $idDictionary])
-                         ->with('countEntries')
-						 ->get();
+		$categories = $this->dictionaryCategoryService->getAll($idDictionary);
+		return $this->TransformerService->returnMultipleCategory($categories);
 	}
-	public function get($idDictionary,$id) {
-		return DictionaryCategory::where(['id' => $id])
-                                 ->with('countEntries')
-                                 ->first();
+	public function get($idDictionary,$id)
+	{
+		$category = $this->dictionaryCategoryService->get($idDictionary, $id);
+		return $this->TransformerService->returnSingleCategory($category);
     }
-
-	public function insert(Request $request, $idDictionary, $defaultParameters = false) {
-		if(!$defaultParameters)
-			$data = DictionaryCategory::prepare($request->json()->all());
-		else
-			$data['name'] = 'default';
-        $data['idDictionary'] = $idDictionary;
-        $category = DictionaryCategory::create($data);
-		return $this->get($idDictionary,$category->id);
+	public function insert(Request $request, $idDictionary, $defaultParameters = false)
+	{
+		$category = $this->dictionaryCategoryService->insert($request->json()->all(), $idDictionary);
+		//$categories = $this->dictionaryCategoryService->get($idDictionary, $category->id);
+		return $this->TransformerService->returnSingleCategory($category);
     }
-    public function internalInsert($idNovel, $idDictionary, $data){
-		$data = DictionaryCategory::prepare($data);
-        $data['idDictionary'] = $idDictionary;
-        $category = DictionaryCategory::create($data);
-
-        return $category->id;
-    }
-
-	public function update(Request $request, $idDictionary, $id) {
-		$category = DictionaryCategory::findOrFail($id);
-		$data = DictionaryCategory::prepare($request->json()->all());
-		$category->update($data);
-
-		return $this->get($idDictionary,$category->id);
+	public function update(Request $request, $idDictionary, $id)
+	{
+		$category = $this->dictionaryCategoryService->update($request->json()->all(),$idDictionary, $id);
+		//$categories = $this->dictionaryCategoryService->get($idDictionary, $category->id);
+		return $this->TransformerService->returnSingleCategory($category);
 	}
-
-	public function internalUpdate($idNovel, $idDictionary, $id, $data) {
-		$category = DictionaryCategory::findOrFail($id);
-		$data = DictionaryCategory::prepare($data);
-		return $category->update($data);
-	}
-	public function delete($idDictionary, $id) {
-		DictionaryCategory::where(['id' => $id])
-			   ->get()
-			   ->delete();
-
-		return 204;
+	public function delete($idDictionary, $id)
+	{
+		return $this->dictionaryCategoryService->delete($idDictionary, $id);
 	}
 }

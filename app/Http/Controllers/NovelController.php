@@ -2,38 +2,50 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\DictionaryController;
-use App\Http\Controllers\DictionaryCategoryController;
-
+use App\Services\NovelService;
+use App\Services\TransformerService;
 use Illuminate\Http\Request;
-use App\Novel;
 
 class NovelController extends Controller
 {
-	public function getAll(){
-	    return Novel::all();
-	}
-	public function get($id) {
-		return Novel::find($id);
-	}
-	public function insert(Request $request, DictionaryController $DC, DictionaryCategoryController $DCC) {
-		$data = Novel::prepare($request->json()->all());
-		$Novel = Novel::create($data);
+	private TransformerService $TransformerService;
+	private NovelService $novelService;
 
-		$DC->insert($request, $DCC, $Novel->id, true);
-
-		return $Novel;
+	public function __construct(
+		TransformerService $TransformerService, 
+		NovelService $novelService
+	) {
+		$this->TransformerService = $TransformerService;
+		$this->novelService = $novelService;
 	}
-	public function update(Request $request, $id) {
-	    $novel = Novel::findOrFail($id);
-		$data = Novel::prepare($request->json()->all());
-	    $novel->update($data);
 
-	    return $novel;
+	public function getAll(Request $request){
+	    $novels = $this->novelService->getAll($request->all());
+		return $this->TransformerService->returnMultipleNovel($novels);
 	}
-	public function delete($id) {
-	    Novel::find($id)->delete();
+	public function get(int $id)
+	{
+		$novel = $this->novelService->get($id);
+		return $this->TransformerService->returnSingleNovel($novel);
+	}
+	public function getByDictionary($idDictionary)
+	{
+		$novels = $this->novelService->getByDictionary($idDictionary);
+		return $this->TransformerService->returnMultipleNovel($novels);
+	}
 
-	    return 204;
+	public function insert(Request $request)
+	{
+		$novel = $this->novelService->insert($request->json()->all());
+		return $this->TransformerService->returnSingleNovel($novel);
+	}
+	public function update(Request $request, $id)
+	{
+		$novel = $this->novelService->update($request->json()->all(), $id);
+		return $this->TransformerService->returnSingleNovel($novel);
+	}
+	public function delete($id)
+	{
+		return $this->novelService->delete($id);
 	}
 }

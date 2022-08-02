@@ -1,3 +1,32 @@
+.table {
+	.orderedBy {
+		color:white;
+		background-color: rgba($color: #fff, $alpha: 0.3);
+	}
+	th .fas {
+		display:block;
+		float:right;
+	}
+	& tr {
+		td:nth-child(5),
+		td:nth-child(6),
+		td:nth-child(8){
+			text-align:center;
+		}
+	}
+	tr.disabled > td {
+		background-color: rgba($color: #007c10, $alpha: 0.5);
+	}
+	.fas {
+		margin:3px;
+		font-size: 20px;
+		vertical-align: super;
+		cursor:pointer;
+	}
+}
+.columns {
+	margin:5px;
+}
 .actionButtons a {
 	text-align: center;
 	width:100%;

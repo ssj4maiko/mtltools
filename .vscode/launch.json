@@ -1,35 +1,27 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
         {
-            "name": "Launch index.html",
-            "type": "firefox",
+            "name": "Xdebug for Backend Liberta",
+            "type": "php",
             "request": "launch",
-            "reAttach": true,
-            "file": "${workspaceFolder}/index.html"
+            "pathMappings": {
+                "/var/www/api": "${workspaceFolder}/",
+            },
+            "port": 9003
         },
         {
-            "name": "Launch localhost",
-            "type": "firefox",
+            "name": "WSL2 MTL Tools",
+            "type": "php",
             "request": "launch",
-            "reAttach": true,
-            "url": "http://192.168.1.9:4200/",
-            "webRoot": "${workspaceFolder}"
+            "hostname": "127.0.0.1",
+            "pathMappings": {
+                "/var/www/api": "${workspaceFolder}/",
+            },
+            "port": 9003
         },
-        {
-            "name": "Attach",
-            "type": "firefox",
-            "request": "attach"
-        },
-        {
-            "name": "Launch WebExtension",
-            "type": "firefox",
-            "request": "launch",
-            "reAttach": true,
-            "addonPath": "${workspaceFolder}"
-        }
-    ]
+	]
 }

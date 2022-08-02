@@ -2,37 +2,68 @@
 
 namespace App\Drivers;
 
-use App\Chapter;
+use App\Models\Chapter;
 
 use Illuminate\Database\Eloquent\Model;
 use GuzzleHttp\Client;
 
-class Syosetu extends Model
+class Syosetu extends Model implements DriverInterface
 {
-	private $url = 'https://ncode.syosetu.com/{{code}}/{{chapter}}';
+	private static $url = 'https://{{R18}}.syosetu.com/{{code}}/{{chapter}}';
 	private $currentCode = null;
 	private $currentChapter = '';
-	public function prepareUrl(){
-		return str_replace('{{code}}', $this->currentCode,
-				str_replace('{{chapter}}', $this->currentChapter, $this->url)
-			);
+	private $R18 = false;
+	private $pointer = 'dateOriginalPost';
+	public function prepareUrl() : string{
+		return str_replace('{{R18}}', ($this->R18 ? 'novel18' : 'ncode'), 
+			str_replace('{{code}}', $this->currentCode,
+				str_replace('{{chapter}}', $this->currentChapter > 0 ? $this->currentChapter : '', self::$url)
+			)
+		);
+	}
+	public static function getSourceUrl($code, $R18 = false, $no = ''): string
+	{
+		return str_replace(
+			'{{R18}}',
+			($R18 ? 'novel18' : 'ncode'),
+			str_replace(
+				'{{code}}',
+				$code,
+				str_replace('{{chapter}}', $no > 0 ? $no : '', self::$url)
+			)
+		);
 	}
 
-	public function __construct($code, $chapter = ''){
+	public function __construct($code, $R18, $chapter = ''){
 		$this->setCode($code);
-		$this->setChapter($chapter);
+		$this->currentChapter = $chapter;
+		$this->setR18($R18);
 	}
 
-	public function setCode($code){
+	public function setCode($code):void {
 		$this->currentCode = $code;
 	}
-	public function setChapter($chapter){
-		$this->currentChapter = $chapter;
+	public function setChapter(?Chapter $chapter):void {
+		if($chapter)
+			$this->currentChapter = $chapter->no;
+		else
+			$this->currentChapter = '';
+	}
+	public function setR18($R18):void {
+		$this->R18 = $R18;
 	}
 
 	private function callUrl(){
-		$client = new Client();
-		$response = $client->request('GET',$this->prepareUrl());
+		$extra = [];
+		if($this->R18){
+			$extra['cookies'] = \GuzzleHttp\Cookie\CookieJar::fromArray(['over18' => 'yes'], '.syosetu.com'); //
+		}
+		$clientExtras = [];
+		if(isset($extra['cookies'])){
+			$clientExtras['cookies'] = true;
+		}
+		$client = new Client($clientExtras);
+		$response = $client->request('GET',$this->prepareUrl(), $extra);
 
 		if($response->getStatusCode() == 200){
 			return $response->getBody()->getContents();
@@ -58,8 +89,9 @@ class Syosetu extends Model
 		return $this->currentTitle;
 	}
 
-	private function HTMLgetContent($html){
-		$classContent = ['novel_p','novel_honbun','menu_on','novel_a'];
+	private function HTMLgetContent($html)
+	{
+		$classContent = ['"novel_p"','"novel_honbun"','"novel_a"'];
 		$contents = [];
 		foreach($classContent as $class){
 			$posStart = strpos($html, $class);
@@ -87,10 +119,17 @@ class Syosetu extends Model
 		}
 		return null;
 	}
-	public function importContent($no){
-		$this->setChapter($no);
+	public function getUpdateMeta(Chapter $chapter): array
+	{
+		return [
+			  'dateOriginalPost'		=>	$chapter->dateOriginalPost
+			, 'dateOriginalRevision'	=>	$chapter->dateOriginalRevision
+		];
+	}
+	public function importContent(Chapter &$chapter) : string{
+		$this->setChapter($chapter);
 		$content = $this->callUrl();
-		$this->setChapter('');
+		$this->setChapter(null);
 
 		if($content){
 			return $this->HTMLgetContent($content);
@@ -98,16 +137,38 @@ class Syosetu extends Model
 		return null;
 	}
 
+	public function getPointer(): string{
+		return $this->pointer;
+	}
+	private $arcs = [];
+	private function parseArcs($html)
+	{
+		$posStart = 0;
+		while ($posStart = strpos($html, 'chapter_title', $posStart)) {
+			$posStart = strpos($html, 'chapter_title">', $posStart) + 15;
+			$posEnd = strpos($html, '</div>', $posStart);
+			$this->arcs[] = [
+				'title'	=>	substr($html, $posStart, $posEnd - $posStart), 'position'	=>	$posStart
+			];
+		}
+		return $this->arcs;
+	}
 	private function parseIndex($html, $idNovel){
 		$Found = true;
 		$posStart = 0;
 
 		$listOfChapters = [];
+		$arcs = $this->parseArcs($html);
+		$nextArc = 0;
 
 		for($index=1; $Found; ++$index){
-
 			$needle = $this->currentCode.'/'.$index;
 			$posStart = strpos($html, $needle, $posStart);
+			if (isset($arcs[$nextArc])) {
+				if ($posStart > $arcs[$nextArc]['position']) {
+					$nextArc++;
+				}
+			}
 
 			if($posStart>0){
 
@@ -132,10 +193,19 @@ class Syosetu extends Model
 					if($posStart2 > 0){
 						$dateOriginalRevision = str_replace('/', '-', substr($dates, $posStart2 + 6 + 1, 16)).':00';
 					}
+				/**
+				 * Gotta use the same pointer as configured at the top, this is because this is the only "absolute" in Syosetu.
+				 * I previously used the chapter number (no), however, if the author releases a new chapter in between old chapters, all numbers are pushed up.
+				 * Same when a chapter is deleted. As such, the original post date is the only absolute variable.
+				 * */ 
 
-				$listOfChapters[$index] = [
+				if(!isset($listOfChapters[$dateOriginalPost])){
+					$listOfChapters[$dateOriginalPost] = [];
+				}
+				$listOfChapters[$dateOriginalPost][] = [
 					'idNovel'				=>	$idNovel,
 					'no'					=>	$index,
+					'arc'					=>	isset($arcs[$nextArc - 1]) ? $arcs[$nextArc - 1]['title'] : null,
 					'title'					=>	$title,
 					'dateOriginalPost'		=>	$dateOriginalPost,
 					'dateOriginalRevision'	=>	$dateOriginalRevision,
@@ -145,7 +215,6 @@ class Syosetu extends Model
 				$Found = false;
 				break;
 			}
-
 		}
 		return $listOfChapters;
 	}

@@ -1,4 +1,5 @@
 export interface IBreadCrumb {
-    label: string;
-    url: string;
+  label: string;
+  url: string;
+  type?: string;
 }

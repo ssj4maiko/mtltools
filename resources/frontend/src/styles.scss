@@ -25,3 +25,39 @@ jw-modal#confirm-import .jw-modal .jw-modal-body {
 .clickable-table tr td{
     cursor:pointer;
 }
+
+@import "../node_modules/bulma/bulma";
+@import "../node_modules/bulma/sass/utilities/initial-variables";
+
+$body-background-color: #000;
+$body-color: #fff;
+
+$title-color: rgb(186, 107, 255);
+$title-strong-color: rgb(186, 107, 255);
+
+$label-color:#fff;
+
+$table-color: #fff;
+$table-background-color: #000;
+$table-row-hover-background-color:#444;
+
+$table-striped-row-even-background-color: #222;
+$table-striped-row-even-hover-background-color: #666;
+
+$table-head-background-color:rgb(112, 0, 163);
+$table-head-cell-color:#aaa;
+
+$input-color:#fff;
+$input-background-color: #000;
+
+
+@import "../node_modules/bulma/sass/utilities/_all.sass";
+@import "../node_modules/bulma/sass/base/_all.sass";
+//@import "../node_modules/bulma/sass/elements/button.sass";
+//@import "../node_modules/bulma/sass/elements/container.sass";
+@import "../node_modules/bulma/sass/elements/table.sass";
+@import "../node_modules/bulma/sass/elements/title.sass";
+@import "../node_modules/bulma/sass/form/_all.sass";
+//@import "../node_modules/bulma/sass/components/navbar.sass";
+//@import "../node_modules/bulma/sass/layout/hero.sass";
+//@import "../node_modules/bulma/sass/layout/section.sass";

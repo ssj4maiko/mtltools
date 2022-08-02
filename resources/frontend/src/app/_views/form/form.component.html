@@ -20,8 +20,25 @@
                     <label>{{ field.label }}</label>
                     <div class="control">
                         <select formControlName="{{ field.name }}">
-                            <option *ngFor="let option of field.options" value="{{ option.value }}">{{ option.label }}</option>
+                            <option *ngFor="let option of field.options" value="{{option.value}}">{{ option.label }}</option>
                         </select>
+                    </div>
+                </ng-container>
+
+                <ng-container #tempCheck *ngSwitchCase="'multiselect'">
+                    <label>{{ field.label }} - {{ field.name }}</label>
+                    <div class="control">
+                        <!--p *ngFor="let option of field.options; let i = index"-->
+                        <p *ngFor="let option of field.options; let i = index">
+                            <label>
+                                <!--<input type="checkbox" value="{{option.value}}" (change)="option.setChecked(!this.checked);" [checked]="option.checked" />-->
+                                <!--{{option.label}}-->
+                                <input type="checkbox" [formControl]="option.control" /> {{ option.label}}
+                            </label>
+                            <!--select multiple='multiple' formControlName="{{ field.name }}" (change)="onDebug(this.value)">
+                                <option *ngFor="let option of field.options" value="{{option.value}}">{{ option.label }}</option>
+                            </select-->
+                        </p>
                     </div>
                 </ng-container>
 

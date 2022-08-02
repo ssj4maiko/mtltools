@@ -1,61 +1,50 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ApiService } from '../../api.service';
+import { ApiService } from '../../api';
 import { FormControl, FormGroupDirective, FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 
 import { DictionaryCategory } from '../../_models/dictionarycategory';
 import { Dictionary } from '../../_models/dictionary';
 import { FormField, Option } from '../../_models/formField';
+import { FormService } from '../form.service';
 
 @Component({
-	selector: 'app-category-add',
-	templateUrl: '../../_views/form/form.component.html',
-	styleUrls: ['../../_views/form/form.component.scss']
+  selector: 'app-category-add',
+  templateUrl: '../../_views/form/form.component.html',
+  styleUrls: ['../../_views/form/form.component.scss']
 })
 
-export class AddComponent implements OnInit {
+export class AddComponent extends FormService implements OnInit {
 
-	formTitle: string;
-	formGroup: FormGroup;
-	form: FormField[];
-	idDictionary:number;
-	idNovel:number;
+  formTitle: string;
+  idDictionary: number;
 
-	constructor(
-		 private router: Router
-		,private route: ActivatedRoute
-		,private api: ApiService
-		,private formBuilder: FormBuilder
-		) {
-		this.form = [
-			new FormField("idDictionary","idDictionary","hidden"),
-			new FormField("name","Name","text")
-		];
-	}
+  constructor(
+      private router: Router
+    , private route: ActivatedRoute
+    , public api: ApiService
+    , public formBuilder: FormBuilder
+  ) {
+    super(formBuilder);
+  }
 
-	ngOnInit() {
-		this.idNovel = this.route.snapshot.params['idNovel'];
-		this.idDictionary = this.route.snapshot.params['idDictionary'];
-		this.formTitle = "Add new Category";
-		this.formGroup = this.formBuilder.group({
-			 'idDictionary'	: [null]
-			,'name'	: [null]
-		});
-	}
+  ngOnInit() {
+    this.idDictionary = this.route.snapshot.params.idDictionary;
+    this.formTitle = 'Add new Category';
+    this.getForm(true);
+  }
 
-	submitForm(form:NgForm){
-		console.log(form);
-        this.api.addCategory(this.idNovel,this.idDictionary,form)
-			.subscribe(res => {
-				console.log(res);
-				let id = res['id'];
-				this.router.navigate(['/novel/dictionary', this.idNovel, this.idDictionary]);
-			}, (err) => {
-				console.log(err);
-			});
-	}
-	goBack() {
-		this.router.navigate(['/novel/dictionary', this.idNovel, this.idDictionary]);
-	}
+  submitForm(form: NgForm) {
+    const values = this.getValues();
+    this.api.Category.add({ idDictionary: this.idDictionary,  category: values.dictionaryCategory })
+      .then(category => {
+        this.router.navigate(['/dictionary', this.idDictionary, category.id]);
+      }, (err) => {
+        console.log(err);
+      });
+  }
+  goBack() {
+    this.router.navigate(['/dictionary', this.idDictionary]);
+  }
 
 }
