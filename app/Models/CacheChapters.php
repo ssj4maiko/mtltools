@@ -89,7 +89,7 @@ class CacheChapters extends Model
      * @param string $direction = '-'|'+'|'='
      * @return string
      */
-    private function UrlCreator(Novel $novel, int $noChapter, int $part, int $total, string $direction = '='):string
+    private function UrlCreator(Novel $novel, int $noChapter, int $part, int $total, string $direction = '='):?string
     {
         // URL::current();
         switch ($direction) {
