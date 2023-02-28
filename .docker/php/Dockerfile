@@ -17,7 +17,7 @@ RUN if [ "$development" = "true" ]; then \
     fi
 
 # xdebug
-RUN yes | pecl install xdebug \
+RUN yes | pecl install xdebug-2.9.8 \
     && echo "zend_extension=xdebug.so" >> /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.mode=debug" >> /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/xdebug.ini \

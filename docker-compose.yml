@@ -5,8 +5,7 @@ services:
     image: nginx
     restart: "unless-stopped"
     networks:
-      mtltools:
-        ipv4_address: 192.168.66.66
+      - mtltools
     depends_on:
       - php-api
       - node-app
@@ -22,17 +21,11 @@ services:
       context: ./.docker/php
     restart: "unless-stopped"
     working_dir: /var/www/api
-    user: ${CURRENT_UID}
     env_file: .env
     networks:
-      mtltools:
-        ipv4_address: 192.168.66.67
+      - mtltools
     volumes:
       - ./:/var/www/api
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-      - "api.mtltools.docker:192.168.66.66"
-      - "mtltools.docker:192.168.66.66"
 
   node-app:
     build:
@@ -41,14 +34,9 @@ services:
     working_dir: /home/node/app
     entrypoint: bash -c "npm install && npm run startDev"
     networks:
-      mtltools:
-        ipv4_address: 192.168.66.68
+      - mtltools
     volumes:
       - ./resources/frontend:/home/node/app
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-      - "api.mtltools.docker:192.168.66.66"
-      - "mtltools.docker:192.168.66.66"
 
   db:
     image: mariadb
@@ -61,33 +49,23 @@ services:
       - 33061:3306
     environment:
       MYSQL_ROOT_PASSWORD: dbpass
+      MARIADB_ROOT_PASSWORD: dbpass
       MARIADB_DATABASE: db
 
   php-startup:
     build:
       context: ./.docker/php
     working_dir: /var/www/api
-    user: ${CURRENT_UID}
     env_file: .env
     entrypoint: bash -c "composer install; php artisan migrate;"
     depends_on:
       - db
     networks:
-      mtltools:
-        ipv4_address: 192.168.66.57
+      - mtltools
     volumes:
       - ./:/var/www/api
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-      - "api.mtltools.docker:192.168.66.66"
-      - "mtltools.docker:192.168.66.66"
 
 
 networks:
   mtltools:
     driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: 192.168.66.0/24
-          gateway: 192.168.66.1
