@@ -1,0 +1,44 @@
+pipeline {
+
+  stages {
+    agent none
+    stage('Frontend') {
+      agent {
+        docker {
+          dockerfile {
+            filename 'Dockerfile'
+            dir '.docker/node/'
+            args '-v ./resources/frontend:/home/node/app --entrypoint "bash -c \"npm install && npm run startDev\""'
+          }
+        }
+      }
+      steps {
+        sh 'yarn'
+        stash includes: 'node_modules/', name: 'node_modules'
+      }
+    } 
+    docker.image('trion/ng-cli-karma:1.2.1').inside {
+      stage('NPM Install') {
+          withEnv(["NPM_CONFIG_LOGLEVEL=warn"]) {
+              sh 'npm install'
+          }
+      }
+
+      stage('Test') {
+          withEnv(["CHROME_BIN=/usr/bin/chromium-browser"]) {
+            sh 'ng test --progress=false --watch false'
+          }
+          junit '**/test-results.xml'
+      }
+
+      stage('Lint') {
+          sh 'ng lint'
+      }
+        
+      stage('Build') {
+          milestone()
+          sh 'ng build --prod --aot --sm --progress=false'
+      }
+    }
+  }
+}
