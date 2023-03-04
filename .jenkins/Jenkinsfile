@@ -1,7 +1,6 @@
 pipeline {
 
   stages {
-    agent none
     stage('Frontend') {
       // agent {
       //   docker {
