@@ -12,6 +12,7 @@ pipeline {
       //     }
       //   }
       // }
+      agent any
       steps {
         sh 'yarn'
         stash includes: 'node_modules/', name: 'node_modules'
