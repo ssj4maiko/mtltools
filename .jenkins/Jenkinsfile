@@ -3,15 +3,15 @@ pipeline {
   stages {
     agent none
     stage('Frontend') {
-      agent {
-        docker {
-          dockerfile {
-            filename 'Dockerfile'
-            dir '.docker/node/'
-            args '-v ./resources/frontend:/home/node/app --entrypoint "bash -c \"npm install && npm run startDev\""'
-          }
-        }
-      }
+      // agent {
+      //   docker {
+      //     dockerfile {
+      //       filename 'Dockerfile'
+      //       dir '.docker/node/'
+      //       args '-v ./resources/frontend:/home/node/app --entrypoint "bash -c \"npm install && npm run startDev\""'
+      //     }
+      //   }
+      // }
       steps {
         sh 'yarn'
         stash includes: 'node_modules/', name: 'node_modules'
