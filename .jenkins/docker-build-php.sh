@@ -8,7 +8,10 @@ if [ -d "./resources/frontend" ]; then
     docker build -t $PHP_BUILD_NAME .
 
     cd ../../
-    docker run -v ./:/var/www/api -w /var/www/api --restart=no $PHP_BUILD_NAME composer install
+    if [ -f ".env"]; then
+        cp .env.example .env
+    fi
+    docker run -v ./:/var/www/api -w /var/www/api --restart=no $PHP_BUILD_NAME bash -c ("composer install; php artisan key:generate;")
 else
     echo "You must run this script from the project's root."
     exit 0
