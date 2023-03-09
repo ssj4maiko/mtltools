@@ -1,0 +1,50 @@
+pipeline {
+  agent any
+  stages {
+
+    stage('Build') {
+      parallel {
+        stage('Front-end') {
+          steps {
+            sh './.jenkins/docker-build-node.sh'
+          }
+        }
+
+        stage('Back-end') {
+          steps {
+            sh './.jenkins/docker-build-php.sh'
+          }
+        }
+      }
+    }
+
+    stage('Test') {
+      parallel {
+        // stage('Front-end') {
+        //   steps {
+        //     sh './.jenkins/docker-test-node.sh'
+        //   }
+        // }
+
+        stage('Back-end') {
+          steps {
+            sh './.jenkins/docker-test-php.sh'
+          }
+        }
+      }
+    }
+
+    stage('Compile') {
+      steps {
+        sh './.jenkins/docker-compile-frontend-production.sh'
+      }
+    }
+
+    stage('Remove docker') {
+      steps {
+        sh './.jenkins/docker-remove-images.sh'
+      }
+    }
+
+  }
+}
