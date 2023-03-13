@@ -2,6 +2,12 @@ pipeline {
   agent any
   stages {
 
+    stage('Debug info') {
+      steps {
+        echo "Which user is running right now? $USER"
+        sh 'whoami'
+      }
+    }
     stage('Build') {
       parallel {
         stage('Front-end') {
