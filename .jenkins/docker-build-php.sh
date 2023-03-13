@@ -8,7 +8,7 @@ if [ -d "./resources/frontend" ]; then
     docker build -t $PHP_BUILD_NAME .
 
     cd ../../
-    if [ -f ".env"]; then
+    if [ ! -f ".env"]; then
         cp .env.example .env
     fi
     docker run -v ./:/var/www/api -w /var/www/api --restart=no $PHP_BUILD_NAME bash -c "composer install; php artisan key:generate;"
