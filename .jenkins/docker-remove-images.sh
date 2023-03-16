@@ -1,7 +1,6 @@
 #!/bin/bash
 
-NODE_BUILD_NAME="docker-mtltools-node-app"
-PHP_BUILD_NAME="docker-mtltools-php-api"
+source .jenkins/variables.sh
 
 #docker container prune -f
 

@@ -1,9 +1,10 @@
 #!/bin/bash
 
-NODE_BUILD_NAME="docker-mtltools-node-app"
 
 ## Use these from root
 if [ -d "./resources/frontend" ]; then
+    source ./.jenkins/variables.sh
+    
     cd .docker/node/
     echo "Creating new image"
     docker build -t $NODE_BUILD_NAME .

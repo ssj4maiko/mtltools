@@ -1,9 +1,9 @@
 #!/bin/bash
 
-NODE_BUILD_NAME="docker-mtltools-node-app"
-
 ## Use these from root
 if [ -d "./resources/frontend" ]; then
+    source .jenkins/variables.sh
+
     if [ -d "./resources/frontend/dist" ]; then
         echo "Compilation already exists. Cleaning it."
         sudo rm -R ./resources/frontend/dist
