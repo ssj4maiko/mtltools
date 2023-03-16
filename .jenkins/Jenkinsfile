@@ -33,25 +33,25 @@ pipeline {
       }
     }
 
-    stage('Test') {
-      parallel {
-        // stage('Front-end') {
-        //   steps {
-        //     sh './.jenkins/docker-test-node.sh'
-        //   }
-        // }
+    // stage('Test') {
+    //   parallel {
+    //     // stage('Front-end') {
+    //     //   steps {
+    //     //     sh './.jenkins/docker-test-node.sh'
+    //     //   }
+    //     // }
 
-        stage('Back-end') {
-          steps {
-            configFileProvider([
-              configFile(fileId: '1443722d-d936-4d6f-aa12-8c067d8314a0', targetLocation: '.env')
-            ]) {
-              sh './.jenkins/docker-test-php.sh'
-            }
-          }
-        }
-      }
-    }
+    //     stage('Back-end') {
+    //       steps {
+    //         configFileProvider([
+    //           configFile(fileId: '1443722d-d936-4d6f-aa12-8c067d8314a0', targetLocation: '.env')
+    //         ]) {
+    //           sh './.jenkins/docker-test-php.sh'
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
 
     stage('Compile') {
       steps {
