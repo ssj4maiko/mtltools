@@ -1,13 +1,6 @@
 pipeline {
   agent any
 
-  // Requires direct manual input before starting pipeline
-  // parameters {
-  //   string(name: 'SSH_USER',                    defaultValue: '', description: 'SSH user of the webhost')
-  //   string(name: 'SSH_HOST',                    defaultValue: '', description: 'SSH host of the webhost')
-  //   string(name: 'SSH_REMOTE_DIRECTORY_BASE',   defaultValue: 'mtltools', description: 'Base path to deploy')
-  //   string(name: 'SSH_CREDENTIALS',             defaultValue: 'ssh_key', description: 'Location of the Credentials to connect to SSH. Defined by the Config File location seen in Test > Back-end')
-  // }
   environment {
     SSH_USER = credentials('SSH_USER')
     SSH_HOST = credentials('SSH_HOST')
@@ -20,75 +13,66 @@ pipeline {
     stage('Debug info') {
       steps {
         echo "Which user is running right now? $USER"
-        sh 'whoami'
-        configFileProvider([
-          configFile(fileId: '1443722d-d936-4d6f-aa12-8c067d8314a0', targetLocation: '.env'),
-          configFile(fileId: '4d2b0a6b-c87e-453d-8fec-05b71bac39b9', targetLocation: 'ssh_key')
-        ]) {
-          sh 'echo "SSH_USER = ${SSH_USER}" | base64'
-          sh 'echo "SSH_HOST = ${SSH_HOST}" | base64'
-          sh 'echo "SSH_REMOTE_DIRECTORY_BASE = ${SSH_REMOTE_DIRECTORY_BASE}" | base64'
-          sh 'echo "SSH_CREDENTIALS = ${SSH_CREDENTIALS}" | base64'
+      }
+    }
+    stage('Build') {
+      parallel {
+        stage('Front-end') {
+          steps {
+            sh './.jenkins/docker-build-node.sh'
+          }
+        }
+
+        stage('Back-end') {
+          steps {
+            configFileProvider([configFile(fileId: '1443722d-d936-4d6f-aa12-8c067d8314a0', targetLocation: '.env')]) {
+              sh './.jenkins/docker-build-php.sh'
+            }
+          }
         }
       }
     }
-    // stage('Build') {
-    //   parallel {
-    //     stage('Front-end') {
-    //       steps {
-    //         sh './.jenkins/docker-build-node.sh'
-    //       }
-    //     }
 
-    //     stage('Back-end') {
-    //       steps {
-    //         configFileProvider([configFile(fileId: '1443722d-d936-4d6f-aa12-8c067d8314a0', targetLocation: '.env')]) {
-    //           sh './.jenkins/docker-build-php.sh'
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
+    stage('Test') {
+      parallel {
+        // stage('Front-end') {
+        //   steps {
+        //     sh './.jenkins/docker-test-node.sh'
+        //   }
+        // }
 
-    // stage('Test') {
-    //   parallel {
-    //     // stage('Front-end') {
-    //     //   steps {
-    //     //     sh './.jenkins/docker-test-node.sh'
-    //     //   }
-    //     // }
+        stage('Back-end') {
+          steps {
+            configFileProvider([
+              configFile(fileId: '1443722d-d936-4d6f-aa12-8c067d8314a0', targetLocation: '.env')
+            ]) {
+              sh './.jenkins/docker-test-php.sh'
+            }
+          }
+        }
+      }
+    }
 
-    //     stage('Back-end') {
-    //       steps {
-    //         configFileProvider([
-    //           configFile(fileId: '1443722d-d936-4d6f-aa12-8c067d8314a0', targetLocation: '.env'),
-    //           configFile(fileId: '4d2b0a6b-c87e-453d-8fec-05b71bac39b9', targetLocation: 'ssh_key')
-    //         ]) {
-    //           sh './.jenkins/docker-test-php.sh'
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
+    stage('Compile') {
+      steps {
+        sh './.jenkins/docker-compile-frontend-production.sh'
+      }
+    }
 
-    // stage('Compile') {
-    //   steps {
-    //     sh './.jenkins/docker-compile-frontend-production.sh'
-    //   }
-    // }
+    stage('Remove docker') {
+      steps {
+        sh './.jenkins/docker-remove-images.sh'
+      }
+    }
 
-    // stage('Remove docker') {
-    //   steps {
-    //     sh './.jenkins/docker-remove-images.sh'
-    //   }
-    // }
-
-    // stage('Deploying files') {
-    //   steps {
-    //     configFileProvider([configFile(fileId: '1443722d-d936-4d6f-aa12-8c067d8314a0', targetLocation: '.env')]) {
-    //       sh './.jenkins/upload-files.sh'
-    //     }
-    //   }
-    // }
+    stage('Deploying files') {
+      steps {
+        configFileProvider([
+          configFile(fileId: '1443722d-d936-4d6f-aa12-8c067d8314a0', targetLocation: '.env')
+        ]) {
+          sh './.jenkins/upload-files.sh'
+        }
+      }
+    }
   }
 }
