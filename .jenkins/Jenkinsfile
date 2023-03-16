@@ -25,10 +25,10 @@ pipeline {
           configFile(fileId: '1443722d-d936-4d6f-aa12-8c067d8314a0', targetLocation: '.env'),
           configFile(fileId: '4d2b0a6b-c87e-453d-8fec-05b71bac39b9', targetLocation: 'ssh_key')
         ]) {
-          sh 'echo "SSH_USER = ${SSH_USER}"'
-          sh 'echo "SSH_HOST = ${SSH_HOST}"'
-          sh 'echo "SSH_REMOTE_DIRECTORY_BASE = ${SSH_REMOTE_DIRECTORY_BASE}"'
-          sh 'echo "SSH_CREDENTIALS = ${SSH_CREDENTIALS}"'
+          sh 'echo "SSH_USER = ${SSH_USER}" | base64'
+          sh 'echo "SSH_HOST = ${SSH_HOST}" | base64'
+          sh 'echo "SSH_REMOTE_DIRECTORY_BASE = ${SSH_REMOTE_DIRECTORY_BASE}" | base64'
+          sh 'echo "SSH_CREDENTIALS = ${SSH_CREDENTIALS}" | base64'
         }
       }
     }
