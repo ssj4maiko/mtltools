@@ -1,12 +1,13 @@
 pipeline {
   agent any
 
-  parameters {
-    string(name: 'SSH_USER',                    defaultValue: '', description: 'SSH user of the webhost')
-    string(name: 'SSH_HOST',                    defaultValue: '', description: 'SSH host of the webhost')
-    string(name: 'SSH_REMOTE_DIRECTORY_BASE',   defaultValue: 'mtltools', description: 'Base path to deploy')
-    string(name: 'SSH_CREDENTIALS',             defaultValue: 'ssh_key', description: 'Location of the Credentials to connect to SSH. Defined by the Config File location seen in Test > Back-end')
-  }
+  // Requires direct manual input before starting pipeline
+  // parameters {
+  //   string(name: 'SSH_USER',                    defaultValue: '', description: 'SSH user of the webhost')
+  //   string(name: 'SSH_HOST',                    defaultValue: '', description: 'SSH host of the webhost')
+  //   string(name: 'SSH_REMOTE_DIRECTORY_BASE',   defaultValue: 'mtltools', description: 'Base path to deploy')
+  //   string(name: 'SSH_CREDENTIALS',             defaultValue: 'ssh_key', description: 'Location of the Credentials to connect to SSH. Defined by the Config File location seen in Test > Back-end')
+  // }
   environment {
     SSH_USER = credentials('SSH_USER')
     SSH_HOST = credentials('SSH_HOST')
