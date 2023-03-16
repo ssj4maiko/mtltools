@@ -1,14 +1,17 @@
 pipeline {
   agent any
 
-  environment {
-    SSH_USER = credentials('SSH_USER')
-  }
   parameters {
     string(name: 'SSH_USER',                    defaultValue: '', description: 'SSH user of the webhost')
     string(name: 'SSH_HOST',                    defaultValue: '', description: 'SSH host of the webhost')
     string(name: 'SSH_REMOTE_DIRECTORY_BASE',   defaultValue: 'mtltools', description: 'Base path to deploy')
     string(name: 'SSH_CREDENTIALS',             defaultValue: 'ssh_key', description: 'Location of the Credentials to connect to SSH. Defined by the Config File location seen in Test > Back-end')
+  }
+  environment {
+    SSH_USER = credentials('SSH_USER')
+    SSH_HOST = credentials('SSH_HOST')
+    SSH_REMOTE_DIRECTORY_BASE = credentials('SSH_REMOTE_DIRECTORY_BASE')
+    SSH_CREDENTIALS = credentials('SSH_CREDENTIALS')
   }
 
   stages {
@@ -21,12 +24,10 @@ pipeline {
           configFile(fileId: '1443722d-d936-4d6f-aa12-8c067d8314a0', targetLocation: '.env'),
           configFile(fileId: '4d2b0a6b-c87e-453d-8fec-05b71bac39b9', targetLocation: 'ssh_key')
         ]) {
-          sh 'cat .env'
-          sh 'cat ssh_key'
-          sh 'echo ${SSH_USER}'
-          sh 'echo ${SSH_HOST}'
-          sh 'echo ${SSH_REMOTE_DIRECTORY_BASE}'
-          sh 'echo ${SSH_CREDENTIALS}'
+          sh 'echo "SSH_USER = ${SSH_USER}"'
+          sh 'echo "SSH_HOST = ${SSH_HOST}"'
+          sh 'echo "SSH_REMOTE_DIRECTORY_BASE = ${SSH_REMOTE_DIRECTORY_BASE}"'
+          sh 'echo "SSH_CREDENTIALS = ${SSH_CREDENTIALS}"'
         }
       }
     }
