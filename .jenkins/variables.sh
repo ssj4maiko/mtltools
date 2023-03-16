@@ -1,6 +1,8 @@
 #!/bin/bash
 if [[ -z "$BRANCH_NAME" ]]; then
     BRANCH_NAME="test-local"
+else
+    BRANCH_NAME="${BRANCH_NAME,,}"  ## Lowercase
 fi
 if [[ -z "$SSH_USER" ]]; then
     SSH_USER=""
