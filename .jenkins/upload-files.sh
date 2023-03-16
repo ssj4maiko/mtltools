@@ -3,6 +3,8 @@
 if [ -d "./resources/frontend" ]; then
     source .jenkins/variables.sh
 
+    chmod 400 $SSH_CREDENTIALS
+
     echo "Create public2 folder"
     ssh -i $SSH_CREDENTIALS $SSH_USER@$SSH_HOST mkdir $SSH_REMOTE_DIRECTORY_BASE/public2
     echo "ssh -i $SSH_CREDENTIALS $SSH_USER@$SSH_HOST mkdir $SSH_REMOTE_DIRECTORY_BASE/public2" | base64
