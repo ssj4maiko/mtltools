@@ -5,22 +5,41 @@ if [ -d "./resources/frontend" ]; then
 
     chmod 400 $SSH_CREDENTIALS
 
-    echo "Create public2 folder"
-    ssh -i $SSH_CREDENTIALS $SSH_USER@$SSH_HOST mkdir $SSH_REMOTE_DIRECTORY_BASE/public2
-    echo "ssh -i $SSH_CREDENTIALS $SSH_USER@$SSH_HOST mkdir $SSH_REMOTE_DIRECTORY_BASE/public2" | base64
+    echo "Using GIT inside ./$SSH_REMOTE_DIRECTORY_BASE to update backend. Then create folder public_tmp"
+    ssh -i $SSH_CREDENTIALS $SSH_USER@$SSH_HOST <<REMOTE_COMMANDS
+        cd $SSH_REMOTE_DIRECTORY_BASE;
 
-    echo "Upload everything from public to remote server"
-    scp -i $SSH_CREDENTIALS -r public/* $SSH_USER@$SSH_HOST:$SSH_REMOTE_DIRECTORY_BASE/public2/
-    echo "scp -i $SSH_CREDENTIALS -r public/* $SSH_USER@$SSH_HOST:$SSH_REMOTE_DIRECTORY_BASE/public2/" | base64
+        git reset --hard HEAD
+        git pull;
 
-    #echo "Remove original public folder"
-    #ssh -i $SSH_CREDENTIALS $SSH_USER@$SSH_HOST rm -R $SSH_REMOTE_DIRECTORY_BASE/public
+        php composer.phar update
+        php artisan migrate --force
+        php artisan config:cache
+        php artisan route:cache
+        php artisan view:cache
+        php artisan event:cache
 
-    #echo "Upload new home for updated scripts"
-    #scp -i $SSH_CREDENTIALS -r resources/views/index.blade.php $SSH_USER@$SSH_HOST:$SSH_REMOTE_DIRECTORY_BASE/resources/views/index.blade.php
+        mkdir public_tmp
+REMOTE_COMMANDS
 
-    #echo "Rename `public2` to `public`"
-    #ssh -i $SSH_CREDENTIALS $SSH_USER@$SSH_HOST mv $SSH_REMOTE_DIRECTORY_BASE/public2 $SSH_REMOTE_DIRECTORY_BASE/public
+    echo "Upload all compiled files to a temporary folder on remote server"
+    scp -i $SSH_CREDENTIALS -r public/* $SSH_USER@$SSH_HOST:$SSH_REMOTE_DIRECTORY_BASE/public_tmp/
+    echo "scp -i $SSH_CREDENTIALS -r public/* $SSH_USER@$SSH_HOST:$SSH_REMOTE_DIRECTORY_BASE/public_tmp/" | base64
+
+    echo "Upload new home for updated scripts"
+    scp -i $SSH_CREDENTIALS -r resources/views/index.blade.php $SSH_USER@$SSH_HOST:$SSH_REMOTE_DIRECTORY_BASE/resources/views/index.blade.php
+
+    echo "Remove original public folder content, replace with new content, remove public_tmp folder"
+    ssh -i $SSH_CREDENTIALS $SSH_USER@$SSH_HOST <<REMOTE_COMMANDS
+        rm -R $SSH_REMOTE_DIRECTORY_BASE/public/*
+        mv $SSH_REMOTE_DIRECTORY_BASE/public_tmp/* $SSH_REMOTE_DIRECTORY_BASE/public
+        rm public_tmp
+REMOTE_COMMANDS
+
+    if [[ ! -z "$BRANCH_NAME" ]]; then
+        echo "If running through Jenkins, delete copy Credentials file"
+        rm $SSH_CREDENTIALS
+    fi
 else
     echo "You must run this script from the project's root."
     exit 0
