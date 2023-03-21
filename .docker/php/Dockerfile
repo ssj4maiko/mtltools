@@ -1,11 +1,13 @@
 FROM php:7.4-fpm
 
+WORKDIR /var/www/api
+
 RUN apt-get update && apt-get install -y libpq-dev libgd-dev libfreetype6-dev libjpeg62-turbo-dev \
         libpng-dev libxml2-dev libxslt-dev libbz2-dev libzip-dev libonig-dev
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 RUN docker-php-ext-install -j$(nproc) gd sockets xml bz2 json mbstring pdo_mysql xmlrpc xsl zip
 
-RUN curl -L -o /usr/local/bin/composer https://getcomposer.org/composer.phar && chmod +x /usr/local/bin/composer
+RUN curl -L -o /usr/local/bin/composer https://getcomposer.org/download/latest-2.x/composer.phar && chmod +x /usr/local/bin/composer
 
 # Dev stuff
 ARG development
@@ -26,3 +28,5 @@ RUN yes | pecl install xdebug-2.9.8 \
     && echo "xdebug.idekey=\"VSCODE\"" >> /usr/local/etc/php/conf.d/xdebug.ini
 
 COPY opcache.ini /etc/php-custom.d/opcache.ini
+
+# CMD ["composer", "install"]
