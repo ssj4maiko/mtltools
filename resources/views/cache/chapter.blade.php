@@ -83,7 +83,12 @@
             position: relative;
         }
 
-        #content-text > *::after {
+        #content-text p::after,
+        #content-text div::after,
+        #content-text h1::after,
+        #content-text h2::after,
+        #content-text h3::after
+         {
             content: attr(data-original-text);
             top: 0;
             left: 100%;
@@ -92,13 +97,26 @@
         }
     </style>
     <script type='text/javascript'>
+        const allowedTags = ['P', 'DIV', 'H1', 'H2', 'H3'];
+        const contentContainer = document.querySelectorAll('#content-text *');
+
+        // Loop through child elements and process valid ones
+        Array.from(contentContainer).forEach(element => {
+            if (allowedTags.includes(element.tagName)) {
+                const originalText = element.textContent.trim();
+                element.dataset.originalText = '| ' + originalText;
+            }
+        });
+        console.log(contentContainer);
+    </script>
+    <!-- <script type='text/javascript'>
         const translatedElements = Array.from(document.getElementById('content-text').children);
         translatedElements.forEach(element => {
             const originalText = element.textContent.trim();
             element.dataset.originalText = '| ' + originalText;
         });
         console.log(translatedElements);
-    </script>
+    </script> -->
 </body>
 
 </html>
