@@ -2,7 +2,7 @@ FROM node:17
 
 WORKDIR /home/node/app
 
-RUN npm i -g @angular/cli @angular-devkit/build-angular
+RUN npm i -g @angular/cli:13 @angular-devkit/build-angular
 
 EXPOSE 4200
 

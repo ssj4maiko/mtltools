@@ -65,7 +65,9 @@
                 @endif
             </p>
             <h1>{{$title}}</h1>
-            {!!$text!!}
+            <div id='content-text'>
+                {!!$text!!}
+            </div>
             <p class='controls'>
                 @if($control['previous'])
                 <a class='previous' href="{{$control['previous']}}">Previous</a>
@@ -76,6 +78,27 @@
             </p>
         </pre>
     </div>
+    <style type="text/css" rel="stylesheet">
+        #content-text > * {
+            position: relative;
+        }
+
+        #content-text > *::after {
+            content: attr(data-original-text);
+            top: 0;
+            left: 100%;
+            margin-left: 10px; /* Adjust as needed */
+            opacity: 0.5; /* Optionally reduce opacity for visual differentiation */
+        }
+    </style>
+    <script type='text/javascript'>
+        const translatedElements = Array.from(document.getElementById('content-text').children);
+        translatedElements.forEach(element => {
+            const originalText = element.textContent.trim();
+            element.dataset.originalText = '| ' + originalText;
+        });
+        console.log(translatedElements);
+    </script>
 </body>
 
 </html>

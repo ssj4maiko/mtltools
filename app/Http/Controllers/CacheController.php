@@ -13,23 +13,23 @@ class CacheController extends Controller
     ) {
         $this->cacheService = $cacheService;
     }
-    
-    public function getDictionary($idDictionary){
+
+    public function getDictionary($idDictionary)
+    {
         return $this->cacheService->getDictionary($idDictionary);
     }
     public function createDictionary($idDictionary)
     {
         return $this->cacheService->createDictionary($idDictionary);
     }
-    public function getChapter($idDictionary, $idNovel, $no,$part)
+    public function getChapter($idNovel, $idDictionary, $no, $part = 1)
     {
         $return = $this->cacheService->getChapter($idDictionary, $idNovel, $no, $part);
         return response($return['view'], $return['status'] ? 200 : 404);
     }
-    public function createChapter($idDictionary, $idNovel, $no, $part)
+    public function createChapter($idNovel, $idDictionary, $no, $part = 1)
     {
         $return = $this->cacheService->createChapter($idDictionary, $idNovel, $no, $part);
         return response($return['view'], $return['status'] ? 200 : 404);
     }
-    
 }
