@@ -106,3 +106,51 @@ This script will compile (relies on Docker) the project and then move the releva
 Now you have to upload the `public/` folder to your server, along with the `resources/views/index.blade.php` folder. You can just delete the `public/` folder from the server, and upload it again with the update server.
 
 And you should now have the frontend working in your server, relying on the URLs you set up in `resources/frontend/src/environments/environment.prod.ts`.
+
+# Screenshots
+
+![Dashboard image](screenshots/1%20-%20Dashboard.png "Dashboard")
+Dashboard: A list of all Novels and Dictionaries
+
+![Novel List image](screenshots/2%20-%20Novel%20List.png "Novel list")
+List Novels: A more complete detailing of all novels registered, also contains extra information, and the list can be reordered.
+
+![Chapter List image](screenshots/3%20-%20Chapter%20List.png "Chapter List")
+Chapter List: When opening a novel, you see its chapters. They can also be reordered, but by default, newer chapters appear at the top.
+
+The button "Update Chapters" will automatically search for new chapters and updates, so new chapters will appear at the top.
+
+You can also check all dictionaries related to the novel.
+
+![Chapter Detail image](screenshots/4%20-%20Chapter%20View.png "Chapter View")
+When opening a chapter, you get a sidebar with the dictionary, it's categories and entries.
+
+![Sidebar image](screenshots/5%20-%20Sidebar%20-%20Dictionary.png "Sidebar")
+If you hover your mouse at the sidebar, it will expand, you can chose a category, add and/or edit any entry, and update them dynamically in the main text.
+
+![Sidebar Entries image](screenshots/6%20-%20Sidebar%20-%20Edit%20Entries.png "Sidebar Edit Entries")
+Entries added, edited or deleted (when they were already saved before) will be highlighted in different forms. Once you "Save Modifications", that will be final.
+
+![Sidebar Categories image](screenshots/7%20-%20Sidebar%20-%20Edit%20Categories.png "Sidebar Edit Categories")
+The same is valid for Categories, although there is no way to delete Categories from this screen (you can rename them).
+
+They can be deleted from another screen though, but you are more likely to just want to rename them.
+
+![Hotkeys image](screenshots/Hotkeys.png "Hotkeys")
+There are hotkeys for many of the main functions, including some only available through it (duplication, useful for suffixes/prefixes). Press F1 for this screen.
+
+![Static chapter image](screenshots/8%20-%20Static.png "Static Chapter")
+This is the "static page". It's a simple page with the text with the keywords already replace, and you can use it on any Machine Translation service you want.
+
+But for this to work, this page needs to be accessible for the services, so either you host it on the internet, or you use a ddns and open a port on your own network for it to reach.
+
+![Static MTL image](screenshots/9%20-%20Static%20MTL.png "Staatic MTL")
+This is how the translated version appears, with the MTL and the source on the side (It uses CSS so that no MTL Service will try to translate it, but you also can't select/copy these).
+
+
+![Entries image](screenshots/10%20-%20Entries.png "Entries")
+This is another, less useful screen to edit Entries, but it allows you to move entries to different Categories (So if you inserted one in the wrong place, you use this screen).
+
+It follows the same rules, with edited entries in green, deleted in red, added in blue.
+
+The screen before it is also the one that allows you to delete categories (if needed).
