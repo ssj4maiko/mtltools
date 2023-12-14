@@ -125,11 +125,15 @@ You can also check all dictionaries related to the novel.
 ![Chapter Detail image](screenshots/4%20-%20Chapter%20View.png "Chapter View")
 When opening a chapter, you get a sidebar with the dictionary, its categories and entries.
 
+As can be seen, replaced keywords are hilighted, and you can also click on them to be redirected to it's position on the Sidebar's dictionary.
+
 ![Sidebar image](screenshots/5%20-%20Sidebar%20-%20Dictionary.png "Sidebar")
-If you hover your mouse at the sidebar, it will expand, you can chose a category, add and/or edit any entry, and update them dynamically in the main text.
+If you hover your mouse at the sidebar, it will expand, revealing more options, you can chose a category, add and/or edit any entry, and update them dynamically in the main text (Click on the button "Refresh Translation", or if you want to remove them and go back to clean text, click on "Refresh to Original").
 
 ![Sidebar Entries image](screenshots/6%20-%20Sidebar%20-%20Edit%20Entries.png "Sidebar Edit Entries")
 Entries added, edited or deleted (when they were already saved before) will be highlighted in different forms. Once you "Save Modifications", that will be final.
+
+It also has support for suffixes and prefixes, very common in eastern languages. You may have to set up multiples if you need for more than one category though, but you can use the Hotkeys to duplicate an existing entry.
 
 ![Sidebar Categories image](screenshots/7%20-%20Sidebar%20-%20Edit%20Categories.png "Sidebar Edit Categories")
 The same is valid for Categories, although there is no way to delete Categories from this screen (you can rename them).
