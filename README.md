@@ -123,7 +123,7 @@ The button "Update Chapters" will automatically search for new chapters and upda
 You can also check all dictionaries related to the novel.
 
 ![Chapter Detail image](screenshots/4%20-%20Chapter%20View.png "Chapter View")
-When opening a chapter, you get a sidebar with the dictionary, it's categories and entries.
+When opening a chapter, you get a sidebar with the dictionary, its categories and entries.
 
 ![Sidebar image](screenshots/5%20-%20Sidebar%20-%20Dictionary.png "Sidebar")
 If you hover your mouse at the sidebar, it will expand, you can chose a category, add and/or edit any entry, and update them dynamically in the main text.
