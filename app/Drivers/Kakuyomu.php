@@ -185,8 +185,8 @@ class Kakuyomu extends Model implements DriverInterface
         for($arcI = 0; $arcI < count($ArcTable); ++$arcI) {
             $arcRef = $this->getRefFromJson($ArcTable[$arcI]->__ref);
 
-            for($chapterI = 0; $chapterI < count($arcRef->episodes); ++$chapterI) {
-                $chapterRef = $this->getRefFromJson($arcRef->episodes[$chapterI]-> __ref);
+            for($chapterI = 0; $chapterI < count($arcRef->episodUnions); ++$chapterI) {
+                $chapterRef = $this->getRefFromJson($arcRef->episodUnions[$chapterI]-> __ref);
                 $arcTitle = $arcRef->chapter ? $this->getRefFromJson($arcRef->chapter->__ref)->title : null;
                 
                 if(!isset($listOfChapters[$chapterRef->id])) {
