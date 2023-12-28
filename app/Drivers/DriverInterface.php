@@ -42,11 +42,13 @@ interface DriverInterface {
 	public static function getSourceUrl(string $code, bool $R18 = false, string $no = ''): string;
 	/**
 	 * Returns the insert and update Date from the Chapter, Syosetsu has them on the Index on the chapter itself, but Kakuyomu requires external connection
-	 *
+	 * $foundChapter is used for Syosetu, where the data from the important index is more relevant.
+  	 *
 	 * @param Chapter $chapter
+  	 * @param array $foundChapter
 	 * @return [dateOriginalPost:string,dateOriginalRevision:string]|null
 	 */
-	public function getUpdateMeta(Chapter $chapter) : array;
+	public function getUpdateMeta(Chapter $chapter, $foundChapter) : array;
 	/**
 	 * Returns the text content from external source.
 	 *
