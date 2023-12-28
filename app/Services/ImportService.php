@@ -357,7 +357,11 @@ class ImportService
 		foreach($chapters as $chapter) {
 			if (!$chapter->dateOriginalRevision) {
 				// Because of Kakuyomu, makes an extra external access. Syosetsu works straight
-				$updateMeta = $driver->getUpdateMeta($chapter);
+				$updateMeta = $driver->getUpdateMeta($chapter, [
+					// RODO: This is a temporary makeup just to get it work for now. A better solution is needed.
+					'dateOriginalPost' => $chapter->dateOriginalPost,
+					'dateOriginalRevision' -> $chapter->dateOriginalRevision
+				]);
 				$chapter->dateOriginalPost = $updateMeta['dateOriginalPost'];
 				$chapter->dateOriginalRevision = $updateMeta['dateOriginalRevision'];
 			}
