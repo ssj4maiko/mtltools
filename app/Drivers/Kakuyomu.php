@@ -133,7 +133,7 @@ class Kakuyomu extends Model implements DriverInterface
         $this->currentContent = implode('<ht/>', $contents);
         return $this->currentContent;
     }
-    public function getUpdateMeta(Chapter $chapter) : array
+    public function getUpdateMeta(Chapter $chapter, array $foundChapter) : array
     {
         $this->setChapter($chapter);
 
