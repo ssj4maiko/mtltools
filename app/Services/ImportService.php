@@ -381,7 +381,7 @@ class ImportService
 		$importedChapters = $this->importIndex($novel);
 		$foundChapter = $this->getChapterFromIndex($importedChapters, $chapter, $chapter->$pointer);
 
-		$meta = $driver->getUpdateMeta($chapter);
+		$meta = $driver->getUpdateMeta($chapter, $foundChapter);
 		if($foundChapter){
 			$meta = array_merge($foundChapter, $meta);
 		}
