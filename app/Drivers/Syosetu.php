@@ -119,11 +119,11 @@ class Syosetu extends Model implements DriverInterface
 		}
 		return null;
 	}
-	public function getUpdateMeta(Chapter $chapter): array
+	public function getUpdateMeta(Chapter $chapter, array $foundChapter): array
 	{
 		return [
-			  'dateOriginalPost'		=>	$chapter->dateOriginalPost
-			, 'dateOriginalRevision'	=>	$chapter->dateOriginalRevision
+			  'dateOriginalPost'		=>	$foundChapter["dateOriginalPost"]
+			, 'dateOriginalRevision'	=>	$foundChapter["dateOriginalRevision"]
 		];
 	}
 	public function importContent(Chapter &$chapter) : string{
