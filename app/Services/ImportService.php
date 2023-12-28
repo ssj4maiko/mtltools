@@ -82,7 +82,7 @@ class ImportService
 	 */
 	private function updateDatabaseChapter(Chapter $KnownChapter, DriverInterface $driver, array $foundChapter = []):Chapter {
 		$update = false;
-		$updateMeta = $driver->getUpdateMeta($KnownChapter);
+		$updateMeta = $driver->getUpdateMeta($KnownChapter, $foundChapter);
 		if (isset($foundChapter['arc']) && $foundChapter['arc'] != $KnownChapter->arc) {
 			$KnownChapter->arc = $foundChapter['arc'];
 			$update = true;
@@ -296,7 +296,7 @@ class ImportService
 		}
 		// Same condition as the insert. I want to save the number of chapters before starting this.
 		if(!empty($ImportedChapters)){
-			$this->UpdateAllChaptersWithNoText($novel->id, $driver);
+			$this->UpdateAllChaptersWithNoText($novel->id, $driver, $ImportedChapters);
 		}
 		// Finally, we start the updates now.
 		foreach($Chapters2Check4Update as $vector){
@@ -338,7 +338,7 @@ class ImportService
 				//$chapter = new Chapter($tmp);
 				//if (!$tmp['dateOriginalRevision']) {
 				//	// Because of Kakuyomu, makes an extra external access. Syosetsu works straight
-				//	$updateMeta = $driver->getUpdateMeta($chapter);
+				//	$updateMeta = $driver->getUpdateMeta($chapter, $importedChapter);
 				//	$tmp['dateOriginalPost'] = $updateMeta['dateOriginalPost'];
 				//	$tmp['dateOriginalRevision'] = $updateMeta['dateOriginalRevision'];
 				//}
@@ -351,7 +351,7 @@ class ImportService
 		Chapter::insert($chapters);
 		return $numberChapters;
 	}
-	public function UpdateAllChaptersWithNoText(int $idNovel, DriverInterface $driver):void {
+	public function UpdateAllChaptersWithNoText(int $idNovel, DriverInterface $driver, $ImportedChapters):void {
 		$this->loadServiceChapter();
 		$chapters = $this->chapterService->getAllWithNoText($idNovel);
 		foreach($chapters as $chapter) {
