@@ -150,7 +150,7 @@ class Kakuyomu extends Model implements DriverInterface
     }
     public function importContent(Chapter &$chapter):string
     {
-        $updateMeta = $this->getUpdateMeta($chapter);
+        $updateMeta = $this->getUpdateMeta($chapter, null);
         if($updateMeta) {
             // Adding this rule because at first, I had not implemented Kakuyomu updates correctly
             // Should be good to remove later
