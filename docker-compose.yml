@@ -22,10 +22,13 @@ services:
     restart: "unless-stopped"
     working_dir: /var/www/api
     env_file: .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - mtltools
     volumes:
       - ./:/var/www/api
+      - ./.docker/php/xdebug.ini:/usr/local/etc/php/conf.d/99-xdebug.ini
 
   node-app:
     build:
