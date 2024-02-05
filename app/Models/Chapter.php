@@ -106,4 +106,40 @@ class Chapter extends Model
         $driver->setChapter($this);
         return $driver->prepareUrl();
     }
+    /**
+     * In case a book has something like <ruby><span>a</span><rt>1</rt><span>b</span><rt>2</rt></ruby> which destroys MTL output, we merge the entries to simplify it.
+     */
+    public static function fixRuby(string $input): string
+    {
+        $pattern = '/<ruby>(.*?)<\/ruby>/s';
+        $output = preg_replace_callback($pattern, function ($matches) {
+            $pos = strpos($matches[1], '</rt><span>');
+            if ($pos > 0) {
+                $rtSpanPattern = '/<rt>(.*?)<\/rt>|<span>(.*?)<\/span>/s';
+                $rtMatches = [];
+                $spanMatches = [];
+
+                // Collect all <rt> and <span> separately
+                preg_match_all($rtSpanPattern, $matches[1], $allMatches, PREG_SET_ORDER);
+
+                foreach ($allMatches as $match) {
+                    if (!empty($match[1])) {
+                        $rtMatches[] = $match[1];
+                    } elseif (!empty($match[2])) {
+                        $spanMatches[] = $match[2];
+                    }
+                }
+
+                // Blend <rt> and <span> into one <rt> and one <span>
+                $mergedRt = !empty($rtMatches) ? '<rt>' . implode('', $rtMatches) . '</rt>' : '';
+                $mergedSpan = !empty($spanMatches) ? '<span>' . implode('', $spanMatches) . '</span>' : '';
+
+                return "<ruby>{$mergedSpan}{$mergedRt}</ruby>";
+            } else {
+                return $matches[0];
+            }
+        }, $input);
+
+        return $output;
+    }
 }

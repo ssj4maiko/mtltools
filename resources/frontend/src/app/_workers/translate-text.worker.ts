@@ -12,6 +12,39 @@ const scapeRegex = (entry:string) => {
               .replace(')','\\)')
               ;
 }
+function fixRuby(input: string): string {
+  const pattern = /<ruby>(.*?)<\/ruby>/gs;
+  const output = input.replace(pattern, (match, content) => {
+    const pos = content.indexOf('</rt><span>');
+      if(pos > 0){
+        console.info(content);
+        const rtSpanPattern = /<rt>(.*?)<\/rt>|<span>(.*?)<\/span>/gs;
+        const rtMatches: string[] = [];
+        const spanMatches: string[] = [];
+        
+        // Collect all <rt> and <span> separately
+        const allMatches = Array.from(content.matchAll(rtSpanPattern));
+  
+        for (const match of allMatches) {
+            if (match[1] !== undefined) {
+                rtMatches.push(match[1]);
+            } else if (match[2] !== undefined) {
+                spanMatches.push(match[2]);
+            }
+        }
+  
+        // Blend <rt> and <span> into one <rt> and one <span>
+        const mergedRt = rtMatches.length > 0 ? `<rt>${rtMatches.join('')}</rt>` : '';
+        const mergedSpan = spanMatches.length > 0 ? `<span>${spanMatches.join('')}</span>` : '';
+  
+        return `<ruby>${mergedSpan}${mergedRt}</ruby>`;
+      } else {
+        return match;
+      }
+  });
+
+  return output;
+}
 const replaceTextAllEntries = (entries: DictionaryEntry[], cloneText: string, cloneTitle: string) => {
   while (entries.length !== 0) {
     const entry = entries.pop();
@@ -97,6 +130,7 @@ addEventListener('message', (data:MessageEvent) => {
       }
     });
     try {
+      text = fixRuby(text);
       for (let i = entries.length; i >= 0; --i) {
         if (entries[i]) {
           [text, title] = replaceTextAllEntries(entries[i], text, title);
