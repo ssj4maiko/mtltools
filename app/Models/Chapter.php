@@ -142,7 +142,7 @@ class Chapter extends Model
                 }
 
                 // Blend <rt> and <span> into one <rt> and one <span>
-                $mergedRt = !empty($rtMatches) ? '<rt>' . implode('', $rtMatches) . '</rt>' : '';
+                $mergedRt = !empty($rtMatches) ? '<rt>(' . implode('', $rtMatches) . ')</rt>' : '';
                 $mergedSpan = !empty($spanMatches) ? '<span>' . implode('', $spanMatches) . '</span>' : '';
 
                 return "<ruby>{$mergedSpan}{$mergedRt}</ruby>";
