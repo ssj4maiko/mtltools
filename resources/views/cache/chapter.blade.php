@@ -79,7 +79,7 @@
         </pre>
     </div>
     <style type="text/css" rel="stylesheet">
-        #content-text > * {
+        #content-text>* {
             position: relative;
         }
 
@@ -87,16 +87,21 @@
         #content-text div::after,
         #content-text h1::after,
         #content-text h2::after,
-        #content-text h3::after
-         {
+        #content-text h3::after {
             content: attr(data-original-text);
             top: 0;
             left: 100%;
-            margin-left: 10px; /* Adjust as needed */
-            opacity: 0.5; /* Optionally reduce opacity for visual differentiation */
+            margin-left: 10px;
+            /* Adjust as needed */
+            opacity: 0.5;
+            /* Optionally reduce opacity for visual differentiation */
         }
     </style>
     <script type='text/javascript'>
+        const RTTags = Array.from(document.querySelectorAll('RT')).map((item) => {
+            item.textContent = '(' + item.textContent + ')';
+        })
+
         const allowedTags = ['P', 'DIV', 'H1', 'H2', 'H3'];
         const contentContainer = document.querySelectorAll('#content-text *');
 
