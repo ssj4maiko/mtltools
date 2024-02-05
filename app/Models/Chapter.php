@@ -10,59 +10,70 @@ use Illuminate\Http\Request;
 
 class Chapter extends Model
 {
-	//
+    //
     protected $table = 'chapters';
     /** @var string[] $primaryKey */
-	protected $primaryKey = ['idNovel','no'];
-	const CREATED_AT = 'dateCreated';
-	const UPDATED_AT = 'dateRevision';
-	public $incrementing = false;
+    protected $primaryKey = ['idNovel', 'no'];
+    const CREATED_AT = 'dateCreated';
+    const UPDATED_AT = 'dateRevision';
+    public $incrementing = false;
 
-	//Pseudo-column = addSelect(DB::raw('(textOriginal IS NOT NULL) as hasText'))
+    //Pseudo-column = addSelect(DB::raw('(textOriginal IS NOT NULL) as hasText'))
 
-	protected $fillable = [
-		 'idNovel'
-		,'no'
-		,'noCode'
-		,'arc'
-		,'title'
-		,'textOriginal'
-		,'dateRevision'
-		,'textCustom'
-		,'dateOriginalPost'
-		,'dateOriginalRevision'
-	];
-    public function novel(){
+    protected $fillable = [
+        'idNovel',
+        'no',
+        'noCode',
+        'arc',
+        'title',
+        'textOriginal',
+        'dateRevision',
+        'textCustom',
+        'dateOriginalPost',
+        'dateOriginalRevision'
+    ];
+    public function novel()
+    {
         return $this->hasOne(Novel::class, 'id', 'idNovel');
     }
-	public static function prepare($data){
-		return $data;
+    public static function prepare($data)
+    {
+        return $data;
     }
-    public function translateText($text, $dictionary):string{
+    public function translateText($text, $dictionary): string
+    {
+        $text = self::fixRuby($text);
+
         /** @var Dictionary $dictionary */
         foreach ($dictionary->dictionary_entry as $entry) {
             /** @var DictionaryEntry $entry */
-            if($entry->sufix){
+            if ($entry->sufix) {
                 $text = str_replace(
-                    ']'.$entry->sufix.']'.$entry->entryOriginal
-                    ,$entry->entryTranslation.']'.$entry->idCategory.']', $text);
-            } else if($entry->prefix) {
+                    ']' . $entry->sufix . ']' . $entry->entryOriginal
+                    ,
+                    $entry->entryTranslation . ']' . $entry->idCategory . ']',
+                    $text
+                );
+            } else if ($entry->prefix) {
                 $text = str_replace(
                     $entry->entryOriginal . '[' . $entry->prefix . '[',
-                    '[' . $entry->idCategory . '['. $entry->entryTranslation,
+                    '[' . $entry->idCategory . '[' . $entry->entryTranslation,
                     $text
                 );
             } else {
-                $text = str_replace($entry->entryOriginal,
-                                    strlen($entry->entryTranslation) === 0 ?
-                                        '' : '['. $entry->idCategory.'['.$entry->entryTranslation.']'.$entry->idCategory.']', $text);
+                $text = str_replace(
+                    $entry->entryOriginal,
+                    strlen($entry->entryTranslation) === 0 ?
+                    '' : '[' . $entry->idCategory . '[' . $entry->entryTranslation . ']' . $entry->idCategory . ']',
+                    $text
+                );
             }
         }
         $regexStart = '\[[0-9]+\[';
-        $regexEnd   = '\][0-9]+\]';
-        $text = preg_replace('/(' . $regexEnd.$regexStart . ')+/m', ' ', $text);
-        $text = preg_replace('/('.$regexEnd.')+/m', '', $text);
-        $text = preg_replace('/('.$regexStart.')+/m', '', $text);
+        $regexEnd = '\][0-9]+\]';
+        $text = preg_replace('/(' . $regexEnd . $regexStart . ')+/m', ' ', $text);
+        $text = preg_replace('/(' . $regexEnd . ')+/m', '', $text);
+        $text = preg_replace('/(' . $regexStart . ')+/m', '', $text);
         return $text;
     }
 
