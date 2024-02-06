@@ -96,6 +96,10 @@
             opacity: 0.5;
             /* Optionally reduce opacity for visual differentiation */
         }
+
+        .duplicate {
+            color: #99F;
+        }
     </style>
     <script type='text/javascript'>
         const RTTags = Array.from(document.querySelectorAll('RT')).map((item) => {
@@ -110,6 +114,24 @@
             if (allowedTags.includes(element.tagName)) {
                 const originalText = element.textContent.trim();
                 element.dataset.originalText = '| ' + originalText;
+
+                const rubyTags = element.querySelectorAll('ruby');
+                if (rubyTags.length > 0) {
+                    // Clone the original element
+                    const duplicateElement = element.cloneNode(true);
+                    // Iterate through each <ruby> tag
+                    rubyTags.forEach(ruby => {
+                        // Get the contents of <rb> and <span> tags
+                        const rbContent = ruby.querySelector('rb')?.textContent;
+                        const spanContents = Array.from(ruby.querySelectorAll('span')).map(span => span.textContent).join('');
+
+                        // Replace the <ruby> tag with the contents of <rb> and <span>
+                        duplicateElement.innerHTML = duplicateElement.innerHTML.replace(/<ruby>.*?<\/ruby>/, rbContent ?? spanContents);
+                    });
+                    // Insert the duplicated element after the current one
+                    duplicateElement.classList.add('duplicate');
+                    element.parentNode.insertBefore(duplicateElement, element.nextSibling);
+                }
             }
         });
         console.log(contentContainer);
