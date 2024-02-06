@@ -23,7 +23,7 @@ class CacheChapters extends Model
         $this->URLGenerator = app(UrlGenerator::class);
         $this->forceCache = $forceCache;
     }
-    public function setIdNovel(int $idNovel):void
+    public function setIdNovel(int $idNovel): void
     {
         $this->idNovel = $idNovel;
     }
@@ -39,7 +39,7 @@ class CacheChapters extends Model
     private const CACHEFOLDER = 'public/chapters/';
     private const AVERAGE_CHAR_COUNT = 25000;
     private $forceCache = false;
-    public function Lock(string $key):bool
+    public function Lock(string $key): bool
     {
         return Storage::put(self::CACHEFOLDER . '/lock/' . $key . '.lock', 1);
     }
@@ -59,9 +59,9 @@ class CacheChapters extends Model
      * @param integer $part
      * @return [view:string,status:bool]
      */
-    public function get(int $part = 1):array
+    public function get(int $part = 1): array
     {
-        if($this->idNovel === 0) {
+        if ($this->idNovel === 0) {
             throw new \Exception("There is no novel, you are doing something wrong.", 404);
         }
         $cacheName = self::CACHEFOLDER . $this->idNovel . '/' . $this->idDictionary . '/' . $this->noChapter . '-' . $part . '.html';
@@ -72,7 +72,7 @@ class CacheChapters extends Model
             ];
         } else {
             $this->forceCache = true;
-            $cachedChapter = $this->create($this->idDictionary,$this->idNovel, $this->noChapter);
+            $cachedChapter = $this->create($this->idDictionary, $this->idNovel, $this->noChapter);
             return [
                 'view' => $cachedChapter['view'],
                 'status' => $cachedChapter['status']
@@ -89,7 +89,7 @@ class CacheChapters extends Model
      * @param string $direction = '-'|'+'|'='
      * @return string
      */
-    private function UrlCreator(Novel $novel, int $noChapter, int $part, int $total, string $direction = '='):?string
+    private function UrlCreator(Novel $novel, int $noChapter, int $part, int $total, string $direction = '='): ?string
     {
         // URL::current();
         switch ($direction) {
@@ -117,19 +117,18 @@ class CacheChapters extends Model
      *
      * @return [view:string,status:bool]
      */
-    public function create():array
+    public function create(): array
     {
         if ($this->idNovel === 0) {
             throw new \Throwable("There is no novel, you are doing something wrong.", 404);
         }
         $cacheDictionary = new CacheDictionary($this->idDictionary);
         $cache = $cacheDictionary->get();
-
         $view = null;
         $status = false;
 
         if ($cache) {
-            $cacheName = self::CACHEFOLDER .  $this->idDictionary . '/' . $this->idNovel . '/' . $this->noChapter . '-{part}.html';
+            $cacheName = self::CACHEFOLDER . $this->idDictionary . '/' . $this->idNovel . '/' . $this->noChapter . '-{part}.html';
 
             /** @var Novel $novel */
             $novel = Novel::where('id', $this->idNovel)->first();
@@ -149,15 +148,15 @@ class CacheChapters extends Model
                     $translatedTitle = $chapter->translateText($chapter->title, $cacheDictionary);
 
                     $view = view('cache/chapter', [
-                        'text'      => $translatedText,
-                        'title'     => $translatedTitle,
-                        'novel'     => $novel,
-                        'chapter'   => $chapter,
-                        'total'     => 1,
-                        'part'      => 1,
-                        'control'   =>  [
-                            'previous'  =>  $this->UrlCreator($novel, $this->noChapter, 0, 1, '-'),
-                            'next'      =>  $this->UrlCreator($novel, $this->noChapter, 0, 1, '+')
+                        'text' => $translatedText,
+                        'title' => $translatedTitle,
+                        'novel' => $novel,
+                        'chapter' => $chapter,
+                        'total' => 1,
+                        'part' => 1,
+                        'control' => [
+                            'previous' => $this->UrlCreator($novel, $this->noChapter, 0, 1, '-'),
+                            'next' => $this->UrlCreator($novel, $this->noChapter, 0, 1, '+')
                         ]
                     ]);
                     $status = true;
@@ -169,36 +168,36 @@ class CacheChapters extends Model
             } else {
                 if ($novel->driver) {
                     $driver = $novel->startDriver($novel->numberChapters + 1);
-                    if($driver){
+                    if ($driver) {
                         $url = $driver->prepareUrl();
-                        if($url){
+                        if ($url) {
                             $view = view('cache/wait', [
-                                'novel'     => $novel,
-                                'total'     => $novel->numberChapters,
-                                'no'        => $this->noChapter,
-                                'url'       => $url,
-                                'control'   =>  [
-                                    'update'  =>  '/api/chapter/autoUpdate/' . $novel->id,
-                                    'current'  =>  $this->UrlCreator($novel, $this->noChapter, 0, 1, '='),
-                                    'previous'  =>  $this->UrlCreator($novel, $this->noChapter, 0, 1, '-')
+                                'novel' => $novel,
+                                'total' => $novel->numberChapters,
+                                'no' => $this->noChapter,
+                                'url' => $url,
+                                'control' => [
+                                    'update' => '/api/chapter/autoUpdate/' . $novel->id,
+                                    'current' => $this->UrlCreator($novel, $this->noChapter, 0, 1, '='),
+                                    'previous' => $this->UrlCreator($novel, $this->noChapter, 0, 1, '-')
                                 ]
                             ]);
                         }
                     }
                 }
-                if(!$view){
+                if (!$view) {
                     $view = view('cache/stop', [
-                        'novel'     => $novel,
-                        'total'     => $novel->numberChapters,
-                        'no'        => $this->noChapter,
-                        'url'       => $url,
-                        'control'   =>  [
-                            'current'  =>  $this->UrlCreator($novel, $this->noChapter, 0, 1, '='),
-                            'previous'  =>  $this->UrlCreator($novel, $this->noChapter, 0, 1, '-')
+                        'novel' => $novel,
+                        'total' => $novel->numberChapters,
+                        'no' => $this->noChapter,
+                        'url' => $url,
+                        'control' => [
+                            'current' => $this->UrlCreator($novel, $this->noChapter, 0, 1, '='),
+                            'previous' => $this->UrlCreator($novel, $this->noChapter, 0, 1, '-')
                         ]
                     ]);
                 }
-                
+
                 //throw new \Exception("No chapter", 1);
             }
             //return Storage::url($cacheName);
