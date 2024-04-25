@@ -131,6 +131,8 @@
             createTooltip() {
                 const tooltip = document.createElement('div');
                 tooltip.classList.add('tooltip');
+                tooltip.classList.add('notranslate');
+                tooltip.setAttribute('translate', 'no');
                 tooltip.textContent = this.text;
                 document.body.appendChild(tooltip);
                 return tooltip;
