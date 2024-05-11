@@ -144,12 +144,23 @@ class CacheChapters extends Model
                     // There is no processing this yet
                     $this->Lock($key);
                     $cacheDictionary = json_decode($cache);
-                    $translatedText = $chapter->translateText($chapter->textRevision ? $chapter->textRevision : $chapter->textOriginal, $cacheDictionary);
-                    $translatedTitle = $chapter->translateText($chapter->title, $cacheDictionary);
+
+                    $separator = '||||||||||';
+                    $translated = explode(
+                        $separator,
+                        $chapter->translateText(
+                            $chapter->title . $separator .
+                            $chapter->arc . $separator .
+                            ($chapter->textRevision ? $chapter->textRevision : $chapter->textOriginal)
+                            ,
+                            $cacheDictionary
+                        )
+                    );
 
                     $view = view('cache/chapter', [
-                        'text' => $translatedText,
-                        'title' => $translatedTitle,
+                        'text' => $translated[2],
+                        'title' => $translated[0],
+                        'arc' => $translated[1],
                         'novel' => $novel,
                         'chapter' => $chapter,
                         'total' => 1,

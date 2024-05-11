@@ -64,6 +64,7 @@
                 <a class='next' href="{{$control['next']}}">Next</a>
                 @endif
             </p>
+            <h2>{{$arc}}</h2>
             <h1>{{$title}}</h1>
             <div id='content-text'>
                 {!!$text!!}
@@ -79,12 +80,17 @@
         </pre>
     </div>
     <style type="text/css" rel="stylesheet">
+        .content {
+            margin:0 5%;
+            width: 90%;
+        }
         #content-text {
             display: none;
         }
 
-        #content-text>* {
+        #content-text > * {
             position: relative;
+            margin:0;
         }
 
         #content-text p::after,
@@ -166,7 +172,7 @@
             hideTooltipWithDelay() {
                 this.timeout = setTimeout(() => {
                     this.hideTooltip();
-                }, 1500); // 3000 milliseconds (3 seconds)
+                }, 500); // In milliseconds
             }
             hideTooltip() {
                 //console.log('Remove Tooltip', this.tooltip);
