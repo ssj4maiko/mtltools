@@ -87,7 +87,7 @@ class Syosetu extends Model implements DriverInterface
 	private $currentTitle = null;
 	private $currentContent = null;
 
-	private function HTMLgetTitle($html)
+	private function HTMLgetTitle(string &$html)
 	{
 		$posStart = strpos($html, 'novel_subtitle');
 		if ($posStart > 0) {
@@ -101,7 +101,7 @@ class Syosetu extends Model implements DriverInterface
 		return $this->currentTitle;
 	}
 
-	private function HTMLgetContent($html)
+	private function HTMLgetContent(string &$html)
 	{
 		$classContent = ['p-novel__text--preface"', 'novel__text"', 'novel__text--afterword"'];
 		$contents = [];
@@ -132,7 +132,7 @@ class Syosetu extends Model implements DriverInterface
 		}
 		return null;
 	}
-	public function getUpdateMeta(Chapter $chapter, $foundChapter): array
+	public function getUpdateMeta(Chapter &$chapter, array $foundChapter): array
 	{
 		return [
 			'dateOriginalPost' => $foundChapter["dateOriginalPost"],
@@ -156,7 +156,7 @@ class Syosetu extends Model implements DriverInterface
 		return $this->pointer;
 	}
 	private $arcs = [];
-	private function parseArcs($html, $page)
+	private function parseArcs(string &$html, $page)
 	{
 		$posStart = 0;
 		while ($posStart = strpos($html, 'chapter-title', $posStart)) {
@@ -170,7 +170,7 @@ class Syosetu extends Model implements DriverInterface
 		}
 		return $this->arcs;
 	}
-	private function detectPageNumber(string $html): int
+	private function detectPageNumber(string &$html): int
 	{
 		// Look for the button "Next", and we can use that to search for the "last" button.
 		$posStart = strpos($html, 'c-pager__item--next', 0);
@@ -181,7 +181,7 @@ class Syosetu extends Model implements DriverInterface
 		}
 		return 1;
 	}
-	private function parseIndex($idNovel)
+	private function parseIndex(int $idNovel): array
 	{
 		/**
 		 * For debug reasons, can use json_encode($listOfChapters) at the end of this method, save in a json and save time.
@@ -194,7 +194,6 @@ class Syosetu extends Model implements DriverInterface
 		$lastPage = 1;
 
 		for ($page = 1; $page <= $lastPage; ++$page) {
-
 			$html = $this->callUrl($page);
 			if ($lastPage == 1) {
 				$lastPage = $this->detectPageNumber($html);
@@ -202,22 +201,21 @@ class Syosetu extends Model implements DriverInterface
 			$arcs = $this->parseArcs($html, $page);
 			$posStart = 0;
 			$Found = true;
-
-			for ($index = 1; $Found; ++$index) {
+			for ($index = 1; $Found && $index < 200; ++$index) {
 				$current_no = (($page - 1) * $this->chaptersPerPage) + $index;
 				$needle = $this->currentCode . '/' . $current_no;
 				$posStart = strpos($html, $needle, $posStart);
-				$posStart = strpos($html, $needle = '>', $posStart);
-				if (isset($arcs[$nextArc])) {
-					if ($posStart > $arcs[$nextArc]['position'] && $page == $arcs[$nextArc]['page']) {
-						$nextArc++;
-					}
-				}
 
 				if ($posStart > 0) {
+					$posStart = strpos($html, '>', $posStart);
+					if (isset($arcs[$nextArc])) {
+						if ($posStart > $arcs[$nextArc]['position'] && $page == $arcs[$nextArc]['page']) {
+							$nextArc++;
+						}
+					}
 					$posStart += strlen($needle) + 1;
 					$posEnd = strpos($html, '</a>', $posStart);
-					$title = trim(substr($html, $posStart, $posEnd - $posStart));
+					$title = substr($html, $posStart, $posEnd - $posStart);
 
 					$posEnd = $posStart;
 
@@ -227,18 +225,19 @@ class Syosetu extends Model implements DriverInterface
 					$posEnd = strpos($html, '</div>', $posStart);
 
 					$datestring = substr($html, $posStart, $posEnd - $posStart);
+					$posStartDate = 16;
 
-					$pattern = '/(\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2})/';
-					preg_match_all($pattern, $datestring, $matches);
+					$dateOriginalPost = str_replace('/', '-', substr($datestring, 0, 16)) . ':00';
+					$dateOriginalRevision = null;
 
-					$dateOriginalPost = $matches[0][0];
-					$dateOriginalRevision = $matches[0][1] ?? null;
+					$needle = '<span title=';
+					$posStartDate = strpos($datestring, $needle, $posStartDate);
+					if ($posStartDate > 0) {
+						$posStartDate += strlen($needle) + 1;
 
-					if ($dateOriginalPost)
-						$dateOriginalPost = str_replace('/', '-', substr($dateOriginalPost, 0, 16)) . ':00';
-					if ($dateOriginalRevision)
-						$dateOriginalRevision = str_replace('/', '-', substr($dateOriginalRevision, 0, 16)) . ':00';
-
+						$dateOriginalRevision = str_replace('/', '-', substr($datestring, $posStartDate, 16)) . ':00';
+					}
+					unset($datestring);
 					/**
 					 * Gotta use the same pointer as configured at the top, this is because this is the only "absolute" in Syosetu.
 					 * I previously used the chapter number (no), however, if the author releases a new chapter in between old chapters, all numbers are pushed up.
@@ -252,7 +251,7 @@ class Syosetu extends Model implements DriverInterface
 						'idNovel' => $idNovel,
 						'no' => $current_no,
 						'arc' => isset($arcs[$nextArc - 1]) ? $arcs[$nextArc - 1]['title'] : null,
-						'title' => $title,
+						'title' => trim($title),
 						'dateOriginalPost' => $dateOriginalPost,
 						'dateOriginalRevision' => $dateOriginalRevision,
 					];
@@ -261,11 +260,12 @@ class Syosetu extends Model implements DriverInterface
 					break;
 				}
 			}
+			unset($html);
 		}
 		// die(json_encode($listOfChapters));
 		return $listOfChapters;
 	}
-	public function importIndex($idNovel)
+	public function importIndex(int $idNovel): array
 	{
 		$listOfChapters = $this->parseIndex($idNovel);
 		return $listOfChapters;

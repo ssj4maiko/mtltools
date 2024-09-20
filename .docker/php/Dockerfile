@@ -10,11 +10,13 @@ RUN docker-php-ext-install -j$(nproc) gd sockets xml bz2 mbstring pdo_mysql xsl 
 RUN curl -L -o /usr/local/bin/composer https://getcomposer.org/download/latest-2.x/composer.phar && chmod +x /usr/local/bin/composer
 
 # Dev stuff
-ARG development
+ARG development="true"
+ARG memory_limit
 RUN if [ "$development" = "true" ]; then \
     echo 'display_errors=On' > /usr/local/etc/php/conf.d/dev.ini; \
     echo 'error_reporting=E_ALL' >> /usr/local/etc/php/conf.d/dev.ini; \
     echo "catch_workers_output = yes" >> /usr/local/etc/php-fpm.d/zz-dev.conf; \
+    echo "memory_limit = ${memory_limit}M" >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini; \
     fi
 
 # xdebug

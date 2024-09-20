@@ -19,6 +19,9 @@ services:
   php-api:
     build:
       context: ./.docker/php
+      args:
+        development: "true"
+        memory_limit: "512"
     restart: "unless-stopped"
     working_dir: /var/www/api
     env_file: .env
@@ -47,7 +50,7 @@ services:
     networks:
       - mtltools
     volumes:
-      - /var/lib/mysql/
+      - ./DATABASE/:/var/lib/mysql/
     ports:
       - 33061:3306
     environment:
@@ -71,4 +74,5 @@ services:
 
 networks:
   mtltools:
+    name: mtltools
     driver: bridge

@@ -120,7 +120,7 @@ class CacheChapters extends Model
     public function create(): array
     {
         if ($this->idNovel === 0) {
-            throw new \Throwable("There is no novel, you are doing something wrong.", 404);
+            throw new \Exception("There is no novel, you are doing something wrong.", 404);
         }
         $cacheDictionary = new CacheDictionary($this->idDictionary);
         $cache = $cacheDictionary->get();

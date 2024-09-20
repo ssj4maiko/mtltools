@@ -92,7 +92,7 @@ class Kakuyomu extends Model implements DriverInterface
     private $currentTitle = null;
     private $currentContent = null;
 
-    private function HTMLgetTitle($html)
+    private function HTMLgetTitle(string &$html)
     {
         $posStart = strpos($html, 'widget-episodeTitle');
         if ($posStart > 0) {
@@ -107,7 +107,7 @@ class Kakuyomu extends Model implements DriverInterface
     }
 
     private $chapterMetadata = [];
-    private function SidebarHTMLgetContent($html)
+    private function SidebarHTMLgetContent(string &$html)
     {
         preg_match_all('/<time datetime="(.*?)"/m', $html, $matches);
         $count = count($matches[1]) - 1;
@@ -116,7 +116,7 @@ class Kakuyomu extends Model implements DriverInterface
         $this->chapterMetadata[$this->currentChapter]['dateOriginalRevision'] = $matches[1][$count] != $matches[1][$count - 1] ? (new Carbon($matches[1][$count]))->format('Y-m-d H:i:s') : null;
         return $this->chapterMetadata[$this->currentChapter];
     }
-    private function HTMLgetContent($html)
+    private function HTMLgetContent(string &$html)
     {
         $classContent = ['widget-episodeBody'];
         $contents = [];
@@ -133,7 +133,7 @@ class Kakuyomu extends Model implements DriverInterface
         $this->currentContent = implode('<ht/>', $contents);
         return $this->currentContent;
     }
-    public function getUpdateMeta(Chapter $chapter, $foundChapter): array
+    public function getUpdateMeta(Chapter &$chapter, array $foundChapter): array
     {
         $this->setChapter($chapter);
 
@@ -211,7 +211,7 @@ class Kakuyomu extends Model implements DriverInterface
     {
         return $this->json->$ref;
     }
-    private function setJson($html): bool
+    private function setJson(string &$html): bool
     {
         $jsonPosStart = strpos($html, 'application/json', 0);
         $jsonPosStart = strpos($html, '>', $jsonPosStart) + 1;

@@ -52,7 +52,7 @@ interface DriverInterface
 	 * @param array $foundChapter
 	 * @return [dateOriginalPost:string,dateOriginalRevision:string]|null
 	 */
-	public function getUpdateMeta(Chapter $chapter, $foundChapter): array;
+	public function getUpdateMeta(Chapter &$chapter, array $foundChapter): array;
 	/**
 	 * Returns the text content from external source.
 	 *
