@@ -103,7 +103,7 @@ class Syosetu extends Model implements DriverInterface
 
 	private function HTMLgetContent($html)
 	{
-		$classContent = ['"novel_p"', '"novel_honbun"', '"novel_a"'];
+		$classContent = ['p-novel__text--preface"', 'novel__text"', 'novel__text--afterword"'];
 		$contents = [];
 		foreach ($classContent as $class) {
 			$posStart = strpos($html, $class);
@@ -159,8 +159,8 @@ class Syosetu extends Model implements DriverInterface
 	private function parseArcs($html, $page)
 	{
 		$posStart = 0;
-		while ($posStart = strpos($html, 'chapter_title', $posStart)) {
-			$posStart = strpos($html, 'chapter_title">', $posStart) + 15;
+		while ($posStart = strpos($html, 'chapter-title', $posStart)) {
+			$posStart = strpos($html, 'chapter-title">', $posStart) + 15;
 			$posEnd = strpos($html, '</div>', $posStart);
 			$this->arcs[] = [
 				'title' => substr($html, $posStart, $posEnd - $posStart),
@@ -172,7 +172,8 @@ class Syosetu extends Model implements DriverInterface
 	}
 	private function detectPageNumber(string $html): int
 	{
-		$posStart = strpos($html, 'novelview_pager-next', 0);
+		// Look for the button "Next", and we can use that to search for the "last" button.
+		$posStart = strpos($html, 'c-pager__item--next', 0);
 		if ($posStart) {
 			$posStart = strpos($html, '?p=', $posStart) + 3;
 			$posEnd = strpos($html, '"', $posStart);
@@ -198,7 +199,6 @@ class Syosetu extends Model implements DriverInterface
 			if ($lastPage == 1) {
 				$lastPage = $this->detectPageNumber($html);
 			}
-
 			$arcs = $this->parseArcs($html, $page);
 			$posStart = 0;
 			$Found = true;
@@ -207,6 +207,7 @@ class Syosetu extends Model implements DriverInterface
 				$current_no = (($page - 1) * $this->chaptersPerPage) + $index;
 				$needle = $this->currentCode . '/' . $current_no;
 				$posStart = strpos($html, $needle, $posStart);
+				$posStart = strpos($html, $needle = '>', $posStart);
 				if (isset($arcs[$nextArc])) {
 					if ($posStart > $arcs[$nextArc]['position'] && $page == $arcs[$nextArc]['page']) {
 						$nextArc++;
@@ -214,28 +215,30 @@ class Syosetu extends Model implements DriverInterface
 				}
 
 				if ($posStart > 0) {
-
-					$posStart += strlen($needle) + 3;
+					$posStart += strlen($needle) + 1;
 					$posEnd = strpos($html, '</a>', $posStart);
-					$title = substr($html, $posStart, $posEnd - $posStart);
+					$title = trim(substr($html, $posStart, $posEnd - $posStart));
+
 					$posEnd = $posStart;
 
-					$needle = '<dt class="long_update">';
+					$needle = 'p-eplist__update">';
 					$posStart = strpos($html, $needle, $posStart);
 					$posStart += strlen($needle) + 1;
-					$posEnd = strpos($html, '</dt>', $posStart);
-					$dates = substr($html, $posStart, $posEnd - $posStart);
+					$posEnd = strpos($html, '</div>', $posStart);
 
-					$dateOriginalPost = null;
-					$dateOriginalRevision = null;
+					$datestring = substr($html, $posStart, $posEnd - $posStart);
 
-					$dateOriginalPost = str_replace('/', '-', substr($dates, 0, 16)) . ':00';
+					$pattern = '/(\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2})/';
+					preg_match_all($pattern, $datestring, $matches);
 
-					$needle2 = "title=";
-					$posStart2 = strpos($dates, $needle2, 16);
-					if ($posStart2 > 0) {
-						$dateOriginalRevision = str_replace('/', '-', substr($dates, $posStart2 + 6 + 1, 16)) . ':00';
-					}
+					$dateOriginalPost = $matches[0][0];
+					$dateOriginalRevision = $matches[0][1] ?? null;
+
+					if ($dateOriginalPost)
+						$dateOriginalPost = str_replace('/', '-', substr($dateOriginalPost, 0, 16)) . ':00';
+					if ($dateOriginalRevision)
+						$dateOriginalRevision = str_replace('/', '-', substr($dateOriginalRevision, 0, 16)) . ':00';
+
 					/**
 					 * Gotta use the same pointer as configured at the top, this is because this is the only "absolute" in Syosetu.
 					 * I previously used the chapter number (no), however, if the author releases a new chapter in between old chapters, all numbers are pushed up.
@@ -253,7 +256,6 @@ class Syosetu extends Model implements DriverInterface
 						'dateOriginalPost' => $dateOriginalPost,
 						'dateOriginalRevision' => $dateOriginalRevision,
 					];
-
 				} else {
 					$Found = false;
 					break;
