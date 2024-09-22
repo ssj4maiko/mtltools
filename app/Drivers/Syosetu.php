@@ -213,9 +213,9 @@ class Syosetu extends Model implements DriverInterface
 							$nextArc++;
 						}
 					}
-					$posStart += strlen($needle) + 1;
+					$posStart += 1;
 					$posEnd = strpos($html, '</a>', $posStart);
-					$title = substr($html, $posStart, $posEnd - $posStart);
+					$title = trim(str_replace("\n", '', substr($html, $posStart, $posEnd - $posStart)));
 
 					$posEnd = $posStart;
 
