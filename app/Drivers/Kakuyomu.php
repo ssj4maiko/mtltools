@@ -180,7 +180,7 @@ class Kakuyomu extends Model implements DriverInterface
 
         $listOfChapters = [];
 
-        $ArcTable = $this->getRefFromJson('Work:' . $this->currentCode)->tableOfContents;
+        $ArcTable = $this->getRefFromJson('Work:' . $this->currentCode)->tableOfContentsV2;
 
         for ($arcI = 0; $arcI < count($ArcTable); ++$arcI) {
             $arcRef = $this->getRefFromJson($ArcTable[$arcI]->__ref);
