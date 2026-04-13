@@ -106,3 +106,55 @@ This script will compile (relies on Docker) the project and then move the releva
 Now you have to upload the `public/` folder to your server, along with the `resources/views/index.blade.php` folder. You can just delete the `public/` folder from the server, and upload it again with the update server.
 
 And you should now have the frontend working in your server, relying on the URLs you set up in `resources/frontend/src/environments/environment.prod.ts`.
+
+# Screenshots
+
+(screenshot removed)
+Dashboard: A list of all Novels and Dictionaries
+
+(screenshot removed)
+List Novels: A more complete detailing of all novels registered, also contains extra information, and the list can be reordered.
+
+(screenshot removed)
+Chapter List: When opening a novel, you see its chapters. They can also be reordered, but by default, newer chapters appear at the top.
+
+The button "Update Chapters" will automatically search for new chapters and updates, so new chapters will appear at the top.
+
+You can also check all dictionaries related to the novel.
+
+(screenshot removed)
+When opening a chapter, you get a sidebar with the dictionary, its categories and entries.
+
+As can be seen, replaced keywords are hilighted, and you can also click on them to be redirected to it's position on the Sidebar's dictionary.
+
+(screenshot removed)
+If you hover your mouse at the sidebar, it will expand, revealing more options, you can chose a category, add and/or edit any entry, and update them dynamically in the main text (Click on the button "Refresh Translation", or if you want to remove them and go back to clean text, click on "Refresh to Original").
+
+(screenshot removed)
+Entries added, edited or deleted (when they were already saved before) will be highlighted in different forms. Once you "Save Modifications", that will be final.
+
+It also has support for suffixes and prefixes, very common in eastern languages. You may have to set up multiples if you need for more than one category though, but you can use the Hotkeys to duplicate an existing entry.
+
+(screenshot removed)
+The same is valid for Categories, although there is no way to delete Categories from this screen (you can rename them).
+
+They can be deleted from another screen though, but you are more likely to just want to rename them.
+
+(screenshot removed)
+There are hotkeys for many of the main functions, including some only available through it (duplication, useful for suffixes/prefixes). Press F1 for this screen.
+
+(screenshot removed)
+This is the "static page". It's a simple page with the text with the keywords already replace, and you can use it on any Machine Translation service you want.
+
+But for this to work, this page needs to be accessible for the services, so either you host it on the internet, or you use a ddns and open a port on your own network for it to reach.
+
+(screenshot removed)
+This is how the translated version appears, with the MTL and the source on the side (It uses CSS so that no MTL Service will try to translate it, but you also can't select/copy these).
+
+
+(screenshot removed)
+This is another, less useful screen to edit Entries, but it allows you to move entries to different Categories (So if you inserted one in the wrong place, you use this screen).
+
+It follows the same rules, with edited entries in green, deleted in red, added in blue.
+
+The screen before it is also the one that allows you to delete categories (if needed).

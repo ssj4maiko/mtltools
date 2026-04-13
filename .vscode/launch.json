@@ -5,11 +5,11 @@
 	"version": "0.2.0",
 	"configurations": [
         {
-            "name": "Xdebug for Backend Liberta",
+            "name": "MTL Tools",
             "type": "php",
             "request": "launch",
             "pathMappings": {
-                "/var/www/api": "${workspaceFolder}/",
+                "/var/www/api": "${workspaceFolder}",
             },
             "port": 9003
         },

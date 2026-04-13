@@ -4,6 +4,7 @@ namespace App\Services;
 use App\Models\Chapter;
 use App\Models\Novel;
 use App\Drivers\DriverInterface;
+use Illuminate\Support\Facades\DB;
 
 /**
  * This service only exists for online novels, not when importing from files.
@@ -11,14 +12,16 @@ use App\Drivers\DriverInterface;
 class ImportService
 {
 	private ?NovelService $novelService = null;
-	private function loadServiceNovel():void {
-		if(!$this->novelService){
+	private function loadServiceNovel(): void
+	{
+		if (!$this->novelService) {
 			$this->novelService = app(NovelService::class);
 		}
 	}
 	private ?ChapterService $chapterService = null;
-	private function loadServiceChapter(): void {
-		if(!$this->chapterService){
+	private function loadServiceChapter(): void
+	{
+		if (!$this->chapterService) {
 			$this->chapterService = app(ChapterService::class);
 		}
 	}
@@ -28,7 +31,8 @@ class ImportService
 	 * @param int $idNovel
 	 * @return Novel
 	 */
-	private function getNovel(int $idNovel):Novel {
+	private function getNovel(int $idNovel): Novel
+	{
 		$this->loadServiceNovel();
 		return $this->novelService->get($idNovel);
 	}
@@ -39,7 +43,8 @@ class ImportService
 	 * @param integer $no
 	 * @return Chapter
 	 */
-	private function getChapter(int $idNovel, int $no):Chapter {
+	private function getChapter(int $idNovel, int $no): Chapter
+	{
 		$this->loadServiceChapter();
 		return $this->chapterService->get($idNovel, $no);
 	}
@@ -79,9 +84,10 @@ class ImportService
 	 * @param array $foundChapter
 	 * @return Chapter
 	 */
-	private function updateDatabaseChapter(Chapter $KnownChapter, DriverInterface $driver, array $foundChapter = []):Chapter {
+	private function updateDatabaseChapter(Chapter $KnownChapter, DriverInterface $driver, array $foundChapter = []): Chapter
+	{
 		$update = false;
-		$updateMeta = $driver->getUpdateMeta($KnownChapter);
+		$updateMeta = $driver->getUpdateMeta($KnownChapter, $foundChapter);
 		if (isset($foundChapter['arc']) && $foundChapter['arc'] != $KnownChapter->arc) {
 			$KnownChapter->arc = $foundChapter['arc'];
 			$update = true;
@@ -107,9 +113,9 @@ class ImportService
 		}
 
 		if ($update) {
-			if(isset($foundChapter['no']))
+			if (isset($foundChapter['no']))
 				$KnownChapter->no = $foundChapter['no'];
-			if(isset($foundChapter['title']))
+			if (isset($foundChapter['title']))
 				$KnownChapter->title = $foundChapter['title'];
 
 			$KnownChapter->save();
@@ -123,7 +129,7 @@ class ImportService
 	 * @param integer $idNovel
 	 * @return Array
 	 */
-	public function importIndex(Novel $novel):Array
+	public function importIndex(Novel $novel): array
 	{
 		/** @var Novel $novel */
 		if (!$novel->driver) {
@@ -143,7 +149,8 @@ class ImportService
 	 * @param string $counter
 	 * @return array|null
 	 */
-	private function getChapterFromIndex(&$ImportedChapters, Chapter &$KnownChapter, string $counter) {
+	private function getChapterFromIndex(&$ImportedChapters, Chapter &$KnownChapter, string $counter)
+	{
 		$foundChapter = null;
 		if (count($ImportedChapters[$counter]) == 1) {
 			$foundChapter = $ImportedChapters[$counter][0];
@@ -186,12 +193,32 @@ class ImportService
 		return null;
 	}
 	/**
+	 * Returns an array with any chapter that may appear in the middle. Empty array otherwise.
+	 * The Index is the "no" value
+	 * 
+	 * @param array $ImportedChapters
+	 * @param int $totalChapters
+	 * @return array
+	 */
+	private function detectIfChapterInsertedMidway(array $ImportedChapters, int $totalChapters): array
+	{
+		$spaces = [];
+		foreach ($ImportedChapters as $creationDate => $ChapterArray) {
+			foreach ($ChapterArray as $Chapter) {
+				if ($Chapter['no'] < $totalChapters) {
+					$spaces[$Chapter['no']] = $Chapter;
+				}
+			}
+		}
+		return $spaces;
+	}
+	/**
 	 * Actively updates new chapters and fills them up
 	 *
 	 * @param integer $idNovel
 	 * @return Novel
 	 */
-	public function updateIndex(int $idNovel):Novel
+	public function updateIndex(int $idNovel): Novel
 	{
 		/** @var Novel $novel */
 		$novel = $this->getNovel($idNovel);
@@ -203,7 +230,6 @@ class ImportService
 
 		/** @var [idNovel:int, no:int, noCode:string, arc:string|null, title:string, dateOriginalPost:string, dateOriginalRevision:string|null][] $ImportedChapters */
 		$ImportedChapters = $driver->importIndex($idNovel);
-
 		/**
 		 * Before we did things in Order, meaning update the first chapters, then insert.
 		 * Kakuyomu disrupted this order, so I will be setting another array with the content.
@@ -211,7 +237,7 @@ class ImportService
 		 * First we do the new chapters (insert), then we do all the update checks
 		 * */
 		$Chapters2Check4Update = [];
-		
+
 		$pointer = $driver->getPointer();
 		/** @var ChapterService $chapterService */
 		$chapterService = app(ChapterService::class);
@@ -227,16 +253,16 @@ class ImportService
 			/** @var Chapter $foundChapter */
 			$foundChapter = null;
 			$pass = isset($ImportedChapters[$counter]);
-			if(!$pass){
+			if (!$pass) {
 				/**
 				 * The chapter was deleted, and reposted, thus earning a new post date
 				 */
 				$foundChapter = $this->checkIfAChapterWasDeleted($ImportedChapters, $KnownChapter);
-				if($foundChapter){
+				if ($foundChapter) {
 					$pass = true;
 				}
 			}
-			if($pass && !$foundChapter){
+			if ($pass && !$foundChapter) {
 				$foundChapter = $this->getChapterFromIndex($ImportedChapters, $KnownChapter, $counter);
 			}
 			/** @var [idNovel:int, no:int, noCode:string, arc:string|null, title:string, dateOriginalPost:string, dateOriginalRevision:string|null] $foundChapter */
@@ -246,23 +272,39 @@ class ImportService
 				dd('An already known chapter was not found on the server... Weird...', $counter, $KnownChapter, $ImportedChapters);
 			}
 		}
+		$spaces = $this->detectIfChapterInsertedMidway($ImportedChapters, $novel->numberChapters);
+
+		if (!empty($spaces)) {
+			DB::beginTransaction();
+			foreach ($spaces as $index => $chapter) {
+				DB::table('chapters')
+					->where('no', '>=', $index)
+					->where('idNovel', $novel->id)
+					->orderBy('no', 'DESC')
+					->update(['no' => DB::raw('no + 1')]);
+			}
+
+			DB::commit();
+			$KnownChapters = $chapterService->getAll($idNovel);
+		}
+
 		// Because I have been removing from the array already imported chapters, only new ones remain here
 		$numberChapters = count($Chapters2Check4Update);
-		if(!empty($ImportedChapters)){
-			$numberChapters += $this->InsertNewChapters($ImportedChapters, $driver);
+		if (!empty($ImportedChapters)) {
+			$numberChapters += $this->InsertNewChaptersWithoutText($ImportedChapters, $driver);
 		}
 		// Yeah, Do not update if it's just deleted content for now
-		if($numberChapters > $novel->numberChapters){
+		if ($numberChapters > $novel->numberChapters) {
 			$novel->numberChapters = $numberChapters;
 			// Save Number of Chapters
 			$novel->save();
 		}
 		// Same condition as the insert. I want to save the number of chapters before starting this.
-		if(!empty($ImportedChapters)){
-			$this->UpdateAllChaptersWithNoText($novel->id, $driver);
+		if (!empty($ImportedChapters)) {
+			$this->FillAllChaptersWithNoText($novel->id, $driver, $ImportedChapters);
 		}
 		// Finally, we start the updates now.
-		foreach($Chapters2Check4Update as $vector){
+		foreach ($Chapters2Check4Update as $vector) {
 			$chapter = $this->updateDatabaseChapter($vector[0], $driver, $vector[1]);
 		}
 
@@ -278,7 +320,8 @@ class ImportService
 	 * @param DriverInterface $driver
 	 * @return integer
 	 */
-	private function InsertNewChapters(array $ImportedChapters, DriverInterface $driver):int {
+	private function InsertNewChaptersWithoutText(array $ImportedChapters, DriverInterface $driver): int
+	{
 		$numberChapters = 0;
 		$chapters = [];
 		foreach ($ImportedChapters as $importedChapterSub) {
@@ -292,7 +335,7 @@ class ImportService
 					'dateOriginalPost' => $importedChapter['dateOriginalPost'],
 					'dateOriginalRevision' => $importedChapter['dateOriginalRevision'],
 				];
-				
+
 				/**
 				 * Once I removed adding the Content for the sake of improving speed,
 				 * because of Kakuyomu, I will also remove the date part now, because there would be conflicts later.
@@ -301,7 +344,7 @@ class ImportService
 				//$chapter = new Chapter($tmp);
 				//if (!$tmp['dateOriginalRevision']) {
 				//	// Because of Kakuyomu, makes an extra external access. Syosetsu works straight
-				//	$updateMeta = $driver->getUpdateMeta($chapter);
+				//	$updateMeta = $driver->getUpdateMeta($chapter, $importedChapter);
 				//	$tmp['dateOriginalPost'] = $updateMeta['dateOriginalPost'];
 				//	$tmp['dateOriginalRevision'] = $updateMeta['dateOriginalRevision'];
 				//}
@@ -314,15 +357,39 @@ class ImportService
 		Chapter::insert($chapters);
 		return $numberChapters;
 	}
-	public function UpdateAllChaptersWithNoText(int $idNovel, DriverInterface $driver):void {
+	private function findCurrentChapterInImportedChapters(string $pointer, Chapter $chapter, $importedChapters)
+	{
+		foreach ($importedChapters[$chapter->pointer] as $importedChapter) {
+			if (
+				$importedChapter['title'] == $chapter->title ||
+				$importedChapter['no'] == $chapter->no
+			) {
+				return $importedChapter;
+			}
+		}
+		return null;
+	}
+	public function FillAllChaptersWithNoText(int $idNovel, DriverInterface $driver, $ImportedChapters): void
+	{
 		$this->loadServiceChapter();
 		$chapters = $this->chapterService->getAllWithNoText($idNovel);
-		foreach($chapters as $chapter) {
+		//$pointer = $driver->getPointer();
+		foreach ($chapters as $chapter) {
+
 			if (!$chapter->dateOriginalRevision) {
+				//$ImportedChapter = $this->findCurrentChapterInImportedChapters($pointer, $chapter, $ImportedChapters);
+				//if (!$ImportedChapter) {
 				// Because of Kakuyomu, makes an extra external access. Syosetsu works straight
-				$updateMeta = $driver->getUpdateMeta($chapter);
+				$updateMeta = $driver->getUpdateMeta($chapter, [
+					// @TODO: This is a temporary makeup just to get it work for now. A better solution is needed.
+					'dateOriginalPost' => $chapter->dateOriginalPost,
+					'dateOriginalRevision' => $chapter->dateOriginalRevision
+				]);
 				$chapter->dateOriginalPost = $updateMeta['dateOriginalPost'];
 				$chapter->dateOriginalRevision = $updateMeta['dateOriginalRevision'];
+				// } else {
+				// 	// Weird situation, shouldn't ever come here.
+				// }
 			}
 			$chapter->textOriginal = $driver->importContent($chapter);
 			$chapter->save();
@@ -340,12 +407,12 @@ class ImportService
 		/** @var DriverInterface $driver */
 		$driver = $novel->startDriver();
 		$pointer = $driver->getPointer();
-		
+
 		$importedChapters = $this->importIndex($novel);
 		$foundChapter = $this->getChapterFromIndex($importedChapters, $chapter, $chapter->$pointer);
 
-		$meta = $driver->getUpdateMeta($chapter);
-		if($foundChapter){
+		$meta = $driver->getUpdateMeta($chapter, $foundChapter);
+		if ($foundChapter) {
 			$meta = array_merge($foundChapter, $meta);
 		}
 

@@ -8,11 +8,13 @@ use Illuminate\Support\Facades\Storage;
 class CacheDictionary extends Model
 {
     private $idDictionary = null;
-    public function __construct(int $idDictionary,$forceCache = false){
+    public function __construct(int $idDictionary, $forceCache = false)
+    {
         $this->setIdDictionary($idDictionary);
         $this->forceCache = $forceCache;
     }
-    public function setIdDictionary(int $idDictionary){
+    public function setIdDictionary(int $idDictionary)
+    {
         $this->idDictionary = $idDictionary;
     }
 
@@ -24,13 +26,13 @@ class CacheDictionary extends Model
      *
      * @return string
      */
-    public function create():string {
+    public function create(): string
+    {
         $dictionary = Dictionary::find($this->idDictionary);
         if ($dictionary) {
             $files = Storage::files(self::CACHEFOLDER);
             $cacheName = self::CACHEFOLDER . $this->idDictionary . '.json';
             $dateName = self::CACHEFOLDER . $this->idDictionary . '.txt';
-
             if (!$this->forceCache) {
                 $key = array_filter($files, function ($el) use ($dictionary) {
                     return strpos($el, self::CACHEFOLDER . $dictionary->id) === 0;
@@ -45,7 +47,7 @@ class CacheDictionary extends Model
                 }
             }
 
-            $entries = Dictionary::with(['countCategories','dictionaryCategory', 'dictionaryCategory.countEntries', 'dictionaryEntry'])
+            $entries = Dictionary::with(['countCategories', 'dictionaryCategory', 'dictionaryCategory.countEntries', 'dictionaryEntry'])
                 ->where('id', $this->idDictionary)
                 ->first();
             Storage::put($dateName, $dictionary->dateRevision);
@@ -61,7 +63,7 @@ class CacheDictionary extends Model
      *
      * @return string
      */
-    public function get():string
+    public function get(): string
     {
         $cacheName = self::CACHEFOLDER . $this->idDictionary . '.json';
         if (Storage::exists($cacheName)) {
@@ -77,7 +79,7 @@ class CacheDictionary extends Model
      *
      * @return bool
      */
-    public function del():bool
+    public function del(): bool
     {
         $cacheName = self::CACHEFOLDER . $this->idDictionary . '.json';
         $CacheChapters = new CacheChapters($this->idDictionary);

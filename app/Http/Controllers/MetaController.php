@@ -13,13 +13,14 @@ class MetaController extends Controller
         $this->MetaService = $MetaService;
     }
 
-	public function getMeta(Request $request){
-        $requests = $request->json()->get('meta');
+    public function getMeta(Request $request)
+    {
+        $requests = $request->get('meta');
         $vessel = [];
-        if($requests)
-            foreach($requests as $request){
-                $vessel[ $request ] = $this->MetaService->$request();
+        if ($requests)
+            foreach ($requests as $request) {
+                $vessel[$request] = $this->MetaService->$request();
             }
-		return $vessel;
-	}
+        return $vessel;
+    }
 }

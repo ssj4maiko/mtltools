@@ -1,0 +1,79 @@
+pipeline {
+  agent any
+
+  environment {
+    SSH_USER = credentials('SSH_USER')
+    SSH_HOST = credentials('SSH_HOST')
+    SSH_REMOTE_DIRECTORY_BASE = credentials('SSH_REMOTE_DIRECTORY_BASE')
+    SSH_CREDENTIALS = "./ssh_key" // credentials('SSH_CREDENTIALS')
+  }
+
+  stages {
+
+    stage('Debug info') {
+      steps {
+        echo "Which user is running right now? $USER"
+      }
+    }
+    stage('Build') {
+      parallel {
+        stage('Front-end') {
+          steps {
+            sh './.jenkins/docker-build-node.sh'
+          }
+        }
+
+        stage('Back-end') {
+          steps {
+            configFileProvider([configFile(fileId: '1443722d-d936-4d6f-aa12-8c067d8314a0', targetLocation: '.env')]) {
+              sh './.jenkins/docker-build-php.sh'
+            }
+          }
+        }
+      }
+    }
+
+    // stage('Test') {
+    //   parallel {
+    //     // stage('Front-end') {
+    //     //   steps {
+    //     //     sh './.jenkins/docker-test-node.sh'
+    //     //   }
+    //     // }
+
+    //     stage('Back-end') {
+    //       steps {
+    //         configFileProvider([
+    //           configFile(fileId: '1443722d-d936-4d6f-aa12-8c067d8314a0', targetLocation: '.env')
+    //         ]) {
+    //           sh './.jenkins/docker-test-php.sh'
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
+
+    stage('Compile') {
+      steps {
+        sh './.jenkins/docker-compile-frontend-production.sh'
+      }
+    }
+
+    stage('Remove docker') {
+      steps {
+        sh './.jenkins/docker-remove-images.sh'
+      }
+    }
+
+    stage('Deploying files') {
+      steps {
+        configFileProvider([
+          configFile(fileId: '1443722d-d936-4d6f-aa12-8c067d8314a0', targetLocation: '.env'),
+          configFile(fileId: '4d2b0a6b-c87e-453d-8fec-05b71bac39b9', targetLocation: 'ssh_key')
+        ]) {
+          sh './.jenkins/upload-files.sh'
+        }
+      }
+    }
+  }
+}
