@@ -91,6 +91,18 @@ class CacheChapters extends Model
      * @param string $direction = '-'|'+'|'='
      * @return string
      */
+    /**
+     * Prefix /images/... with config('app.images_base_url') in rendered static HTML (see config/app.php).
+     */
+    private static function absoluteImageUrls(string $html): string
+    {
+        $base = rtrim((string) config('app.images_base_url'), '/');
+        if ($base === '') {
+            return $html;
+        }
+        return preg_replace('~((?:src|href)=(["\']))/images/~', '$1' . $base . '/images/', $html) ?? $html;
+    }
+
     private function UrlCreator(Novel $novel, int $noChapter, int $part, int $total, string $direction = '='): ?string
     {
         // URL::current();
@@ -161,7 +173,7 @@ class CacheChapters extends Model
                     );
 
                     $view = view('cache/chapter', [
-                        'text' => $translated[2],
+                        'text' => self::absoluteImageUrls($translated[2]),
                         'title' => $translated[0],
                         'arc' => $translated[1],
                         'novel' => $novel,

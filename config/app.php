@@ -57,6 +57,14 @@ return [
     'asset_url' => env('ASSET_URL', null),
 
     /*
+    | Absolute public origin prefixed to /images/... only in the rendered /static pages.
+    | Their <base href="/"> makes relative image URLs resolve to translate.goog when viewed through
+    | Google Translate's proxy (which then 400s without the port). The DB and API keep relative paths.
+    | Example: IMAGES_BASE_URL=https://example.com:8443  (empty = keep relative)
+    */
+    'images_base_url' => env('IMAGES_BASE_URL', ''),
+
+    /*
     |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
