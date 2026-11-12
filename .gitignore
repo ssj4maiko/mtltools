@@ -40,6 +40,7 @@ yarn-error.log
 /sql/
 /sql-processed/
 *.sql
+!backend/test/integration/schema.sql
 *.sql.gz
 *.epub
 *.jsonl
