@@ -1,0 +1,27 @@
+{
+  "name": "mtltools-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "dev": "tsx watch src/server.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "cache-purge": "node dist/cli.js cache-purge"
+  },
+  "dependencies": {
+    "fastify": "^5.2.1",
+    "kysely": "^0.27.5",
+    "mysql2": "^3.11.5"
+  },
+  "devDependencies": {
+    "@testcontainers/mariadb": "^10.16.0",
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

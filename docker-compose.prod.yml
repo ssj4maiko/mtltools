@@ -10,6 +10,7 @@ services:
     restart: unless-stopped
     depends_on:
       - php
+      - backend
     networks:
       - mtltools-prod
     ports:
@@ -18,6 +19,7 @@ services:
       - ./:/var/www/api:ro
       - ./storage-prod:/var/www/api/storage:ro
       - ./.docker/prod/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./.docker/prod/nginx-node-chapter-list.conf:/etc/nginx/nginx-node-chapter-list.conf:ro
 
   php:
     build:
@@ -44,6 +46,33 @@ services:
       # Separate storage (logs, cache, sessions, chapter cache) so prod never mixes with dev.
       - ./storage-prod:/var/www/api/storage
       - ./.docker/prod/php.ini:/usr/local/etc/php/conf.d/99-prod.ini:ro
+
+
+  backend:
+    build:
+      context: ./backend
+    image: mtltools-prod-backend:latest
+    user: "1000:1000"
+    restart: unless-stopped
+    env_file: .env.prod
+    environment:
+      PORT: "3000"
+      CACHE_DIR: /app/cache
+      DB_HOST: db
+      DB_PORT: "3306"
+      NODE_ENV: production
+      NODE_OPTIONS: --max-old-space-size=96
+    mem_limit: 128m
+    memswap_limit: 128m
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - mtltools-prod
+    volumes:
+      - ./storage-prod/app/node-cache:/app/cache
+    ports:
+      - "127.0.0.1:8801:3000"
 
   db:
     image: mariadb:11.4

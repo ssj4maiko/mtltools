@@ -4,6 +4,7 @@ namespace App\Services;
 use App\Models\Chapter;
 use App\Models\Novel;
 use App\Drivers\DriverInterface;
+use App\Support\NodeCache;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -308,6 +309,7 @@ class ImportService
 			$chapter = $this->updateDatabaseChapter($vector[0], $driver, $vector[1]);
 		}
 
+		NodeCache::invalidateChapterList((int) $idNovel);
 		return $novel;
 	}
 	/**
@@ -417,6 +419,7 @@ class ImportService
 		}
 
 		$chapter = $this->updateDatabaseChapter($chapter, $driver, $meta);
+		NodeCache::invalidateChapterList((int) $novel->id);
 		return $chapter;
 	}
 }

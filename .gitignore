@@ -24,6 +24,7 @@ yarn-error.log
 .env.production
 /my.cnf
 /docs/node-rewrite-survey.md
+/docs/node-backend-plan.md
 /docs/private/
 /.images-backups-*
 
