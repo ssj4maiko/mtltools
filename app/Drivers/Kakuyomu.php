@@ -213,7 +213,7 @@ class Kakuyomu extends Model implements DriverInterface
     }
     private function setJson(string &$html): bool
     {
-        $jsonPosStart = strpos($html, 'application/json', 0);
+        $jsonPosStart = strpos($html, '__NEXT_DATA__', 0);
         $jsonPosStart = strpos($html, '>', $jsonPosStart) + 1;
 
         $jsonPosEnd = strpos($html, '</script', $jsonPosStart);
