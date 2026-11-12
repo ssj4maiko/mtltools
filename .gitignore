@@ -23,3 +23,5 @@ yarn-error.log
 *.bak-*
 .env.production
 /my.cnf
+/docs/node-rewrite-survey.md
+/docs/private/

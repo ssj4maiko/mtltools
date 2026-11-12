@@ -1,5 +1,5 @@
-# Local production stack for mtltools on MK-II.
-# Public URL: https://meganium-mba.ddns.net:63639 (TLS terminated on the reverse proxy, proxied to HOST_IP:8800)
+# Local production stack for mtltools.
+# Public access: TLS is terminated by an external reverse proxy that forwards to this host on port 8800.
 # Usage: docker compose -f docker-compose.prod.yml up -d
 # Isolated from the dev stack (docker-compose.yml): own project name, network, DB data dir and storage dir.
 name: mtltools-prod

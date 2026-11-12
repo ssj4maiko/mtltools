@@ -16,7 +16,7 @@ class TrustProxies extends Middleware
 
     /**
      * Trusted proxies can also be set with TRUSTED_PROXIES (comma-separated IPs/CIDRs, or "*").
-     * Used by the local production stack (the reverse proxy at PROXY_IP terminates TLS).
+     * Used by the local production stack, which sits behind a TLS-terminating reverse proxy.
      * When unset, behaviour is unchanged ($proxies above).
      *
      * @return array|string|null
