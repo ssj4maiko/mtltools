@@ -6,7 +6,7 @@
     <title>Chapter no found - ({{$no}}/{{$novel->numberChapters}}) {{$novel->nameCustom}} </title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <base href='/'>
-    <link href="{{ asset('css/styles.css') }}" rel="stylesheet">
+    <link href="/css/styles.css" rel="stylesheet">
 </head>
 
 <body>
