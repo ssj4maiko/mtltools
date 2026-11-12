@@ -7,6 +7,7 @@ use App\Models\DictionaryEntry;
 use App\Models\Dictionary;
 
 use Illuminate\Support\Facades\DB;
+use App\Support\NodeCache;
 
 class MassDictionaryService
 {
@@ -145,6 +146,7 @@ class MassDictionaryService
 			$return['dateRevision'] = $Dictionary->dateRevision;
 			$CacheDictionary = new CacheDictionary($Dictionary->id);
 			$CacheDictionary->del();
+			NodeCache::invalidateDictionary((int) $Dictionary->id);
 		} else {
 		}
 
@@ -188,6 +190,7 @@ class MassDictionaryService
 			$return['dateRevision'] = $DIC->dateRevision;
 			$CD = new CacheDictionary($idDictionary);
 			$CD->del();
+			NodeCache::invalidateDictionary((int) $idDictionary);
 		}
 
 		return $return;

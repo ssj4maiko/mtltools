@@ -24,6 +24,7 @@ yarn-error.log
 .env.production
 /my.cnf
 /docs/node-rewrite-survey.md
+/docs/node-backend-plan.md
 /docs/private/
 /.images-backups-*
 
@@ -39,6 +40,8 @@ yarn-error.log
 /sql/
 /sql-processed/
 *.sql
+!backend/test/integration/schema.sql
+/backend/dist
 *.sql.gz
 *.epub
 *.jsonl

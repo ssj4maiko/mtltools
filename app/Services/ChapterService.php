@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use App\Models\Chapter;
+use App\Support\NodeCache;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -36,13 +37,16 @@ class ChapterService
 	public function insert($chapter, $idNovel): Chapter
 	{
 		$data = Chapter::prepare($chapter);
-		return Chapter::create($data);
+		$created = Chapter::create($data);
+		NodeCache::invalidateChapterList((int) $idNovel);
+		return $created;
 	}
 	public function update($chapter, $idNovel, $no): Chapter
 	{
 		$chapter = Chapter::where(['idNovel' => $idNovel, 'no' => $no])->findOrFail();
 		$data = Chapter::prepare($chapter);
 		$chapter->update($data);
+		NodeCache::invalidateChapterList((int) $idNovel);
 
 		return $chapter;
 	}
@@ -52,7 +56,9 @@ class ChapterService
 		if ($no) {
 			$chapters->where('no', $no);
 		}
-		return $chapters->delete();
+		$deleted = $chapters->delete();
+		NodeCache::invalidateChapterList((int) $idNovel);
+		return $deleted;
 	}
 	public function getAllWithNoText($idNovel): Collection
 	{

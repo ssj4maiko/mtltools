@@ -3,6 +3,7 @@ namespace App\Services;
 
 use App\Models\DictionaryCategory;
 use Illuminate\Database\Eloquent\Collection;
+use App\Support\NodeCache;
 
 class DictionaryCategoryService
 {
@@ -23,6 +24,7 @@ class DictionaryCategoryService
 	public function insert($data, $idDictionary): DictionaryCategory {
 		$data['idDictionary'] = $idDictionary;
 		$category = DictionaryCategory::create($data);
+		NodeCache::invalidateDictionary((int) $idDictionary);
 		return $category->load('countEntries');
 	}
 	public function update($data, $idDictionary, $id): DictionaryCategory {
@@ -30,9 +32,11 @@ class DictionaryCategoryService
 		$data = DictionaryCategory::prepare($data);
 		$category->update($data);
 
+		NodeCache::invalidateDictionary((int) $idDictionary);
 		return $category->load('countEntries');
 	}
 	public function delete($idDictionary, $id = null): bool {
+		NodeCache::invalidateDictionary((int) $idDictionary);
 		$cats = DictionaryCategory::where(['idDictionary' => $idDictionary]);
 		if($id){
 			$cats->where('id',$id);

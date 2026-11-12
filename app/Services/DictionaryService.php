@@ -4,6 +4,7 @@ namespace App\Services;
 use App\Models\Dictionary;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use App\Support\NodeCache;
 
 class DictionaryService
 {
@@ -38,6 +39,7 @@ class DictionaryService
 			'name'	=>	'default'
 		], $Dictionary->id);
 
+		NodeCache::invalidateDictionary((int) $Dictionary->id);
 		return $Dictionary->load('novel','countCategories');
 	}
 	public function update($data, $id): Dictionary {
@@ -47,6 +49,7 @@ class DictionaryService
 		if (isset($data['novels'])) {
 			$Dictionary->setNovels($data['novels']);
 		}
+		NodeCache::invalidateDictionary((int) $Dictionary->id);
 		return $Dictionary->load('novel','countCategories');
 	}
 	public function delete($id): bool {
@@ -55,7 +58,9 @@ class DictionaryService
 		$DictionaryCategoryService = app(DictionaryCategoryService::class);
 		if($DictionaryCategoryService->delete($dict->id)){
 			$dict->novel()->detach();
-			return $dict->delete();
+			$ok = $dict->delete();
+			NodeCache::invalidateDictionary((int) $id);
+			return $ok;
 		}
 		return false;
 	}
