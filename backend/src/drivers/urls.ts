@@ -22,3 +22,21 @@ export function chapterUrlSource(opts: {
   }
   return null;
 }
+
+/** Novel-level source URL. Manual/unknown drivers are an empty string, matching Novel::getUrlSource(). */
+export function novelUrlSource(opts: {
+  driver: NovelDriver;
+  code: string;
+  flagR18: number | boolean;
+}): string {
+  const driver = opts.driver ?? "";
+  const r18 = typeof opts.flagR18 === "boolean" ? opts.flagR18 : Number(opts.flagR18) !== 0;
+  if (driver === "syosetu") {
+    const host = r18 ? "novel18" : "ncode";
+    return `https://${host}.syosetu.com/${opts.code}/`;
+  }
+  if (driver === "kakuyomu") {
+    return `https://kakuyomu.jp/works/${opts.code}`;
+  }
+  return "";
+}

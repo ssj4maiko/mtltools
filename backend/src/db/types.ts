@@ -30,7 +30,44 @@ export interface ChaptersTable {
   hasText: Generated<number>;
 }
 
+export interface DictionariesTable {
+  id: Generated<number>;
+  name: string;
+  language: string;
+  dateCreated: Generated<string>;
+  dateRevision: string | null;
+}
+
+export interface NovelsDictionariesTable {
+  id: Generated<number>;
+  idNovel: number;
+  idDictionary: number;
+}
+
+export interface DictionaryCategoriesTable {
+  id: Generated<number>;
+  idDictionary: number;
+  name: string;
+}
+
+export interface DictionaryEntriesTable {
+  id: Generated<number>;
+  idCategory: number;
+  entryOriginal: string | null;
+  entryTranslation: string;
+  description: string | null;
+  length: number;
+  idDictionary: number | null;
+  sufix: number | null;
+  prefix: number | null;
+  simplified: string | null;
+}
+
 export interface Database {
   novels: NovelsTable;
   chapters: ChaptersTable;
+  dictionaries: DictionariesTable;
+  novelsDictionaries: NovelsDictionariesTable;
+  dictionaryCategories: DictionaryCategoriesTable;
+  dictionaryEntries: DictionaryEntriesTable;
 }

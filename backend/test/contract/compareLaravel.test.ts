@@ -42,6 +42,34 @@ async function nodeGet(path: string): Promise<{ status: number; body: string }> 
   return { status: res.status, body: await res.text() };
 }
 
+async function laravelPost(path: string, payload: unknown): Promise<{ status: number; body: string }> {
+  if (!laravelBase) {
+    throw new Error(
+      "MTLTOOLS_LARAVEL_URL is required. Use docker compose -f docker-compose.backend.yml -f docker-compose.backend.compare.yml run --rm tools ...",
+    );
+  }
+  const res = await fetch(`${laravelBase}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  return { status: res.status, body: await res.text() };
+}
+
+async function nodePost(path: string, payload: unknown): Promise<{ status: number; body: string }> {
+  const res = await fetch(`${nodeBase}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  return { status: res.status, body: await res.text() };
+}
+
+const catalogGets = (process.env.MTLTOOLS_COMPARE_GETS ?? "/api/novel,/api/novel/1,/api/novel/44,/api/novel/51,/api/novel/dictionary/1,/api/dictionary,/api/dictionary/1,/api/dictionary/52,/api/dictionary/novel/1,/api/category/1,/api/category/1/1,/api/cache/dictionary/52")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+
 function assertSameBody(label: string, laravel: string, node: string) {
   if (laravel !== node) {
     const max = Math.max(laravel.length, node.length);
@@ -71,6 +99,26 @@ describe.skipIf(!enabled)("byte-for-byte compare vs Laravel (live novels, not co
     expect(laravel.status).toBe(200);
     expect(nodeRes.status).toBe(200);
     assertSameBody(`chapter ${idNovel}/${no}`, laravel.body, nodeRes.body);
+    expect(nodeRes.body).toBe(laravel.body);
+  });
+
+  it.each(catalogGets)("GET %s", async (path) => {
+    const [laravel, nodeRes] = await Promise.all([laravelGet(path), nodeGet(path)]);
+    expect(laravel.status).toBe(200);
+    expect(nodeRes.status).toBe(200);
+    assertSameBody(path, laravel.body, nodeRes.body);
+    expect(nodeRes.body).toBe(laravel.body);
+  });
+
+  it("POST /api/meta drivers+languages", async () => {
+    const payload = { meta: ["drivers", "languages"] };
+    const [laravel, nodeRes] = await Promise.all([
+      laravelPost("/api/meta", payload),
+      nodePost("/api/meta", payload),
+    ]);
+    expect(laravel.status).toBe(200);
+    expect(nodeRes.status).toBe(200);
+    assertSameBody("POST /api/meta", laravel.body, nodeRes.body);
     expect(nodeRes.body).toBe(laravel.body);
   });
 });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { chapterUrlSource } from "../../src/drivers/urls.js";
+import { chapterUrlSource, novelUrlSource } from "../../src/drivers/urls.js";
 
 describe("chapterUrlSource", () => {
   it("builds Syosetu ncode and R18 novel18 URLs from chapter number", () => {
@@ -24,5 +24,27 @@ describe("chapterUrlSource", () => {
     expect(
       chapterUrlSource({ driver: null, code: "x", flagR18: 0, no: 1, noCode: null }),
     ).toBeNull();
+  });
+});
+
+describe("novelUrlSource", () => {
+  it("adds a trailing slash for Syosetu and uses novel18 when R18", () => {
+    expect(novelUrlSource({ driver: "syosetu", code: "n1234ab", flagR18: 0 })).toBe(
+      "https://ncode.syosetu.com/n1234ab/",
+    );
+    expect(novelUrlSource({ driver: "syosetu", code: "n1234ab", flagR18: 1 })).toBe(
+      "https://novel18.syosetu.com/n1234ab/",
+    );
+  });
+
+  it("builds a Kakuyomu work URL with no trailing slash", () => {
+    expect(novelUrlSource({ driver: "kakuyomu", code: "1234567890", flagR18: 1 })).toBe(
+      "https://kakuyomu.jp/works/1234567890",
+    );
+  });
+
+  it("returns an empty string for manual / unknown drivers", () => {
+    expect(novelUrlSource({ driver: "manual", code: "x", flagR18: 0 })).toBe("");
+    expect(novelUrlSource({ driver: null, code: "x", flagR18: 0 })).toBe("");
   });
 });

@@ -5,7 +5,7 @@ import { buildApp } from "./app.js";
 const config = loadConfig();
 const pool = createPoolFromConfig(config);
 const db = createDb(pool);
-const app = await buildApp({ db, cacheDir: config.cacheDir });
+const app = await buildApp({ db, cacheDir: config.cacheDir, laravelDictionaryCacheDir: config.laravelDictionaryCacheDir });
 
 const shutdown = async () => {
   await app.close();

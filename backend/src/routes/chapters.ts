@@ -4,14 +4,7 @@ import {
   ChapterNotFoundError,
   NovelNotFoundError,
 } from "../services/chapterList.js";
-
-function jsonReply(reply: any, body: string) {
-  return reply
-    .header("Content-Type", "application/json")
-    .header("Cache-Control", "no-cache, private")
-    .header("Access-Control-Allow-Origin", "*")
-    .send(body);
-}
+import { jsonReply } from "./http.js";
 
 export async function chapterRoutes(app: FastifyInstance, opts: { service: ChapterListService }) {
   app.get<{ Params: { idNovel: string }; Querystring: { search?: string } }>(

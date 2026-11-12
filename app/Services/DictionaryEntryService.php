@@ -3,6 +3,7 @@ namespace App\Services;
 
 use App\Models\DictionaryEntry;
 use Illuminate\Database\Eloquent\Collection;
+use App\Support\NodeCache;
 
 class DictionaryEntryService
 {
@@ -20,7 +21,9 @@ class DictionaryEntryService
 		$data['length'] = strlen($data['simplified']);
 		if ($data['sufix'] == 'null') $data['sufix'] = null;
 		if ($data['prefix'] == 'null') $data['prefix'] = null;
-		return DictionaryEntry::create($data);
+		$entry = DictionaryEntry::create($data);
+		NodeCache::invalidateDictionary((int) $idDictionary);
+		return $entry;
 	}
 	public function update($data,$idDictionary, $idCategory, $id): DictionaryEntry {
 		$entry = DictionaryEntry::findOrFail($id);
@@ -29,9 +32,11 @@ class DictionaryEntryService
 		if($data['sufix'] == 'null') $data['sufix'] = null;
 		if($data['prefix'] == 'null') $data['prefix'] = null;
 		$entry->update($data);
+		NodeCache::invalidateDictionary((int) $idDictionary);
 		return $entry;
 	}
 	public function delete($idDictionary, $idCategory, $id = null): bool {
+		NodeCache::invalidateDictionary((int) $idDictionary);
 		$entries = DictionaryEntry::where('idDictionary',$idDictionary);
 		if(is_array($idCategory)){
 			$entries->whereIn('idCategory',$idCategory);

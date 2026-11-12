@@ -6,6 +6,7 @@ function optional(name: string, fallback: string, env: NodeJS.ProcessEnv = proce
 export type AppConfig = {
   port: number;
   cacheDir: string;
+  laravelDictionaryCacheDir: string;
   db: {
     host: string;
     port: number;
@@ -19,6 +20,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
   return {
     port: Number(optional("PORT", "3000", env)),
     cacheDir: optional("CACHE_DIR", "./cache", env),
+    laravelDictionaryCacheDir: optional("LARAVEL_DICTIONARY_CACHE_DIR", "", env),
     db: {
       host: optional("DB_HOST", "127.0.0.1", env),
       port: Number(optional("DB_PORT", "3306", env)),

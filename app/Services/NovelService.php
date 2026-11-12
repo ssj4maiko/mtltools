@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 use Illuminate\Support\Facades\DB;
+use App\Support\NodeCache;
 
 class NovelService
 {
@@ -45,6 +46,7 @@ class NovelService
 			$novel->setDictionaries($data['dictionaries']);
 		}
 
+		NodeCache::invalidateNovelCatalog((int) $novel->id);
 		return $novel->load('dictionary');
 	}
 	public function update($data, $id): Novel
@@ -56,6 +58,7 @@ class NovelService
 		if(isset($data['dictionaries'])){
 			$novel->setDictionaries($data['dictionaries']);
 		}
+		NodeCache::invalidateNovelCatalog((int) $novel->id);
 		return $novel->load('dictionary');
 	}
 	public function delete($id): bool
@@ -65,7 +68,9 @@ class NovelService
 		/** @var ChapterService $chapterService */
 		$chapterService = app(ChapterService::class);
 		$chapterService->delete($novel->id);
-		return $novel->delete();
+		$ok = $novel->delete();
+		NodeCache::invalidateNovelCatalog((int) $id);
+		return $ok;
 	}
 	
 }

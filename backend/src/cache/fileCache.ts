@@ -53,6 +53,7 @@ export class FileCache {
   async invalidateNovel(idNovel: number): Promise<void> {
     await this.invalidateChapterList(idNovel);
     await this.invalidateChaptersForNovel(idNovel);
+    await this.invalidateNovelCatalog(idNovel);
   }
 
   async invalidateAllChapterLists(): Promise<void> {
@@ -66,5 +67,100 @@ export class FileCache {
   async invalidateAll(): Promise<void> {
     await this.invalidateAllChapterLists();
     await this.invalidateAllChapters();
+    await this.invalidateCatalog();
+  }
+
+  novelListPath(): string {
+    return join(this.root, "novel-list", "all.json");
+  }
+
+  novelPath(idNovel: number): string {
+    return join(this.root, "novel", `${idNovel}.json`);
+  }
+
+  novelsByDictionaryPath(idDictionary: number): string {
+    return join(this.root, "novels-by-dictionary", `${idDictionary}.json`);
+  }
+
+  dictionaryListPath(): string {
+    return join(this.root, "dictionary-list", "all.json");
+  }
+
+  dictionaryPath(idDictionary: number): string {
+    return join(this.root, "dictionary", `${idDictionary}.json`);
+  }
+
+  dictionariesByNovelPath(idNovel: number): string {
+    return join(this.root, "dictionaries-by-novel", `${idNovel}.json`);
+  }
+
+  categoryListPath(idDictionary: number): string {
+    return join(this.root, "category-list", `${idDictionary}.json`);
+  }
+
+  categoryPath(idDictionary: number, idCategory: number): string {
+    return join(this.root, "category", String(idDictionary), `${idCategory}.json`);
+  }
+
+  entryListPath(idDictionary: number, idCategory: number): string {
+    return join(this.root, "entry-list", String(idDictionary), `${idCategory}.json`);
+  }
+
+  entryPath(idEntry: number): string {
+    return join(this.root, "entry", `${idEntry}.json`);
+  }
+
+  cacheDictionaryPath(idDictionary: number): string {
+    return join(this.root, "cache-dictionary", `${idDictionary}.json`);
+  }
+
+  metaPath(): string {
+    return join(this.root, "meta", "meta.json");
+  }
+
+  async invalidateCatalog(): Promise<void> {
+    await Promise.all(
+      [
+        "novel-list",
+        "novel",
+        "novels-by-dictionary",
+        "dictionary-list",
+        "dictionary",
+        "dictionaries-by-novel",
+        "category-list",
+        "category",
+        "entry-list",
+        "entry",
+        "cache-dictionary",
+        "meta",
+      ].map((dir) => rm(join(this.root, dir), { recursive: true, force: true })),
+    );
+  }
+
+  async invalidateDictionary(idDictionary: number): Promise<void> {
+    await Promise.all([
+      rm(this.dictionaryListPath(), { force: true }),
+      rm(this.dictionaryPath(idDictionary), { force: true }),
+      rm(this.novelsByDictionaryPath(idDictionary), { force: true }),
+      rm(this.categoryListPath(idDictionary), { force: true }),
+      rm(join(this.root, "category", String(idDictionary)), { recursive: true, force: true }),
+      rm(join(this.root, "entry-list", String(idDictionary)), { recursive: true, force: true }),
+      rm(this.cacheDictionaryPath(idDictionary), { force: true }),
+      // Nested dictionary payloads on every novel list/detail can be stale.
+      rm(join(this.root, "novel-list"), { recursive: true, force: true }),
+      rm(join(this.root, "novel"), { recursive: true, force: true }),
+      rm(join(this.root, "dictionaries-by-novel"), { recursive: true, force: true }),
+    ]);
+  }
+
+  async invalidateNovelCatalog(idNovel: number): Promise<void> {
+    await Promise.all([
+      rm(this.novelListPath(), { force: true }),
+      rm(this.novelPath(idNovel), { force: true }),
+      rm(this.dictionariesByNovelPath(idNovel), { force: true }),
+      rm(join(this.root, "dictionary-list"), { recursive: true, force: true }),
+      rm(join(this.root, "dictionary"), { recursive: true, force: true }),
+      rm(join(this.root, "novels-by-dictionary"), { recursive: true, force: true }),
+    ]);
   }
 }
