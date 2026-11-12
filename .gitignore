@@ -3,6 +3,7 @@
 /public/storage
 /storage/*.key
 /vendor
+/DATABASE
 .env
 .env.backup
 .phpunit.result.cache
@@ -10,3 +11,34 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
+# local production stack (MK-II)
+.env.prod
+.env.prod.db
+/dumps
+/DATABASE_PROD
+/storage-prod
+/.migration-backups-*
+/resources/frontend/dist.bak-*
+/.step0-backups-*
+*.bak-*
+.env.production
+/my.cnf
+/docs/node-rewrite-survey.md
+/docs/private/
+/.images-backups-*
+
+# Novel content must never be committed (paid novels): images, chapter text, SQL, dumps, manifests, caches
+/storage-prod/
+/storage/app/public/images/
+/storage/app/public/chapters/
+/storage/app/public/cache/
+/storage/app/image-extraction/
+/public/images/
+/images/
+/out/
+/sql/
+/sql-processed/
+*.sql
+*.sql.gz
+*.epub
+*.jsonl

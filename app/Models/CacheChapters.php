@@ -64,7 +64,9 @@ class CacheChapters extends Model
         if ($this->idNovel === 0) {
             throw new \Exception("There is no novel, you are doing something wrong.", 404);
         }
-        $cacheName = self::CACHEFOLDER . $this->idNovel . '/' . $this->idDictionary . '/' . $this->noChapter . '-' . $part . '.html';
+        // Must match the path written by create() (and purged by del()): chapters/{idDictionary}/{idNovel}/{no}-{part}.html
+        // It used to read chapters/{idNovel}/{idDictionary}/..., so the cache never hit (step0 2026-11-12).
+        $cacheName = self::CACHEFOLDER . $this->idDictionary . '/' . $this->idNovel . '/' . $this->noChapter . '-' . $part . '.html';
         if (Storage::exists($cacheName)) {
             return [
                 'view' => Storage::get($cacheName),
@@ -110,7 +112,8 @@ class CacheChapters extends Model
                 break;
         }
         $array = [$novel->id, $this->idDictionary, $noChapter, $part + 1];
-        return $this->URLGenerator->to('/static/' . implode('/', $array));
+        // Relative URL: cached HTML must not embed whichever host rendered it first (LAN IP, old domain...).
+        return '/static/' . implode('/', $array);
     }
     /**
      * Creation of the cache
