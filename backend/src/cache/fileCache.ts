@@ -8,6 +8,14 @@ export class FileCache {
     return join(this.root, "chapter-list", `${idNovel}.json`);
   }
 
+  chapterPath(idNovel: number, no: number): string {
+    return join(this.root, "chapter", String(idNovel), `${no}.json`);
+  }
+
+  chaptersDir(idNovel: number): string {
+    return join(this.root, "chapter", String(idNovel));
+  }
+
   async get(filePath: string): Promise<Buffer | null> {
     try {
       return await readFile(filePath);
@@ -34,7 +42,29 @@ export class FileCache {
     await rm(this.chapterListPath(idNovel), { force: true });
   }
 
+  async invalidateChapter(idNovel: number, no: number): Promise<void> {
+    await rm(this.chapterPath(idNovel, no), { force: true });
+  }
+
+  async invalidateChaptersForNovel(idNovel: number): Promise<void> {
+    await rm(this.chaptersDir(idNovel), { recursive: true, force: true });
+  }
+
+  async invalidateNovel(idNovel: number): Promise<void> {
+    await this.invalidateChapterList(idNovel);
+    await this.invalidateChaptersForNovel(idNovel);
+  }
+
   async invalidateAllChapterLists(): Promise<void> {
     await rm(join(this.root, "chapter-list"), { recursive: true, force: true });
+  }
+
+  async invalidateAllChapters(): Promise<void> {
+    await rm(join(this.root, "chapter"), { recursive: true, force: true });
+  }
+
+  async invalidateAll(): Promise<void> {
+    await this.invalidateAllChapterLists();
+    await this.invalidateAllChapters();
   }
 }

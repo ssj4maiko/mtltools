@@ -10,6 +10,7 @@
     "dev": "tsx watch src/server.ts",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:live": "vitest run --config vitest.live.config.ts",
     "cache-purge": "node dist/cli.js cache-purge"
   },
   "dependencies": {

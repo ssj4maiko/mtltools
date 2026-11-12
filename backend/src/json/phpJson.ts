@@ -1,6 +1,6 @@
 /**
  * PHP json_encode() with default flags (0): compact, escaped slashes, \uXXXX for non-ASCII.
- * Laravel's chapter-list responses are encoded this way.
+ * Laravel's chapter list and single-chapter responses are encoded this way.
  */
 export function phpJsonEncode(value: unknown): string {
   const json = JSON.stringify(value);

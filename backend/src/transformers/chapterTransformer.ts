@@ -57,3 +57,28 @@ export function transformChapterListItem(row: ChapterListRow): ChapterListItem {
     }),
   };
 }
+
+export type ChapterDetailRow = ChapterListRow & {
+  textOriginal: string | null;
+  textRevision: string | null;
+  textCustom: string | null;
+};
+
+export type ChapterDetail = ChapterListItem & {
+  textOriginal?: string;
+  textRevision?: string;
+  textCustom?: string;
+};
+
+/** Match Laravel `if ($chapter->textOriginal)` for typical strings (omit null/empty). */
+function hasPresentText(value: string | null | undefined): value is string {
+  return value !== null && value !== undefined && value !== "";
+}
+
+export function transformChapterDetail(row: ChapterDetailRow): ChapterDetail {
+  const item: ChapterDetail = transformChapterListItem(row);
+  if (hasPresentText(row.textOriginal)) item.textOriginal = row.textOriginal;
+  if (hasPresentText(row.textRevision)) item.textRevision = row.textRevision;
+  if (hasPresentText(row.textCustom)) item.textCustom = row.textCustom;
+  return item;
+}

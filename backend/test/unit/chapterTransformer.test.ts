@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { phpJsonEncode } from "../../src/json/phpJson.js";
-import { transformChapterListItem, type ChapterListRow } from "../../src/transformers/chapterTransformer.js";
+import { transformChapterDetail, transformChapterListItem, type ChapterListRow } from "../../src/transformers/chapterTransformer.js";
 
 const base: ChapterListRow = {
   idNovel: 1,
@@ -62,5 +62,51 @@ describe("transformChapterListItem", () => {
     expect(json).toContain("https:\\/\\/ncode.syosetu.com\\/n1234ab\\/2");
     expect(json).toContain('"hasText":1');
     expect(json).toContain('"dateOriginalRevision":null');
+  });
+});
+
+describe("transformChapterDetail", () => {
+  it("appends present text fields after the list keys and omits null or empty ones", () => {
+    const item = transformChapterDetail({
+      ...base,
+      textOriginal: "body / 本文",
+      textRevision: "rev",
+      textCustom: null,
+    });
+    expect(Object.keys(item)).toEqual([
+      "idNovel",
+      "no",
+      "arc",
+      "title",
+      "dateOriginalPost",
+      "dateOriginalRevision",
+      "dateCreated",
+      "dateRevision",
+      "hasText",
+      "urlSource",
+      "textOriginal",
+      "textRevision",
+    ]);
+    expect(item.textOriginal).toBe("body / 本文");
+    expect(item.textRevision).toBe("rev");
+    expect(item.textCustom).toBeUndefined();
+    const json = phpJsonEncode(item);
+    expect(json).toContain("\\/");
+    expect(json).toContain("\\u672c\\u6587");
+    expect(json.includes("textCustom")).toBe(false);
+  });
+
+  it("omits all text keys when they are null", () => {
+    const item = transformChapterDetail({
+      ...base,
+      hasText: 0,
+      textOriginal: null,
+      textRevision: null,
+      textCustom: null,
+    });
+    expect(item.textOriginal).toBeUndefined();
+    expect(item.textRevision).toBeUndefined();
+    expect(item.textCustom).toBeUndefined();
+    expect(Object.keys(item).some((k) => k.startsWith("text"))).toBe(false);
   });
 });

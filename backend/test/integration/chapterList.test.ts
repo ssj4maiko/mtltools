@@ -124,7 +124,7 @@ async function seed() {
         arc: "Arc",
         title: "ep",
         textOriginal: "synthetic",
-        textRevision: null,
+        textRevision: "revised / 改",
         textCustom: null,
         dateOriginalPost: "2021-03-04 05:06:07",
         dateOriginalRevision: null,
@@ -223,5 +223,61 @@ describe("GET /api/chapter/:idNovel", () => {
     await cache.invalidateChapterList(1);
     const fresh = await request("/api/chapter/1");
     expect(fresh.body).toBe(first.body);
+  });
+
+
+  it("returns a single chapter with text fields and the Laravel JSON contract", async () => {
+    const res = await request("/api/chapter/1/1");
+    expect(res.statusCode).toBe(200);
+    expect(res.headers["content-type"]).toMatch(/application\/json/);
+    const expected =
+      '{"idNovel":1,"no":1,"arc":null,"title":"\\u4e00","dateOriginalPost":"2020-01-01 00:00:00","dateOriginalRevision":null,"dateCreated":"2020-01-01T00:00:01.000000Z","dateRevision":null,"hasText":1,"urlSource":"https:\\/\\/ncode.syosetu.com\\/n1234ab\\/1","textOriginal":"synthetic body 1"}';
+    expect(res.body).toBe(expected);
+    const parsed = JSON.parse(res.body);
+    expect(parsed.textOriginal).toBe("synthetic body 1");
+    expect(parsed.textRevision).toBeUndefined();
+  });
+
+  it("includes textRevision when set and builds a Kakuyomu urlSource", async () => {
+    const res = await request("/api/chapter/3/1");
+    expect(res.statusCode).toBe(200);
+    const expected =
+      '{"idNovel":3,"no":1,"arc":"Arc","title":"ep","dateOriginalPost":"2021-03-04 05:06:07","dateOriginalRevision":null,"dateCreated":"2021-03-04T05:06:08.000000Z","dateRevision":null,"hasText":1,"urlSource":"https:\\/\\/kakuyomu.jp\\/works\\/12345678901234567890\\/episodes\\/99887766","textOriginal":"synthetic","textRevision":"revised \\\/ \\u6539"}';
+    expect(res.body).toBe(expected);
+  });
+
+  it("omits text keys for a chapter without text", async () => {
+    const res = await request("/api/chapter/2/10");
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toBe(
+      '{"idNovel":2,"no":10,"arc":null,"title":"manual","dateOriginalPost":null,"dateOriginalRevision":null,"dateCreated":"2022-05-06T07:08:09.000000Z","dateRevision":null,"hasText":0,"urlSource":null}',
+    );
+    const parsed = JSON.parse(res.body);
+    expect(parsed.textOriginal).toBeUndefined();
+  });
+
+  it("returns 404 for a missing chapter", async () => {
+    const res = await request("/api/chapter/1/99");
+    expect(res.statusCode).toBe(404);
+  });
+
+  it("serves a single-chapter disk cache and refreshes after invalidation", async () => {
+    const first = await request("/api/chapter/1/2");
+    expect(first.statusCode).toBe(200);
+    const cache = new FileCache(cacheDir);
+    const path = cache.chapterPath(1, 2);
+    const onDisk = await readFile(path, "utf8");
+    expect(onDisk).toBe(first.body);
+
+    await writeFile(path, '{"cached":true}');
+    const cached = await request("/api/chapter/1/2");
+    expect(cached.body).toBe('{"cached":true}');
+
+    await cache.invalidateNovel(1);
+    const fresh = await request("/api/chapter/1/2");
+    expect(fresh.body).toBe(first.body);
+    const list = await request("/api/chapter/1");
+    expect(list.statusCode).toBe(200);
+    expect(JSON.parse(list.body)[0].textOriginal).toBeUndefined();
   });
 });
