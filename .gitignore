@@ -25,3 +25,20 @@ yarn-error.log
 /my.cnf
 /docs/node-rewrite-survey.md
 /docs/private/
+/.images-backups-*
+
+# Novel content must never be committed (paid novels): images, chapter text, SQL, dumps, manifests, caches
+/storage-prod/
+/storage/app/public/images/
+/storage/app/public/chapters/
+/storage/app/public/cache/
+/storage/app/image-extraction/
+/public/images/
+/images/
+/out/
+/sql/
+/sql-processed/
+*.sql
+*.sql.gz
+*.epub
+*.jsonl
