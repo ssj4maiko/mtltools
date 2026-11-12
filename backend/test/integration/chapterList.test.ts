@@ -1,22 +1,11 @@
-import { mkdtemp, readFile, writeFile } from "node:fs/promises";
-import { readFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
-import { MariaDbContainer, type StartedMariaDbContainer } from "@testcontainers/mariadb";
+import { readFile, writeFile } from "node:fs/promises";
+import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import mysql from "mysql2/promise";
-import { createDb, createPoolFromConfig } from "../../src/db/client.js";
-import { buildApp } from "../../src/app.js";
-import { loadConfig } from "../../src/config.js";
 import { FileCache } from "../../src/cache/fileCache.js";
 import type { FastifyInstance } from "fastify";
 import type { Db } from "../../src/db/client.js";
+import { applySchema, schemaSql, startApp } from "./harness.js";
 
-const here = dirname(fileURLToPath(import.meta.url));
-const schemaSql = readFileSync(join(here, "schema.sql"), "utf8");
-
-let container: StartedMariaDbContainer;
 let db: Db;
 let app: FastifyInstance;
 let cacheDir: string;
@@ -138,43 +127,18 @@ async function seed() {
 
 describe("GET /api/chapter/:idNovel", () => {
   beforeAll(async () => {
-    container = await new MariaDbContainer("mariadb:11.4").start();
-    const conn = await mysql.createConnection({
-      host: container.getHost(),
-      port: container.getPort(),
-      user: container.getUsername(),
-      password: container.getUserPassword(),
-      database: container.getDatabase(),
-      multipleStatements: true,
-    });
-    await conn.query(schemaSql);
-    await conn.end();
-
-    const config = loadConfig({
-      ...process.env,
-      DB_HOST: container.getHost(),
-      DB_PORT: String(container.getPort()),
-      DB_DATABASE: container.getDatabase(),
-      DB_USERNAME: container.getUsername(),
-      DB_PASSWORD: container.getUserPassword(),
-    });
-    const pool = createPoolFromConfig(config);
-    db = createDb(pool);
+    await applySchema(schemaSql);
+    const harness = await startApp();
+    db = harness.db;
+    app = harness.app;
+    cacheDir = harness.cacheDir;
+    baseUrl = harness.baseUrl;
     await seed();
-    cacheDir = await mkdtemp(join(tmpdir(), "mtl-int-cache-"));
-    app = await buildApp({ db, cacheDir });
-    await app.listen({ host: "127.0.0.1", port: 0 });
-    const addr = app.server.address();
-    if (!addr || typeof addr === "string") {
-      throw new Error("no listen address");
-    }
-    baseUrl = `http://127.0.0.1:${addr.port}`;
   }, 120_000);
 
   afterAll(async () => {
     if (app) await app.close();
     if (db) await db.destroy();
-    if (container) await container.stop();
   });
 
   it("returns the Laravel JSON contract for a syosetu novel, ordered by no, without text fields", async () => {

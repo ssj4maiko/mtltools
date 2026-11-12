@@ -1,0 +1,66 @@
+# Backend dev/test tooling. Does not replace docker-compose.prod.yml.
+# Usage (from the repo root, no host Node required):
+#   docker compose -f docker-compose.backend.yml build
+#   docker compose -f docker-compose.backend.yml run --rm tools npm test
+#   docker compose -f docker-compose.backend.yml run --rm tools npm run test:live
+#   docker compose -f docker-compose.backend.yml run --rm tools npm run typecheck
+#   docker compose -f docker-compose.backend.yml run --rm tools npx tsx src/cli.ts cache-purge --novel=1
+# Laravel compare (prod stack must be up):
+#   docker compose -f docker-compose.backend.yml -f docker-compose.backend.compare.yml run --rm tools npm test -- test/contract/compareLaravel.test.ts
+# Prod cache purge:
+#   docker compose -f docker-compose.prod.yml exec backend node dist/cli.js cache-purge --novel=ID
+name: mtltools-backend
+
+services:
+  testdb:
+    image: mariadb:11.4
+    environment:
+      MARIADB_ROOT_PASSWORD: test
+      MARIADB_DATABASE: mtltools_test
+      MARIADB_USER: test
+      MARIADB_PASSWORD: test
+    tmpfs:
+      - /var/lib/mysql
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 5s
+    networks:
+      - backend-tools
+
+  tools:
+    build:
+      context: ./backend
+      target: tools
+    image: mtltools-backend-tools:latest
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+      - backend_tools_node_modules:/app/node_modules
+    environment:
+      MTLTOOLS_TEST_DB: "1"
+      DB_HOST: testdb
+      DB_PORT: "3306"
+      DB_DATABASE: mtltools_test
+      DB_USERNAME: test
+      DB_PASSWORD: test
+      CACHE_DIR: /tmp/node-cache
+    depends_on:
+      testdb:
+        condition: service_healthy
+    networks:
+      - backend-tools
+    init: true
+
+volumes:
+  backend_tools_node_modules:
+
+networks:
+  backend-tools:
+    name: mtltools-backend-tools
+    driver: bridge

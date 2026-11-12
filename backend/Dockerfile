@@ -1,7 +1,24 @@
-FROM node:22-alpine AS build
+FROM node:22-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
+
+# Dev/test image: run via docker compose -f docker-compose.backend.yml
+FROM deps AS tools
+WORKDIR /app
+COPY docker-entrypoint-tools.sh /usr/local/bin/backend-tools-entrypoint
+RUN chmod +x /usr/local/bin/backend-tools-entrypoint \
+    && mkdir -p /tmp/node-cache
+COPY tsconfig.json vitest.config.ts vitest.live.config.ts ./
+COPY src ./src
+COPY test ./test
+ENV NODE_ENV=development
+ENV CACHE_DIR=/tmp/node-cache
+ENTRYPOINT ["/usr/local/bin/backend-tools-entrypoint"]
+CMD ["npm", "test"]
+
+FROM deps AS build
+WORKDIR /app
 COPY tsconfig.json ./
 COPY src ./src
 RUN npm run build && npm prune --omit=dev

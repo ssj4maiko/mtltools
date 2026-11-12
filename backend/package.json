@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
@@ -11,7 +13,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:live": "vitest run --config vitest.live.config.ts",
-    "cache-purge": "node dist/cli.js cache-purge"
+    "cache-purge": "node dist/cli.js cache-purge",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "fastify": "^5.2.1",
@@ -19,7 +22,6 @@
     "mysql2": "^3.11.5"
   },
   "devDependencies": {
-    "@testcontainers/mariadb": "^10.16.0",
     "@types/node": "^22.10.2",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",

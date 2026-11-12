@@ -1,22 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { execFile } from "node:child_process";
-import { promisify } from "node:util";
-
-const execFileAsync = promisify(execFile);
 
 /**
- * Live byte-for-byte compare against Laravel. Skipped in CI.
+ * Live byte-for-byte compare against Laravel. Skipped unless opted in.
  *
- *   MTLTOOLS_LARAVEL_COMPARE=1 npm test -- test/contract/compareLaravel.test.ts
+ *   docker compose -f docker-compose.backend.yml -f docker-compose.backend.compare.yml \
+ *     run --rm tools npm test -- test/contract/compareLaravel.test.ts
  *
- * Hits Laravel via scripts/laravel-chapter-list.php and scripts/laravel-chapter.php
- * inside the prod php container (bypasses nginx), and Node at MTLTOOLS_NODE_URL
- * (default http://127.0.0.1:8801). Response bodies are compared in memory and
- * never written to the repo.
+ * Hits Laravel at MTLTOOLS_LARAVEL_URL (php -S on the internal compose network,
+ * bypassing nginx) and Node at MTLTOOLS_NODE_URL (the prod backend service).
+ * Response bodies are compared in memory and never written to the repo.
  */
 const enabled = process.env.MTLTOOLS_LARAVEL_COMPARE === "1";
-const nodeBase = process.env.MTLTOOLS_NODE_URL ?? "http://127.0.0.1:8801";
-const phpContainer = process.env.MTLTOOLS_PHP_CONTAINER ?? "mtltools-prod-php-1";
+const nodeBase = process.env.MTLTOOLS_NODE_URL ?? "http://backend:3000";
+const laravelBase = process.env.MTLTOOLS_LARAVEL_URL ?? "";
 const novelIds = (process.env.MTLTOOLS_COMPARE_NOVELS ?? "1,44,51")
   .split(",")
   .map((s) => Number(s.trim()))
@@ -31,20 +27,19 @@ const chapterIds = (process.env.MTLTOOLS_COMPARE_CHAPTERS ?? "1:1,44:10100,51:1"
   })
   .filter((p) => p.idNovel > 0 && p.no > 0);
 
-async function laravelScript(args: string[], script: string): Promise<{ status: number; body: string }> {
-  const { stdout, stderr } = await execFileAsync("docker", ["exec", phpContainer, "php", script, ...args], {
-    encoding: "buffer",
-    maxBuffer: 32 * 1024 * 1024,
-  });
-  if (stderr.length) {
-    const errText = stderr.toString("utf8");
-    if (/error|exception|fatal/i.test(errText)) {
-      throw new Error(errText.slice(0, 500));
-    }
+async function laravelGet(path: string): Promise<{ status: number; body: string }> {
+  if (!laravelBase) {
+    throw new Error(
+      "MTLTOOLS_LARAVEL_URL is required. Use docker compose -f docker-compose.backend.yml -f docker-compose.backend.compare.yml run --rm tools ...",
+    );
   }
-  const text = stdout.toString("utf8");
-  const nl = text.indexOf("\n");
-  return { status: Number(text.slice(0, nl)), body: text.slice(nl + 1) };
+  const res = await fetch(`${laravelBase}${path}`);
+  return { status: res.status, body: await res.text() };
+}
+
+async function nodeGet(path: string): Promise<{ status: number; body: string }> {
+  const res = await fetch(`${nodeBase}${path}`);
+  return { status: res.status, body: await res.text() };
 }
 
 function assertSameBody(label: string, laravel: string, node: string) {
@@ -59,8 +54,8 @@ function assertSameBody(label: string, laravel: string, node: string) {
 describe.skipIf(!enabled)("byte-for-byte compare vs Laravel (live novels, not committed)", () => {
   it.each(novelIds)("list novel %s", async (idNovel) => {
     const [laravel, nodeRes] = await Promise.all([
-      laravelScript([String(idNovel)], "scripts/laravel-chapter-list.php"),
-      fetch(`${nodeBase}/api/chapter/${idNovel}`).then(async (res) => ({ status: res.status, body: await res.text() })),
+      laravelGet(`/api/chapter/${idNovel}`),
+      nodeGet(`/api/chapter/${idNovel}`),
     ]);
     expect(laravel.status).toBe(200);
     expect(nodeRes.status).toBe(200);
@@ -70,11 +65,8 @@ describe.skipIf(!enabled)("byte-for-byte compare vs Laravel (live novels, not co
 
   it.each(chapterIds)("chapter $idNovel/$no", async ({ idNovel, no }) => {
     const [laravel, nodeRes] = await Promise.all([
-      laravelScript([String(idNovel), String(no)], "scripts/laravel-chapter.php"),
-      fetch(`${nodeBase}/api/chapter/${idNovel}/${no}`).then(async (res) => ({
-        status: res.status,
-        body: await res.text(),
-      })),
+      laravelGet(`/api/chapter/${idNovel}/${no}`),
+      nodeGet(`/api/chapter/${idNovel}/${no}`),
     ]);
     expect(laravel.status).toBe(200);
     expect(nodeRes.status).toBe(200);

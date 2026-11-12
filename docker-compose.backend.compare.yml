@@ -1,0 +1,40 @@
+# Override for live Laravel/Node byte compares. The prod stack must already be up
+# (network mtltools-prod). Laravel is served with php -S on the internal network
+# so GET /api/chapter/* still hits PHP instead of the nginx Node locations.
+# Do not publish laravel-http to the host.
+services:
+  laravel-http:
+    image: mtltools-prod-php:latest
+    user: "1000:1000"
+    working_dir: /var/www/api
+    env_file: .env.prod
+    environment:
+      HOME: /tmp
+    volumes:
+      - ./:/var/www/api
+      - ./.env.prod:/var/www/api/.env.production:ro
+      - ./storage-prod:/var/www/api/storage
+      - ./.docker/prod/php.ini:/usr/local/etc/php/conf.d/99-prod.ini:ro
+    command: ["php", "-S", "0.0.0.0:8080", "-t", "public", "/var/www/api/server.php"]
+    networks:
+      - backend-tools
+      - mtltools-prod
+
+  tools:
+    environment:
+      MTLTOOLS_LARAVEL_COMPARE: "1"
+      MTLTOOLS_NODE_URL: http://backend:3000
+      MTLTOOLS_LARAVEL_URL: http://laravel-http:8080
+    depends_on:
+      testdb:
+        condition: service_healthy
+      laravel-http:
+        condition: service_started
+    networks:
+      - backend-tools
+      - mtltools-prod
+
+networks:
+  mtltools-prod:
+    external: true
+    name: mtltools-prod
