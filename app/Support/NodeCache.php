@@ -22,6 +22,7 @@ class NodeCache
         self::rmDir($dir);
         // numberChapters (and nested payloads) can change on chapter writes.
         self::invalidateNovelCatalog($idNovel);
+        self::invalidateStaticChapters($idNovel);
     }
 
     public static function invalidateNovelCatalog(?int $idNovel): void
@@ -49,6 +50,32 @@ class NodeCache
             self::rmDirRel('category/' . $idDictionary);
             self::rmDirRel('entry-list/' . $idDictionary);
             self::unlinkRel('cache-dictionary/' . $idDictionary . '.json');
+            self::rmDir(storage_path('app/public/chapters/' . $idDictionary));
+        }
+    }
+
+    /**
+     * Node serves /static HTML from Laravel's chapters cache folder.
+     * Remove every dictionary's folder for this novel.
+     */
+    public static function invalidateStaticChapters(?int $idNovel): void
+    {
+        if (!$idNovel) {
+            return;
+        }
+        $root = storage_path('app/public/chapters');
+        if (!is_dir($root)) {
+            return;
+        }
+        $items = @scandir($root);
+        if ($items === false) {
+            return;
+        }
+        foreach ($items as $item) {
+            if ($item === '.' || $item === '..') {
+                continue;
+            }
+            self::rmDir($root . '/' . $item . '/' . $idNovel);
         }
     }
 

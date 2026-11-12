@@ -122,3 +122,48 @@ describe.skipIf(!enabled)("byte-for-byte compare vs Laravel (live novels, not co
     expect(nodeRes.body).toBe(laravel.body);
   });
 });
+
+describe("GET /static/{novel}/{dict}/{chapter} vs Laravel", () => {
+  if (!enabled) {
+    it.skip("opt in with MTLTOOLS_LARAVEL_COMPARE=1", () => {});
+    return;
+  }
+
+  it("matches Laravel byte-for-byte for a chapter that already has a cache file (bodies stay in memory)", async () => {
+    const paths: string[] = [];
+    for (const id of novelIds) {
+      const dicts = await nodeGet(`/api/dictionary/novel/${id}`);
+      if (dicts.status !== 200) continue;
+      let parsed: Array<{ id?: number }> = [];
+      try {
+        parsed = JSON.parse(dicts.body) as Array<{ id?: number }>;
+      } catch {
+        continue;
+      }
+      const dictId = parsed[0]?.id;
+      if (!dictId) continue;
+      const list = await nodeGet(`/api/chapter/${id}`);
+      if (list.status !== 200) continue;
+      let chapters: Array<{ no?: number }> = [];
+      try {
+        chapters = JSON.parse(list.body) as Array<{ no?: number }>;
+      } catch {
+        continue;
+      }
+      const no = chapters[0]?.no;
+      if (!no) continue;
+      paths.push(`/static/${id}/${dictId}/${no}/`);
+      break;
+    }
+    if (paths.length === 0) {
+      throw new Error("could not resolve a /static path from catalog reads");
+    }
+    for (const path of paths) {
+      const [laravel, node] = await Promise.all([laravelGet(path), nodeGet(path)]);
+      if (laravel.status !== node.status) {
+        throw new Error(`status differs for ${path}: laravel=${laravel.status} node=${node.status}`);
+      }
+      assertSameBody(path, laravel.body, node.body);
+    }
+  });
+});

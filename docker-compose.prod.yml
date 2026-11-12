@@ -21,6 +21,7 @@ services:
       - ./.docker/prod/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./.docker/prod/nginx-node-chapter-list.conf:/etc/nginx/nginx-node-chapter-list.conf:ro
       - ./.docker/prod/nginx-node-catalog.conf:/etc/nginx/nginx-node-catalog.conf:ro
+      - ./.docker/prod/nginx-node-static.conf:/etc/nginx/nginx-node-static.conf:ro
 
   php:
     build:
@@ -64,6 +65,7 @@ services:
       NODE_ENV: production
       NODE_OPTIONS: --max-old-space-size=96
       LARAVEL_DICTIONARY_CACHE_DIR: /app/laravel-dictionary-cache
+      LARAVEL_CHAPTER_CACHE_DIR: /app/laravel-chapter-cache
     mem_limit: 128m
     memswap_limit: 128m
     depends_on:
@@ -74,6 +76,7 @@ services:
     volumes:
       - ./storage-prod/app/node-cache:/app/cache
       - ./storage-prod/app/public/cache:/app/laravel-dictionary-cache
+      - ./storage-prod/app/public/chapters:/app/laravel-chapter-cache
     ports:
       - "127.0.0.1:8801:3000"
 

@@ -5,7 +5,14 @@ import { buildApp } from "./app.js";
 const config = loadConfig();
 const pool = createPoolFromConfig(config);
 const db = createDb(pool);
-const app = await buildApp({ db, cacheDir: config.cacheDir, laravelDictionaryCacheDir: config.laravelDictionaryCacheDir });
+const app = await buildApp({
+  db,
+  cacheDir: config.cacheDir,
+  laravelDictionaryCacheDir: config.laravelDictionaryCacheDir,
+  laravelChapterCacheDir: config.laravelChapterCacheDir,
+  imagesBaseUrl: config.imagesBaseUrl,
+  appUrl: config.appUrl,
+});
 
 const shutdown = async () => {
   await app.close();

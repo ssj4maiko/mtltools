@@ -17,6 +17,7 @@ export type IntegrationHarness = {
   db: Db;
   app: FastifyInstance;
   cacheDir: string;
+  chapterCacheDir: string;
   baseUrl: string;
   close: () => Promise<void>;
 };
@@ -74,7 +75,15 @@ export async function startApp(extraEnv: Record<string, string> = {}): Promise<I
   const pool = createPoolFromConfig(config);
   const db = createDb(pool);
   const cacheDir = await mkdtemp(join(tmpdir(), "mtl-int-cache-"));
-  const app = await buildApp({ db, cacheDir });
+  const chapterCacheDir = extraEnv.LARAVEL_CHAPTER_CACHE_DIR ?? (await mkdtemp(join(tmpdir(), "mtl-int-chapters-")));
+  const app = await buildApp({
+    db,
+    cacheDir,
+    laravelDictionaryCacheDir: extraEnv.LARAVEL_DICTIONARY_CACHE_DIR ?? "",
+    laravelChapterCacheDir: chapterCacheDir,
+    imagesBaseUrl: extraEnv.IMAGES_BASE_URL ?? "",
+    appUrl: extraEnv.APP_URL ?? "",
+  });
   await app.listen({ host: "127.0.0.1", port: 0 });
   const addr = app.server.address();
   if (!addr || typeof addr === "string") {
@@ -84,6 +93,7 @@ export async function startApp(extraEnv: Record<string, string> = {}): Promise<I
     db,
     app,
     cacheDir,
+    chapterCacheDir,
     baseUrl: `http://127.0.0.1:${addr.port}`,
     close: async () => {
       await app.close();

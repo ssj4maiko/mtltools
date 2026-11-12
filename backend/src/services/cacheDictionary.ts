@@ -1,5 +1,6 @@
 import { rm } from "node:fs/promises";
 import { join } from "node:path";
+import type { LaravelChapterCache } from "../cache/laravelChapterCache.js";
 import type { Db } from "../db/client.js";
 import type { FileCache } from "../cache/fileCache.js";
 import { phpJsonEncode } from "../json/phpJson.js";
@@ -23,6 +24,7 @@ export class CacheDictionaryService {
     private readonly db: Db,
     private readonly cache: FileCache,
     private readonly laravelCacheDir: string = "",
+    private readonly chapterCache?: LaravelChapterCache,
   ) {}
 
   async getJson(idDictionary: number): Promise<string> {
@@ -38,6 +40,9 @@ export class CacheDictionaryService {
     const body = await this.build(idDictionary);
     await this.cache.set(this.cache.cacheDictionaryPath(idDictionary), body);
     await this.deleteLaravelCacheFiles(idDictionary);
+    if (this.chapterCache) {
+      await this.chapterCache.invalidateDictionary(idDictionary);
+    }
     return body;
   }
 

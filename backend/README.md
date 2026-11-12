@@ -18,9 +18,13 @@ GET /api/entry/{idDictionary}/{idCategory}/{idEntry}
 POST /api/meta
 GET /api/cache/dictionary/{id}
 PUT /api/cache/dictionary/{id}
+GET /static/{idNovel}/{idDictionary}/{no}
+GET /static/{idNovel}/{idDictionary}/{no}/{part}
 ```
 
 JSON bodies are kept byte-for-byte identical to Laravel (PHP `json_encode` defaults: compact, escaped slashes, `\uXXXX` for non-ASCII). The chapter list never selects `text*` columns. Single-chapter responses include `textOriginal` / `textRevision` / `textCustom` only when those values are present. Responses are cached as files under `storage-prod/app/node-cache/` (chapter lists, single chapters, catalog reads, and `cache-dictionary/{id}.json`). `?search=` on the chapter or novel list bypasses the cache. Chapter text and dictionary blobs are never held in an in-memory LRU.
+
+`GET /static/{idNovel}/{idDictionary}/{no}/{part?}` serves the same HTML Laravel already wrote under `storage-prod/app/public/chapters/{idDictionary}/{idNovel}/{no}-{part}.html`. A cache miss generates Blade-identical chapter, wait, or stop HTML (`Chapter::translateText`, `fixRuby`, `IMAGES_BASE_URL` prefixing of `/images/` URLs, and `APP_URL` for the wait-page fanfare asset), writes the chapter page to that path, and drops the text from RAM. Wait and stop pages are not cached. `cache-purge --novel` / `--dictionary` also removes the matching static HTML, as does `App\Support\NodeCache`.
 
 A missing chapter, novel, dictionary, category, or entry returns 404 (Laravel may 500 on a missing row; Node does not copy that). `GET /api/entry/{idDictionary}/{idCategory}/{idEntry}` looks up the entry by id only, matching Laravel.
 
@@ -82,6 +86,7 @@ In `.docker/prod/nginx.conf`, comment out the matching include and reload nginx:
 ```
 include /etc/nginx/nginx-node-chapter-list.conf;
 include /etc/nginx/nginx-node-catalog.conf;
+include /etc/nginx/nginx-node-static.conf;
 ```
 
-The first include covers `GET /api/chapter/{id}` and `GET /api/chapter/{id}/{no}`. The second covers the catalog reads, `POST /api/meta`, and `GET/PUT /api/cache/dictionary/{id}`. Either can be rolled back independently. Leave the backend container running or stop it; it is not required once both includes are commented out.
+The first include covers `GET /api/chapter/{id}` and `GET /api/chapter/{id}/{no}`. The second covers the catalog reads, `POST /api/meta`, and `GET/PUT /api/cache/dictionary/{id}`. The third covers `GET /static/{novel}/{dict}/{chapter}/`. Each can be rolled back independently. Leave the backend container running or stop it; it is not required once all Node includes are commented out.

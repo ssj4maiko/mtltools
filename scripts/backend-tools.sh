@@ -56,6 +56,8 @@ case "$cmd" in
   deploy)
     $PROD build backend
     $PROD up -d --no-deps --force-recreate backend
+    # Recreate nginx so new Node location includes (volume mounts) take effect.
+    $PROD up -d --no-deps --force-recreate nginx
     wait_backend
     ;;
   dev-on|dev)

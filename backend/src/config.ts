@@ -7,6 +7,9 @@ export type AppConfig = {
   port: number;
   cacheDir: string;
   laravelDictionaryCacheDir: string;
+  laravelChapterCacheDir: string;
+  imagesBaseUrl: string;
+  appUrl: string;
   db: {
     host: string;
     port: number;
@@ -21,6 +24,9 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     port: Number(optional("PORT", "3000", env)),
     cacheDir: optional("CACHE_DIR", "./cache", env),
     laravelDictionaryCacheDir: optional("LARAVEL_DICTIONARY_CACHE_DIR", "", env),
+    laravelChapterCacheDir: optional("LARAVEL_CHAPTER_CACHE_DIR", "", env),
+    imagesBaseUrl: optional("IMAGES_BASE_URL", "", env),
+    appUrl: optional("APP_URL", "", env),
     db: {
       host: optional("DB_HOST", "127.0.0.1", env),
       port: Number(optional("DB_PORT", "3306", env)),
