@@ -4,7 +4,9 @@
 #   docker compose -f docker-compose.backend.yml run --rm tools npm test
 #   docker compose -f docker-compose.backend.yml run --rm tools npm run test:live
 #   docker compose -f docker-compose.backend.yml run --rm tools npm run typecheck
-#   docker compose -f docker-compose.backend.yml run --rm tools npx tsx src/cli.ts cache-purge --novel=1
+#   docker compose -f docker-compose.backend.yml run --rm tools node dist/cli.js cache-purge --novel=1
+# Dev (tsx watch) behind prod nginx: ./scripts/backend-tools.sh dev-on / dev-off
+# Rebuild compiled prod: ./scripts/backend-tools.sh deploy
 # Laravel compare (prod stack must be up):
 #   docker compose -f docker-compose.backend.yml -f docker-compose.backend.compare.yml run --rm tools npm test -- test/contract/compareLaravel.test.ts
 # Prod cache purge:

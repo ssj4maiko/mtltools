@@ -41,6 +41,7 @@ yarn-error.log
 /sql-processed/
 *.sql
 !backend/test/integration/schema.sql
+/backend/dist
 *.sql.gz
 *.epub
 *.jsonl

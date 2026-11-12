@@ -26,16 +26,20 @@ A missing chapter, novel, dictionary, category, or entry returns 404 (Laravel ma
 
 All dev and test commands run in Docker. Host Node is not required. Integration tests use a compose-managed MariaDB (`testdb`); Testcontainers is not used.
 
+Production and the tools CLI run the **compiled** `dist/` output (`node dist/server.js`, `node dist/cli.js`). A separate dev override bind-mounts `backend/src` and runs `tsx watch` when you want fast updates behind the same nginx on :8800.
+
 ## Commands
 
-From the repo root:
+From the repo root (or via `scripts/backend-tools.sh <command>`):
 
 ```bash
 # build the tools image (after Dockerfile or package-lock changes)
 docker compose -f docker-compose.backend.yml build
+# same: ./scripts/backend-tools.sh build
 
 # unit + integration (no novel content; live site tests excluded)
 docker compose -f docker-compose.backend.yml run --rm tools npm test
+# same: ./scripts/backend-tools.sh test
 
 # typecheck
 docker compose -f docker-compose.backend.yml run --rm tools npm run typecheck
@@ -47,17 +51,25 @@ docker compose -f docker-compose.backend.yml run --rm tools npm run test:live
 docker compose -f docker-compose.backend.yml -f docker-compose.backend.compare.yml \
   run --rm tools npm test -- test/contract/compareLaravel.test.ts
 
-# smoke the cache-purge CLI against a throwaway dir in the tools container
-docker compose -f docker-compose.backend.yml run --rm tools npx tsx src/cli.ts cache-purge --novel=1
+# smoke the cache-purge CLI against a throwaway dir (compiled dist, not tsx)
+docker compose -f docker-compose.backend.yml run --rm tools node dist/cli.js cache-purge --novel=1
 
-# purge production caches
+# purge production caches (compiled CLI in the prod backend container)
 docker compose -f docker-compose.prod.yml --project-name mtltools-prod \
   exec backend node dist/cli.js cache-purge --novel=ID
 docker compose -f docker-compose.prod.yml --project-name mtltools-prod \
   exec backend node dist/cli.js cache-purge --dictionary=ID
+
+# rebuild and redeploy the compiled prod backend (nginx keeps pointing at `backend`)
+./scripts/backend-tools.sh deploy
+
+# temporarily replace the prod backend with tsx watch + bind-mounted src
+./scripts/backend-tools.sh dev-on
+# ...edit backend/src, requests to :8800 hot-reload...
+./scripts/backend-tools.sh dev-off   # back to the compiled image
 ```
 
-`scripts/backend-tools.sh` wraps the same commands (`test`, `test:live`, `test:compare`, `typecheck`, `cache-purge`, `cache-purge:tools`).
+`scripts/backend-tools.sh` wraps: `test`, `test:live`, `test:compare`, `typecheck`, `build`, `cache-purge`, `cache-purge:tools`, `deploy`, `dev-on`, `dev-off`.
 
 Live site canaries (public works only; polite delays; story text is asserted in memory and never written): `npm run test:live` in the tools container as above.
 

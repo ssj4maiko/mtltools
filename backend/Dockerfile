@@ -4,16 +4,21 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 # Dev/test image: run via docker compose -f docker-compose.backend.yml
+# Also used by docker-compose.backend.dev.yml (tsx watch behind prod nginx).
 FROM deps AS tools
 WORKDIR /app
 COPY docker-entrypoint-tools.sh /usr/local/bin/backend-tools-entrypoint
-RUN chmod +x /usr/local/bin/backend-tools-entrypoint \
-    && mkdir -p /tmp/node-cache
 COPY tsconfig.json vitest.config.ts vitest.live.config.ts ./
 COPY src ./src
 COPY test ./test
+RUN chmod +x /usr/local/bin/backend-tools-entrypoint \
+    && mkdir -p /tmp/node-cache \
+    && npm run build \
+    && cp package-lock.json node_modules/.package-lock.stamp \
+    && chown -R node:node /app /tmp/node-cache
 ENV NODE_ENV=development
 ENV CACHE_DIR=/tmp/node-cache
+USER node
 ENTRYPOINT ["/usr/local/bin/backend-tools-entrypoint"]
 CMD ["npm", "test"]
 
