@@ -172,6 +172,24 @@ describe("catalog and cache-dictionary routes", () => {
     );
   });
 
+  it("accepts a trailing slash on catalog list and item routes", async () => {
+    const list = await request("/api/novel/");
+    expect(list.statusCode).toBe(200);
+    expect(list.body).toBe((await request("/api/novel")).body);
+
+    const dicts = await request("/api/dictionary/");
+    expect(dicts.statusCode).toBe(200);
+    expect(dicts.body).toBe((await request("/api/dictionary")).body);
+
+    const cats = await request("/api/category/10/");
+    expect(cats.statusCode).toBe(200);
+    expect(cats.body).toBe((await request("/api/category/10")).body);
+
+    const one = await request("/api/novel/1/");
+    expect(one.statusCode).toBe(200);
+    expect(one.body).toBe((await request("/api/novel/1")).body);
+  });
+
   it("filters novels by nameCustom when search is set, and 404s a missing novel", async () => {
     const res = await request("/api/novel?search=Manual");
     expect(res.statusCode).toBe(200);

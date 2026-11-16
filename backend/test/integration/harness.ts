@@ -5,7 +5,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import mysql from "mysql2/promise";
 import { createDb, createPoolFromConfig } from "../../src/db/client.js";
-import { buildApp } from "../../src/app.js";
+import { buildApp, type BuildAppOptions } from "../../src/app.js";
 import { loadConfig } from "../../src/config.js";
 import type { FastifyInstance } from "fastify";
 import type { Db } from "../../src/db/client.js";
@@ -62,7 +62,7 @@ export async function applySchema(sql: string, env: NodeJS.ProcessEnv = process.
   }
 }
 
-export async function startApp(extraEnv: Record<string, string> = {}): Promise<IntegrationHarness> {
+export async function startApp(extraEnv: Record<string, string> = {}, appOpts: Partial<BuildAppOptions> = {}): Promise<IntegrationHarness> {
   const config = loadConfig({
     ...process.env,
     ...extraEnv,
@@ -79,10 +79,15 @@ export async function startApp(extraEnv: Record<string, string> = {}): Promise<I
   const app = await buildApp({
     db,
     cacheDir,
-    laravelDictionaryCacheDir: extraEnv.LARAVEL_DICTIONARY_CACHE_DIR ?? "",
+    laravelDictionaryCacheDir: extraEnv.LARAVEL_DICTIONARY_CACHE_DIR ?? appOpts.laravelDictionaryCacheDir ?? "",
     laravelChapterCacheDir: chapterCacheDir,
-    imagesBaseUrl: extraEnv.IMAGES_BASE_URL ?? "",
-    appUrl: extraEnv.APP_URL ?? "",
+    imagesBaseUrl: extraEnv.IMAGES_BASE_URL ?? appOpts.imagesBaseUrl ?? "",
+    appUrl: extraEnv.APP_URL ?? appOpts.appUrl ?? "",
+    kakuyomuClient: appOpts.kakuyomuClient,
+    syosetuClient: appOpts.syosetuClient,
+    kakuyomuJobs: appOpts.kakuyomuJobs,
+    kakuyomuNow: appOpts.kakuyomuNow,
+    chapterNow: appOpts.chapterNow,
   });
   await app.listen({ host: "127.0.0.1", port: 0 });
   const addr = app.server.address();

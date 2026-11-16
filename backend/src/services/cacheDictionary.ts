@@ -110,7 +110,16 @@ export class CacheDictionaryService {
     return phpJsonEncode(blob);
   }
 
-  private async deleteLaravelCacheFiles(idDictionary: number): Promise<void> {
+  /** Drop Node + Laravel dictionary caches and that dictionary's static chapter HTML. */
+  async invalidateOnWrite(idDictionary: number): Promise<void> {
+    await this.cache.invalidateDictionary(idDictionary);
+    await this.deleteLaravelCacheFiles(idDictionary);
+    if (this.chapterCache) {
+      await this.chapterCache.invalidateDictionary(idDictionary);
+    }
+  }
+
+  async deleteLaravelCacheFiles(idDictionary: number): Promise<void> {
     if (!this.laravelCacheDir) return;
     await Promise.all([
       rm(join(this.laravelCacheDir, `${idDictionary}.json`), { force: true }),

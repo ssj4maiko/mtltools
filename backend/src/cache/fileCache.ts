@@ -114,6 +114,15 @@ export class FileCache {
     return join(this.root, "cache-dictionary", `${idDictionary}.json`);
   }
 
+  kakuyomuWorkPath(code: string): string {
+    return join(this.root, "kakuyomu-work", `${code}.json`);
+  }
+
+  syosetuIndexPath(code: string): string {
+    return join(this.root, "syosetu-index", `${code}.json`);
+  }
+
+
   metaPath(): string {
     return join(this.root, "meta", "meta.json");
   }

@@ -1,0 +1,13 @@
+{
+  "data": {
+    "work": {
+      "publicEpisodeUnion": {
+        "__typename": "Episode",
+        "id": "aaa",
+        "publishedAt": "2019-10-13T06:02:21Z",
+        "editedAt": "2026-11-10T13:36:49Z",
+        "characterCount": 10540
+      }
+    }
+  }
+}

@@ -295,14 +295,21 @@ class ImportService
 			$numberChapters += $this->InsertNewChaptersWithoutText($ImportedChapters, $driver);
 		}
 		// Yeah, Do not update if it's just deleted content for now
-		if ($numberChapters > $novel->numberChapters) {
+		$insertedOrRecounted = $numberChapters > $novel->numberChapters;
+		if ($insertedOrRecounted) {
 			$novel->numberChapters = $numberChapters;
 			// Save Number of Chapters
 			$novel->save();
 		}
+		// Invalidate as soon as new rows exist. The later loops can run for minutes
+		// (or get killed / time out), and Node would otherwise keep serving a stale list.
+		if (!empty($ImportedChapters) || $insertedOrRecounted) {
+			NodeCache::invalidateChapterList((int) $idNovel);
+		}
 		// Same condition as the insert. I want to save the number of chapters before starting this.
 		if (!empty($ImportedChapters)) {
 			$this->FillAllChaptersWithNoText($novel->id, $driver, $ImportedChapters);
+			NodeCache::invalidateChapterList((int) $idNovel);
 		}
 		// Finally, we start the updates now.
 		foreach ($Chapters2Check4Update as $vector) {

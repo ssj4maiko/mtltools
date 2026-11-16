@@ -80,3 +80,18 @@ CREATE TABLE dictionaryEntries (
   CONSTRAINT dictionaryentries_prefix_foreign FOREIGN KEY (prefix) REFERENCES dictionaryCategories (id),
   CONSTRAINT dictionaryentries_sufix_foreign FOREIGN KEY (sufix) REFERENCES dictionaryCategories (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE chapter_images (
+  id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  idNovel smallint(5) unsigned NOT NULL,
+  no smallint(5) unsigned NOT NULL,
+  col varchar(20) NOT NULL,
+  sha256 char(64) NOT NULL,
+  ext varchar(5) NOT NULL,
+  bytes int(10) unsigned NOT NULL,
+  refs smallint(5) unsigned NOT NULL DEFAULT 1,
+  created_at timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (id),
+  UNIQUE KEY chapter_images_chapter_sha (idNovel, no, col, sha256),
+  KEY chapter_images_sha256_index (sha256)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

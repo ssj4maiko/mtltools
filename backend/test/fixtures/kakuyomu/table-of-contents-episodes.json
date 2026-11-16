@@ -1,0 +1,44 @@
+{
+  "data": {
+    "work": {
+      "id": "100",
+      "editedAt": "2026-11-10T13:36:49Z",
+      "publicEpisodeCount": 3,
+      "tableOfContents": [
+        {
+          "__typename": "TableOfContentsChapter",
+          "id": "toc-1",
+          "episodeUnions": [
+            {
+              "__typename": "Episode",
+              "id": "aaa",
+              "publishedAt": "2019-10-13T06:02:21Z",
+              "editedAt": "2026-11-10T13:36:49Z",
+              "characterCount": 10540
+            },
+            {
+              "__typename": "Episode",
+              "id": "bbb",
+              "publishedAt": "2021-02-03T04:05:06Z",
+              "editedAt": "2021-02-03T04:05:06Z",
+              "characterCount": 20
+            }
+          ]
+        },
+        {
+          "__typename": "TableOfContentsChapter",
+          "id": "toc-2",
+          "episodeUnions": [
+            {
+              "__typename": "Episode",
+              "id": "ccc",
+              "publishedAt": "2026-11-01T14:31:51Z",
+              "editedAt": "2026-11-01T14:31:51Z",
+              "characterCount": 30
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

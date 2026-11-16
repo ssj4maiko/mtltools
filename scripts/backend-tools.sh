@@ -53,6 +53,10 @@ case "$cmd" in
     # Compiles dist if bind-mounted src is newer, then runs the compiled CLI.
     $COMPOSE run --rm tools node dist/cli.js cache-purge "$@"
     ;;
+  extract-images)
+    # Prod image extraction into storage-prod/app/public/images.
+    $PROD exec -T backend node dist/cli.js extract-images "$@"
+    ;;
   deploy)
     $PROD build backend
     $PROD up -d --no-deps --force-recreate backend
@@ -72,7 +76,7 @@ case "$cmd" in
     echo "compiled mode: nginx :8800 is proxying to mtltools-prod-backend (dist)"
     ;;
   *)
-    echo "Usage: $0 test | test:live | test:compare | typecheck | build | cache-purge --novel=ID|--dictionary=ID|--all | cache-purge:tools --novel=ID|--all | deploy | dev-on | dev-off" >&2
+    echo "Usage: $0 test | test:live | test:compare | typecheck | build | cache-purge --novel=ID|--dictionary=ID|--all | cache-purge:tools --novel=ID|--all | extract-images [--dry-run] [--novel=ID]... [--no=N]... [--limit=N] | deploy | dev-on | dev-off" >&2
     exit 2
     ;;
 esac

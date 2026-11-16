@@ -63,6 +63,18 @@ export interface DictionaryEntriesTable {
   simplified: string | null;
 }
 
+export interface ChapterImagesTable {
+  id: Generated<number>;
+  idNovel: number;
+  no: number;
+  col: string;
+  sha256: string;
+  ext: string;
+  bytes: number;
+  refs: number;
+  created_at: Generated<string>;
+}
+
 export interface Database {
   novels: NovelsTable;
   chapters: ChaptersTable;
@@ -70,4 +82,5 @@ export interface Database {
   novelsDictionaries: NovelsDictionariesTable;
   dictionaryCategories: DictionaryCategoriesTable;
   dictionaryEntries: DictionaryEntriesTable;
+  chapter_images: ChapterImagesTable;
 }

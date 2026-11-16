@@ -46,8 +46,7 @@ export async function staticPageRoutes(app: FastifyInstance, opts: { service: St
   };
 
   const config = { schema: { params } };
+  // Trailing slashes are accepted via ignoreTrailingSlash on the app.
   app.get<{ Params: StaticParams }>("/static/:idNovel/:idDictionary/:no", config, handler);
-  app.get<{ Params: StaticParams }>("/static/:idNovel/:idDictionary/:no/", config, handler);
   app.get<{ Params: StaticParams }>("/static/:idNovel/:idDictionary/:no/:part", config, handler);
-  app.get<{ Params: StaticParams }>("/static/:idNovel/:idDictionary/:no/:part/", config, handler);
 }
