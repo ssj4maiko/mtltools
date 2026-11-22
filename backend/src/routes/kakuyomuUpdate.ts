@@ -86,6 +86,12 @@ export async function kakuyomuUpdateRoutes(
     jobByNovel,
   );
 
+  // Current (running or recently finished) job(s); in-memory only, at most one at a time.
+  app.get("/api/jobs", async (_request, reply) => {
+    const job = opts.jobs.get();
+    return reply.send({ jobs: job ? [job.snapshot()] : [] });
+  });
+
   app.get<{ Params: { jobId: string } }>("/api/jobs/:jobId", async (request, reply) => {
     const job = opts.jobs.getById(request.params.jobId);
     if (!job) return reply.code(404).send({ message: "Job not found" });

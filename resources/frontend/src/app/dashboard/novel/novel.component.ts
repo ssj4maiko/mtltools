@@ -4,6 +4,7 @@ import { CacheService } from '../../cache.service';
 
 import { Observable } from 'rxjs/Observable';
 import { Novel } from '../../_models/novel';
+import { UpdateJobsService } from '../../_services/update-jobs.service';
 import { ListComponent } from 'src/app/novel/list/list.component';
 
 @Component({
@@ -13,8 +14,9 @@ import { ListComponent } from 'src/app/novel/list/list.component';
 })
 export class NovelComponent extends ListComponent {
   constructor(
-    api: ApiService
+    api: ApiService,
+    jobs: UpdateJobsService
   ) {
-    super(api);
+    super(api, jobs);
   }
 }

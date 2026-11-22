@@ -13,6 +13,31 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    # Integration tests need MariaDB (same image/settings as docker-compose.backend.yml testdb).
+    services:
+      testdb:
+        image: mariadb:11.4
+        env:
+          MARIADB_ROOT_PASSWORD: test
+          MARIADB_DATABASE: mtltools_test
+          MARIADB_USER: test
+          MARIADB_PASSWORD: test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=3s
+          --health-timeout=5s
+          --health-retries=30
+          --health-start-period=5s
+    env:
+      MTLTOOLS_TEST_DB: "1"
+      DB_HOST: 127.0.0.1
+      DB_PORT: "3306"
+      DB_DATABASE: mtltools_test
+      DB_USERNAME: test
+      DB_PASSWORD: test
+      CACHE_DIR: /tmp/node-cache
     defaults:
       run:
         working-directory: backend

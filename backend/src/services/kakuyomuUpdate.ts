@@ -16,6 +16,7 @@ import {
   type WorkSignals,
 } from "../drivers/kakuyomu.js";
 import { SyosetuClient, type SyosetuEpisode, type SyosetuIndex } from "../drivers/syosetu.js";
+import { matchSyosetuChapters as matchSyosetuChaptersPure } from "./syosetuMatch.js";
 import { phpJsonEncode } from "../json/phpJson.js";
 import { KakuyomuJobConflictError, KakuyomuJobStore, type KakuyomuJob } from "./kakuyomuJob.js";
 
@@ -380,8 +381,10 @@ export class KakuyomuUpdateService {
         "hasText",
         "dateOriginalPost",
         "dateOriginalRevision",
-        "textOriginal",
-        "textRevision",
+        // Only "has original text?" is needed here; loading every chapter body OOM-killed the
+        // 128 MB backend on long novels. The single-chapter loader still reads the real text.
+        sql<string | null>`CASE WHEN textOriginal IS NULL OR textOriginal = '' THEN NULL ELSE '1' END`.as("textOriginal"),
+        sql<string | null>`NULL`.as("textRevision"),
       ])
       .where("idNovel", "=", idNovel)
       .orderBy("no", "asc")
@@ -490,6 +493,12 @@ export class KakuyomuUpdateService {
         `.execute(trx);
       }
     });
+  }
+
+  /** Mark a novel completed (used by the weekly updater when the source is gone). */
+  async markCompleted(idNovel: number): Promise<void> {
+    await this.deps.db.updateTable("novels").set({ completed: 1 }).where("id", "=", idNovel).execute();
+    await this.invalidateNovelCaches(idNovel);
   }
 
   private async invalidateNovelCaches(idNovel: number): Promise<void> {
@@ -688,44 +697,19 @@ export class KakuyomuUpdateService {
     known: KnownChapter[],
     episodes: SyosetuEpisode[],
   ): { previouslyKnown: Array<{ known: KnownChapter; found: SyosetuEpisode }>; newcomers: SyosetuEpisode[] } {
-    const remaining = new Map<string, SyosetuEpisode[]>();
-    for (const ep of episodes) {
-      const key = mysqlDatetimeKey(ep.dateOriginalPost);
-      const bucket = remaining.get(key) ?? [];
-      bucket.push(ep);
-      remaining.set(key, bucket);
-    }
-
-    const previouslyKnown: Array<{ known: KnownChapter; found: SyosetuEpisode }> = [];
-    for (const chapter of known) {
-      const found = this.takeSyosetuMatch(remaining, chapter);
-      if (!found) throw new KnownChapterMissingError(chapter.no, chapter.noCode);
-      previouslyKnown.push({ known: chapter, found });
-    }
-
-    const newcomers = [...remaining.values()].flat().sort((a, b) => a.no - b.no);
-    return { previouslyKnown, newcomers };
+    return matchSyosetuChaptersPure(known, episodes, (chapter) => {
+      throw new KnownChapterMissingError(chapter.no, chapter.noCode);
+    });
   }
 
   private findSyosetuEpisode(episodes: SyosetuEpisode[], chapter: KnownChapter): SyosetuEpisode | undefined {
-    const remaining = new Map<string, SyosetuEpisode[]>();
-    for (const ep of episodes) {
-      const key = mysqlDatetimeKey(ep.dateOriginalPost);
-      const bucket = remaining.get(key) ?? [];
-      bucket.push(ep);
-      remaining.set(key, bucket);
+    try {
+      return matchSyosetuChaptersPure([chapter], episodes, () => {
+        throw new Error("missing");
+      }).previouslyKnown[0]?.found;
+    } catch {
+      return undefined;
     }
-    return this.takeSyosetuMatch(remaining, chapter);
-  }
-
-  private takeSyosetuMatch(remaining: Map<string, SyosetuEpisode[]>, chapter: KnownChapter): SyosetuEpisode | undefined {
-    const key = mysqlDatetimeKey(chapter.dateOriginalPost);
-    const bucket = remaining.get(key);
-    if (!bucket || bucket.length === 0) return undefined;
-    const byNo = bucket.findIndex((ep) => ep.no === chapter.no);
-    const found = (byNo >= 0 ? bucket.splice(byNo, 1)[0] : bucket.shift()) ?? undefined;
-    if (bucket.length === 0) remaining.delete(key);
-    return found;
   }
 
   private async loadSyosetuIndexReusable(code: string, r18: boolean): Promise<SyosetuIndex> {
@@ -757,9 +741,5 @@ export class KakuyomuUpdateService {
   }
 }
 
-function mysqlDatetimeKey(value: string | null | undefined): string {
-  if (!value) return "";
-  return value.replace("T", " ").replace(/\.\d+Z?$/, "").trim();
-}
 
 export { KakuyomuJobConflictError };

@@ -28,7 +28,7 @@
 						<i *ngIf="!novel.flagR18" class="fas fa-user-secret has-text-grey-lighter" title="Everyone"></i>
 					</td>
 					<td class="actions">
-						<i class="fas fa-sync" title="Update chapters" (click)="updateChapters(novel.id)">
+						<i class="fas fa-sync" [ngClass]="{'fa-spin': updating[novel.id]}" title="Update chapters" (click)="updateChapters(novel.id)">
 
 						</i>
 						<a [routerLink]="['/novel/edit', novel.id]">

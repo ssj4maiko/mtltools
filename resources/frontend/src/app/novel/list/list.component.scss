@@ -24,6 +24,19 @@
 		cursor:pointer;
 	}
 }
+.updateBanner {
+	margin:5px;
+}
+.updateTag {
+	margin-left:8px;
+	vertical-align:middle;
+	.fas {
+		font-size:12px;
+		margin:0;
+		vertical-align:baseline;
+		cursor:default;
+	}
+}
 .columns {
 	margin:5px;
 }

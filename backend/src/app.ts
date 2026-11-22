@@ -15,6 +15,9 @@ import { staticPageRoutes } from "./routes/staticPages.js";
 import { PoliteHttp } from "./drivers/politeHttp.js";
 import { KakuyomuClient } from "./drivers/kakuyomu.js";
 import { SyosetuClient } from "./drivers/syosetu.js";
+import { WeeklyUpdateService } from "./services/weeklyUpdate.js";
+import { weeklyUpdateRoutes } from "./routes/weeklyUpdate.js";
+import { join } from "node:path";
 import { KakuyomuJobStore } from "./services/kakuyomuJob.js";
 import { KakuyomuUpdateService } from "./services/kakuyomuUpdate.js";
 import { kakuyomuUpdateRoutes } from "./routes/kakuyomuUpdate.js";
@@ -33,6 +36,9 @@ export type BuildAppOptions = {
   kakuyomuClient?: KakuyomuClient;
   syosetuClient?: SyosetuClient;
   kakuyomuJobs?: KakuyomuJobStore;
+  weeklyDelayMs?: number;
+  weeklyConfirmDelayMs?: number;
+  weeklyBusyWaitMs?: number;
   kakuyomuNow?: () => Date;
   chapterNow?: () => Date;
 };
@@ -98,6 +104,16 @@ export async function buildApp(opts: BuildAppOptions): Promise<FastifyInstance> 
 
   app.get("/health", async () => ({ status: "ok" }));
   await app.register(kakuyomuUpdateRoutes, { updater, jobs });
+  const weekly = new WeeklyUpdateService({
+    db: opts.db,
+    jobs,
+    updater,
+    lastRunPath: opts.cacheDir ? join(opts.cacheDir, "weekly-update", "last-run.json") : null,
+    delayBetweenMs: opts.weeklyDelayMs,
+    confirmDelayMs: opts.weeklyConfirmDelayMs,
+    busyWaitMs: opts.weeklyBusyWaitMs,
+  });
+  await app.register(weeklyUpdateRoutes, { weekly });
   await app.register(chapterRoutes, { service: chapterList, writes: chapterWrites });
   await app.register(catalogRoutes, { catalog, meta });
   await app.register(dictionaryWriteRoutes, { writes: dictionaryWrites });

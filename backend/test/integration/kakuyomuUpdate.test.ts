@@ -241,6 +241,15 @@ describe("Kakuyomu autoUpdate and updateChapter", () => {
     client.index.work.editedAt = previousEdited;
     client.batchFails = false;
   });
+
+  it("lists the current job at GET /api/jobs", async () => {
+    await request("/api/chapter/autoUpdate/10");
+    const res = await request("/api/jobs");
+    expect(res.statusCode).toBe(200);
+    const body = JSON.parse(res.body);
+    expect(body.jobs).toHaveLength(1);
+    expect(body.jobs[0]).toMatchObject({ idNovel: 10, kind: "autoUpdate", phase: "done" });
+  });
 });
 
 describe("Kakuyomu mid-list insert", () => {

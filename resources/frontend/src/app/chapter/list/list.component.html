@@ -7,7 +7,9 @@
 			<a routerLink="['/novel/',idNovel,'add']" class="button is-info">Import Chapter</a>
 		</div>
 		<div class="column" *ngIf="novel && novel.driver != 'manual'">
-			<a (click)="updateChapters()" class="button" [ngClass]="{'is-danger': disableupdate > 0, 'is-info': disableupdate == 0}">Update Chapters</a>
+			<a (click)="updateChapters()" class="button" [ngClass]="{'is-danger': disableupdate > 0, 'is-info': disableupdate == 0}">
+				<i class="fas fa-sync fa-spin" *ngIf="disableupdate > 0"></i> Update Chapters
+			</a>
 		</div>
 		<div class="column" *ngIf="novel && novel.driver == 'kakuyomu'">
 			<a (click)="updateAllChapters()" class="button" [ngClass]="{'is-danger': disableupdate > 0, 'is-info': disableupdate == 0}">Update All Chapters (Alternative)</a>
@@ -17,6 +19,14 @@
 		</div-->
 	</div>
 </ng-template>
+<div class="notification is-info is-light" *ngIf="runningJob as rj">
+	<i class="fas fa-sync fa-spin"></i> Updating this novel: <b>{{ label(rj) }}</b>
+	<progress *ngIf="rj.total > 0" class="progress is-small is-info" [value]="rj.current" [max]="rj.total"></progress>
+	<progress *ngIf="rj.total == 0" class="progress is-small is-info"></progress>
+</div>
+<div class="notification is-light" *ngIf="finishedJob as fj" [ngClass]="fj.phase == 'done' ? 'is-success' : 'is-danger'">
+	<i class="fas" [ngClass]="fj.phase == 'done' ? 'fa-check' : 'fa-times'"></i> {{ label(fj) }}
+</div>
 <div id="novelInfo" *ngIf="novel">
 	<p>Name:<br /><b>{{ novel.nameCustom }}</b></p>
 	<p>Original:<br /><b>{{ novel.nameOriginal }}</b></p>

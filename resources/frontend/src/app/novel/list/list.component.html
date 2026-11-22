@@ -9,6 +9,12 @@
 
 <div>
 	<ng-container *ngTemplateOutlet="actionButtons"></ng-container>
+	<div class="notification is-info is-light updateBanner" *ngIf="job && isRunning(job)">
+		<i class="fas fa-sync fa-spin"></i>
+		Updating novel #{{ job.idNovel }}: <b>{{ label(job) }}</b>
+		<progress *ngIf="job.total > 0" class="progress is-small is-info" [value]="job.current" [max]="job.total"></progress>
+		<progress *ngIf="job.total == 0" class="progress is-small is-info"></progress>
+	</div>
 	<table class='table is-striped is-hoverable is-fullwidth'>
 		<thead>
 			<tr>
@@ -58,7 +64,15 @@
 				<tr title="{{ novel.nameOriginal }}" *ngIf="novel.show" [ngClass]="{'disabled': updating[novel.id] }">
 					<td>{{ novel.id }}</td>
 					<td [routerLink]="['/novel/', novel.id]">{{ novel.code }}</td>
-					<td [routerLink]="['/novel/', novel.id]">{{ novel.nameCustom }}</td>
+					<td [routerLink]="['/novel/', novel.id]">
+						{{ novel.nameCustom }}
+						<span *ngIf="updating[novel.id]" class="tag is-warning updateTag">
+							<i class="fas fa-sync fa-spin"></i>&nbsp;{{ job && job.idNovel == novel.id ? label(job) : 'Updating…' }}
+						</span>
+						<span *ngIf="finishedJob(novel.id) as fj" class="tag updateTag" [ngClass]="fj.phase == 'done' ? 'is-success' : 'is-danger'" [title]="label(fj)">
+							<i class="fas" [ngClass]="fj.phase == 'done' ? 'fa-check' : 'fa-times'"></i>&nbsp;{{ label(fj) }}
+						</span>
+					</td>
 					<td [routerLink]="['/novel/', novel.id]">{{ novel.nameOriginal }}</td>
 					<td [routerLink]="['/novel/', novel.id]">{{ novel.numberChapters }}</td>
 					<td>{{ novel.driver }}</td>
@@ -77,7 +91,7 @@
 							<i class=" fas fa-book-open" title="Dictionaries"></i>
 						</a>
 						<a (click)="updateChapters(novel.id)">
-							<i class="has-text-info fas fa-sync" title="Update Chapters"></i>
+							<i class="has-text-info fas fa-sync" [ngClass]="{'fa-spin': updating[novel.id]}" [title]="updating[novel.id] ? 'Updating…' : 'Update Chapters'"></i>
 						</a>
 						<a [routerLink]="['/novel/edit', novel.id]">
 							<i class="has-text-success fas fa-edit" title="Edit"></i>

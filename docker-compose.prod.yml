@@ -64,13 +64,13 @@ services:
       DB_HOST: db
       DB_PORT: "3306"
       NODE_ENV: production
-      NODE_OPTIONS: --max-old-space-size=96
+      NODE_OPTIONS: --max-old-space-size=192
       LARAVEL_DICTIONARY_CACHE_DIR: /app/laravel-dictionary-cache
       LARAVEL_CHAPTER_CACHE_DIR: /app/laravel-chapter-cache
       IMAGES_DIR: /app/images
       IMAGE_EXTRACTION_DIR: /app/image-extraction
-    mem_limit: 128m
-    memswap_limit: 128m
+    mem_limit: 256m
+    memswap_limit: 256m
     depends_on:
       db:
         condition: service_healthy
