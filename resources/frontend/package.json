@@ -14,7 +14,7 @@
   },
   "private": true,
   "dependencies": {
-    "@angular-devkit/build-angular": "^13.2.2",
+    "@angular-devkit/build-angular": "^22.3.0",
     "@angular-devkit/build-webpack": "^0.1302.2",
     "@angular/animations": "^13.2.1",
     "@angular/common": "^13.2.1",
@@ -31,7 +31,7 @@
     "core-js": "^2.6.9",
     "dotenv": "^16.0.0",
     "ng-keyboard-shortcuts": "^13.0.7",
-    "ng-packagr": "^13.2.1",
+    "ng-packagr": "^22.3.0",
     "ngx-papaparse": "^5.0.0",
     "rxjs": "^6.5.2",
     "rxjs-compat": "^6.5.2",
