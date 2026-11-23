@@ -22,7 +22,7 @@
     "mysql2": "^3.11.5"
   },
   "devDependencies": {
-    "@types/node": "^22.10.2",
+    "@types/node": "^26.6.6",
     "tsx": "^4.19.2",
     "typescript": "^7.0.2",
     "vite": "^8.3.8",
