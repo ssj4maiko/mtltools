@@ -20,14 +20,14 @@
     "@fortawesome/fontawesome-free": "^7.3.1",
     "papaparse": "^5.4.1",
     "rxjs": "^7.8.1",
-    "zone.js": "~0.15.1"
+    "zone.js": "~0.16.3"
   },
   "devDependencies": {
     "@angular/build": "^22.3.0",
     "@angular/cli": "^22.3.0",
     "@angular/compiler-cli": "^22.3.0",
     "@angular/language-service": "^22.3.0",
-    "@types/node": "^18.19.130",
+    "@types/node": "^22.10.0",
     "@types/papaparse": "^5.3.14",
     "bulma": "^1.0.4",
     "tslib": "^2.0.3",
