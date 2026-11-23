@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { Dictionary } from 'src/app/_models/dictionary';
 import { DictionaryCategory } from 'src/app/_models/dictionarycategory';
 import { ApiService } from 'src/app/api';
@@ -9,6 +9,7 @@ import { DictionaryEntry } from 'src/app/_models/dictionaryentry';
     selector: 'app-diff',
     templateUrl: './diff.component.html',
     styleUrls: ['./diff.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DiffComponent implements OnInit, OnDestroy {

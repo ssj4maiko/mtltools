@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 
 import { ModalService } from './modal.service';
 
@@ -8,6 +8,7 @@ import { ModalService } from './modal.service';
     selector: 'jw-modal',
     templateUrl: './modal.component.html',
     styleUrls: ['./modal.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ModalComponent implements OnInit, OnDestroy {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ListComponent } from 'src/app/dictionary/list/list.component';
 import { ApiService } from '../../api';
@@ -11,6 +11,7 @@ import { Novel } from '../../_models/novel';
     selector: 'app-dashboard-dictionary',
     templateUrl: './dictionary.component.html',
     styleUrls: ['../../dictionary/list/list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DictionaryComponent extends ListComponent {

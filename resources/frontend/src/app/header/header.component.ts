@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd, Event as RouterEvent } from '@angular/router';
 import { IBreadCrumb } from './breadcrumb.interface';
 import { filter, distinctUntilChanged } from 'rxjs/operators';
@@ -8,6 +8,7 @@ import { ApiService } from '../api';
     selector: 'app-header',
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class HeaderComponent implements OnInit {

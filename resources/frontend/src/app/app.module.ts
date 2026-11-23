@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -12,7 +12,7 @@ import { ModalComponent } from './_services/modal/modal.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
-import { KeyboardShortcutsModule } from 'ng-keyboard-shortcuts';
+import { KeyboardShortcutsModule } from './_services/keyboard-shortcuts/keyboard-shortcuts';
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { SafeHtmlPipe } from './_pipes/safe-html.pipe';
 
@@ -34,9 +34,9 @@ library.add(fas);
         ReactiveFormsModule, // Necessary for Dynamic Forms
         FontAwesomeModule, // Necessary for SVG
         //Papa,    // Necessary for CSV
-        KeyboardShortcutsModule.forRoot(),
+        KeyboardShortcutsModule,
         BrowserAnimationsModule], providers: [
         ModalComponent,
-        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
     ] })
 export class AppModule { }

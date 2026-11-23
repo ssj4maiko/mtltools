@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ApiService } from '../../api';
 import { CacheService } from '../../cache.service';
 
@@ -11,6 +11,7 @@ import { ListComponent } from 'src/app/novel/list/list.component';
     selector: 'app-dashboard-novel',
     templateUrl: './novel.component.html',
     styleUrls: ['../../novel/list/list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class NovelComponent extends ListComponent {

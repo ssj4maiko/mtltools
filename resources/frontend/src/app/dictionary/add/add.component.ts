@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../api';
 import { FormControl, FormGroupDirective, UntypedFormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
@@ -12,6 +12,7 @@ import { Novel } from 'src/app/_models';
     selector: 'app-dictionary-add',
     templateUrl: '../../_views/form/form.component.html',
     styleUrls: ['../../_views/form/form.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class AddComponent extends FormService implements OnInit {

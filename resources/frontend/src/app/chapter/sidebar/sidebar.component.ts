@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, OnDestroy, ViewChild, AfterViewInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NgModel } from '@angular/forms';
 
@@ -11,12 +11,13 @@ import { Novel } from 'src/app/_models/novel';
 import { CacheService } from '../cache.service';
 import { DetailComponent } from '../detail/detail.component';
 import { FormService } from '../form.service';
-import { AllowIn, KeyboardShortcutsComponent, ShortcutEventOutput, ShortcutInput } from 'ng-keyboard-shortcuts';
+import { AllowIn, KeyboardShortcutsComponent, ShortcutEventOutput, ShortcutInput } from '../../_services/keyboard-shortcuts/keyboard-shortcuts';
 
 @Component({
     selector: 'app-chapter-sidebar',
     templateUrl: './sidebar.component.html',
     styleUrls: ['./sidebar.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class SidebarComponent extends FormService implements OnInit, OnDestroy, AfterViewInit {

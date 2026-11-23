@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { Subscription } from 'rxjs';
 // import { ApiService } from '../../api.service';
 import { ApiService } from '../../api';
@@ -21,6 +21,7 @@ function compare(a: any, b: any): number {
     selector: 'app-novel-list',
     templateUrl: './list.component.html',
     styleUrls: ['./list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ListComponent implements OnInit, OnDestroy {

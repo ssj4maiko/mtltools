@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../api';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -9,7 +9,7 @@ import { DictionaryCategory } from 'src/app/_models/dictionarycategory';
 import { CategoryModule } from 'src/app/category';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { ViewportScroller } from '@angular/common';
-import { AllowIn, KeyboardShortcutsComponent, ShortcutEventOutput, ShortcutInput } from 'ng-keyboard-shortcuts';
+import { AllowIn, KeyboardShortcutsComponent, ShortcutEventOutput, ShortcutInput } from '../../_services/keyboard-shortcuts/keyboard-shortcuts';
 
 import { PipeTransform, Pipe } from "@angular/core";
 import { DictionaryEntry } from 'src/app/_models';
@@ -30,6 +30,7 @@ export class SafeHtmlPipe implements PipeTransform {
     templateUrl: './detail.component.html',
     styleUrls: ['./detail.component.scss'],
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DetailComponent implements OnInit {
