@@ -1,6 +1,5 @@
 import { Optional } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { startWith } from 'rxjs-compat/operator/startWith';
 
 export class Option {
   control: FormControl;

@@ -5,7 +5,6 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { Papa } from 'ngx-papaparse';
 
 import { HeaderComponent } from './header/header.component';
 import { ModalComponent } from './_services/modal/modal.component';

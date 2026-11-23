@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../api';
 import { CacheService } from '../../cache.service';
 
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { Novel } from '../../_models/novel';
 import { UpdateJobsService } from '../../_services/update-jobs.service';
 import { ListComponent } from 'src/app/novel/list/list.component';

@@ -3,7 +3,7 @@ import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { ApiService } from '../../api';
 
 import { ModalService } from '../../_services/modal/modal.service';
-import { Papa } from 'ngx-papaparse';
+import * as Papa from 'papaparse';
 
 import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
 
@@ -29,7 +29,6 @@ export class ListComponent extends FormService implements OnInit, OnDestroy {
         , public api: ApiService
         , public formBuilder: FormBuilder
         , private modalService: ModalService
-        , private papa: Papa
     ) {
         super(formBuilder);
     }
@@ -108,7 +107,7 @@ export class ListComponent extends FormService implements OnInit, OnDestroy {
         const fileReader = new FileReader();
         fileReader.onload = (e) => {
 
-            this.papa.parse( fileReader.result as string, {
+            Papa.parse( fileReader.result as string, {
                 complete: (result) => {
                     this.tmpResult = result.data;
                     this.openModal('confirm-import');

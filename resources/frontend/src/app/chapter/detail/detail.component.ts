@@ -7,7 +7,6 @@ import { Chapter } from '../../_models/chapter';
 import { Novel } from '../../_models/novel';
 import { DictionaryCategory } from 'src/app/_models/dictionarycategory';
 import { CategoryModule } from 'src/app/category';
-import { count } from 'rxjs-compat/operator/count';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { ViewportScroller } from '@angular/common';
 import { AllowIn, KeyboardShortcutsComponent, ShortcutEventOutput, ShortcutInput } from 'ng-keyboard-shortcuts';
