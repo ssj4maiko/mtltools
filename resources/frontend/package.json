@@ -4,14 +4,11 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "startDev": "ng serve --host=0.0.0.0 --port=4200 --disableHostCheck=true",
-    "build": "ng build",
-    "test": "ng test",
-    "lint": "ng lint"
+    "startDev": "ng serve --host=0.0.0.0 --port=4200 --allowed-hosts=all",
+    "build": "ng build"
   },
   "private": true,
   "dependencies": {
-    "@angular-devkit/build-angular": "^22.3.0",
     "@angular/animations": "^22.3.0",
     "@angular/common": "^22.3.0",
     "@angular/compiler": "^22.3.0",
@@ -23,31 +20,19 @@
     "@fortawesome/angular-fontawesome": "^0.10.1",
     "@fortawesome/fontawesome-svg-core": "^1.2.18",
     "@fortawesome/free-solid-svg-icons": "^5.8.2",
-    "core-js": "^2.6.9",
     "papaparse": "^5.4.1",
     "rxjs": "^7.8.1",
     "zone.js": "~0.15.1"
   },
   "devDependencies": {
+    "@angular/build": "^22.3.0",
     "@angular/cli": "^22.3.0",
     "@angular/compiler-cli": "^22.3.0",
     "@angular/language-service": "^22.3.0",
-    "@types/jasmine": "~2.8.8",
-    "@types/jasminewd2": "~2.0.3",
     "@types/node": "^18.19.130",
     "@types/papaparse": "^5.3.14",
     "bulma": "^0.9.4",
-    "istanbul-lib-instrument": "^6.0.3",
-    "jasmine-core": "~2.99.1",
-    "jasmine-spec-reporter": "~4.2.1",
-    "karma": "^6.3.2",
-    "karma-chrome-launcher": "~2.2.0",
-    "karma-coverage-istanbul-reporter": "~2.0.1",
-    "karma-jasmine": "~1.1.2",
-    "karma-jasmine-html-reporter": "^0.2.2",
-    "ts-node": "~7.0.0",
     "tslib": "^2.0.3",
-    "tslint": "~5.11.0",
     "typescript": "^6.0.3"
   }
 }

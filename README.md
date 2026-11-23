@@ -11,7 +11,7 @@ An interface to **back up Japanese web novels and partially translate their keyw
 | Part | Tech | Role |
 |---|---|---|
 | `backend/` | Node 22, Fastify, Kysely, MariaDB | The API, static chapter pages, the Kakuyomu/Syosetu updaters, the job store and the weekly updater. Compiled (`dist/`) in production. |
-| `resources/frontend/` | Angular 13 (AOT), Bulma | The single-page app. Lazy modules: dashboard, novel, chapter, dictionary, category and entry. The production build is copied into `public/`. |
+| `resources/frontend/` | Angular (AOT), Bulma | The single-page app. Lazy modules: dashboard, novel, chapter, dictionary, category and entry. The production build is copied into `public/`. |
 | nginx | `nginx:1.27` | Serves the SPA from `public/`, proxies `/api/...` and `/static/...` to the Node backend, and serves `/images/` from disk. |
 | MariaDB | `mariadb:11.4` | Novels, chapters, dictionaries. |
 
@@ -40,7 +40,7 @@ It starts nginx (published on port 8800, put your TLS reverse proxy in front of 
 
 ```bash
 docker compose up node-app     # ng serve on http://localhost:4200
-sh shell-node.sh               # shell inside the Node 18 / Angular 13 container
+sh shell-node.sh               # shell inside the Node 22 / Angular container
 ```
 
 The dev server talks to the API origin set in `resources/frontend/src/environments/`. For backend work, `scripts/backend-tools.sh dev-on` runs the backend with live reload behind the production stack.
