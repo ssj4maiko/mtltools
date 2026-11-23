@@ -50,3 +50,4 @@ yarn-error.log
 .env.local
 /storage/
 /bootstrap/cache/
+/scripts/smoke/node_modules/
