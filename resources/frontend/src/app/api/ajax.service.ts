@@ -44,11 +44,11 @@ export class AjaxService {
     switch (type) {
       case 'get':
       case 'delete':
-        HTTP = this.http[type](apiUrl + params.url);
+        HTTP = (this.http as any)[type](apiUrl + params.url);
         break;
       case 'post':
       case 'put':
-        HTTP = this.http[type](apiUrl + params.url, params.content, httpOptions);
+        HTTP = (this.http as any)[type](apiUrl + params.url, params.content, httpOptions);
         break;
     }
     HTTP.pipe(
