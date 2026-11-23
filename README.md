@@ -34,7 +34,7 @@ It starts nginx (published on port 8800, put your TLS reverse proxy in front of 
 * **Chapter images** are extracted from chapter text to disk (`storage-prod/app/public/images`) and served from `/images/` instead of being stored inside the database (`node dist/cli.js extract-images`).
 * **Caches** are plain files under `storage-prod/app/node-cache/`, never an in-memory store of chapter text.
 * Rebuild only the backend: `docker compose -f docker-compose.prod.yml up -d --build backend`. Rebuilding the backend resets its in-memory job state, so do it when no update is running.
-* Build the frontend (Docker, production AOT) and copy it to `public/`: `sh build-front-production.sh`.
+* Build the frontend (Docker, production AOT) and replace the contents of `public/` with it (stale files are deleted, nothing else is touched): `scripts/frontend-build.sh` (`--dev` for a non-production build). `public/` is generated output; `robots.txt` and the favicon live in `resources/frontend/src/`.
 
 ### Frontend toolchain (`docker-compose.yml`)
 

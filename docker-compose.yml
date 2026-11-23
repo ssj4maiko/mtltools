@@ -1,7 +1,7 @@
 # Frontend toolchain only (Angular 13 on Node 18). The backend and the full stack live in
 # docker-compose.prod.yml and docker-compose.backend*.yml.
 #   docker compose up node-app                 # ng serve on :4200
-#   ./build-front-production.sh                # AOT production build into public/
+#   scripts/frontend-build.sh                 # AOT production build into public/
 services:
   node-app:
     build:
