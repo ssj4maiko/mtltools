@@ -66,6 +66,7 @@ log('dictionary list rows:', await page.locator('table tbody tr').count());
 const dlinks = await page.locator('table tbody a').evaluateAll((as) => as.map((a) => a.getAttribute('href')).filter(Boolean));
 log('dictionary links:', dlinks.slice(0, 4).join(' '));
 if (dlinks[0]) { await go(dlinks[0]); await page.waitForTimeout(1200); log('dictionary page:', page.url().replace(BASE, ''), 'text length', (await page.locator('body').innerText()).length); }
+await go('/novel/add'); await page.waitForTimeout(500); await page.screenshot({ path: '/smoke/shots/add.png' });
 await go('/dashboard');
 await page.waitForTimeout(800);
 log('dashboard text length:', (await page.locator('body').innerText()).length);

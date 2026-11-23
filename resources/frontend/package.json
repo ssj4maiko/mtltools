@@ -17,10 +17,10 @@
     "@angular/platform-browser": "^22.3.0",
     "@angular/platform-browser-dynamic": "^22.3.0",
     "@angular/router": "^22.3.0",
+    "@fortawesome/fontawesome-free": "^7.3.1",
     "papaparse": "^5.4.1",
     "rxjs": "^7.8.1",
-    "zone.js": "~0.15.1",
-    "@fortawesome/fontawesome-free": "^7.3.1"
+    "zone.js": "~0.15.1"
   },
   "devDependencies": {
     "@angular/build": "^22.3.0",
@@ -29,7 +29,7 @@
     "@angular/language-service": "^22.3.0",
     "@types/node": "^18.19.130",
     "@types/papaparse": "^5.3.14",
-    "bulma": "^0.9.4",
+    "bulma": "^1.0.4",
     "tslib": "^2.0.3",
     "typescript": "^6.0.3"
   }
