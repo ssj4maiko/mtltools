@@ -11,7 +11,7 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "strict": false,
-    "target": "es2020",
+    "target": "ES2022",
     "typeRoots": [
       "node_modules/@types"
     ],
@@ -19,6 +19,7 @@
       "es2020",
       "dom"
     ],
+    "useDefineForClassFields": false
   },
   "forceConsistentCasingInFileNames": false,
   "strict": false,
