@@ -1,44 +1,44 @@
 <ng-template #actionButtons>
-	<div class="columns actionButtons">
-		<div class="column">
-			<a  (click)="LINK(null,'add');" class="button is-info">Add Dictionary</a>
-		</div>
-	</div>
+  <div class="columns actionButtons">
+    <div class="column">
+      <a  (click)="LINK(null,'add');" class="button is-info">Add Dictionary</a>
+    </div>
+  </div>
 </ng-template>
 
 <div>
-	<ng-container *ngTemplateOutlet="actionButtons"></ng-container>
-	<table class='table is-striped is-hoverable is-fullwidth'>
-		<thead>
-			<tr>
-				<th>Name</th>
-				<th>Language</th>
-				<th style="width: 200px;"># of Categories</th>
-				<th style="width: 200px;">Actions</th>
-			</tr>
-		</thead>
-		<tbody>
-			<ng-container *ngFor="let dictionary of dictionaries" >
-				<tr>
-                    <td (click)="LINK(dictionary.id);">{{ dictionary.name }}</td>
-                    <td (click)="LINK(dictionary.id);">{{ dictionary.language }}</td>
-                    <td (click)="LINK(dictionary.id);">{{ dictionary.countCategories() }}</td>
-					<td>
-                        <!--a [routerLink]="['/dictionary/diff/', dictionary.id]">
-                            Diff
-                        </a>
-                        /
-						-->
-                        <a (click)="LINK(dictionary.id, 'edit');" class="icon has-text-success">
-                               <i class="fas fa-info-circle"></i>
-                        </a>
-						/
-                        <a [routerLink]="[]" (click)="delete(dictionary.id);" class="icon has-text-danger">
-                            <i class="fas fa-ban"></i>
-                        </a>
-					</td>
-				</tr>
-			</ng-container>
-		</tbody>
-	</table>
+  <ng-container *ngTemplateOutlet="actionButtons"></ng-container>
+  <table class='table is-striped is-hoverable is-fullwidth'>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Language</th>
+        <th style="width: 200px;"># of Categories</th>
+        <th style="width: 200px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (dictionary of dictionaries; track dictionary) {
+        <tr>
+          <td (click)="LINK(dictionary.id);">{{ dictionary.name }}</td>
+          <td (click)="LINK(dictionary.id);">{{ dictionary.language }}</td>
+          <td (click)="LINK(dictionary.id);">{{ dictionary.countCategories() }}</td>
+          <td>
+            <!--a [routerLink]="['/dictionary/diff/', dictionary.id]">
+            Diff
+          </a>
+          /
+          -->
+          <a (click)="LINK(dictionary.id, 'edit');" class="icon has-text-success">
+            <i class="fas fa-info-circle"></i>
+          </a>
+          /
+          <a [routerLink]="[]" (click)="delete(dictionary.id);" class="icon has-text-danger">
+            <i class="fas fa-ban"></i>
+          </a>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>
 </div>

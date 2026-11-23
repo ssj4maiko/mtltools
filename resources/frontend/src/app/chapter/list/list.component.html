@@ -1,118 +1,158 @@
 <ng-template #actionButtons>
-	<div class="columns actionButtons">
-        <div class="column">
-            <a [routerLink]="['/novel/', idNovel,'dictionary']" class="button is-primary">Dictionary</a>
+  <div class="columns actionButtons">
+    <div class="column">
+      <a [routerLink]="['/novel/', idNovel,'dictionary']" class="button is-primary">Dictionary</a>
+    </div>
+    @if (novel && novel.driver == 'manual') {
+      <div class="column">
+        <a routerLink="['/novel/',idNovel,'add']" class="button is-info">Import Chapter</a>
+      </div>
+    }
+    @if (novel && novel.driver != 'manual') {
+      <div class="column">
+        <a (click)="updateChapters()" class="button" [ngClass]="{'is-danger': disableupdate > 0, 'is-info': disableupdate == 0}">
+          @if (disableupdate > 0) {
+            <i class="fas fa-sync fa-spin"></i>
+            } Update Chapters
+          </a>
         </div>
-		<div class="column" *ngIf="novel && novel.driver == 'manual'">
-			<a routerLink="['/novel/',idNovel,'add']" class="button is-info">Import Chapter</a>
-		</div>
-		<div class="column" *ngIf="novel && novel.driver != 'manual'">
-			<a (click)="updateChapters()" class="button" [ngClass]="{'is-danger': disableupdate > 0, 'is-info': disableupdate == 0}">
-				<i class="fas fa-sync fa-spin" *ngIf="disableupdate > 0"></i> Update Chapters
-			</a>
-		</div>
-		<div class="column" *ngIf="novel && novel.driver == 'kakuyomu'">
-			<a (click)="updateAllChapters()" class="button" [ngClass]="{'is-danger': disableupdate > 0, 'is-info': disableupdate == 0}">Update All Chapters (Alternative)</a>
-		</div>
-		<!--div class="column" *ngIf="novel && novel.driver == 'syosetu'">
-			<a (click)="downloadChapter()" class="button is-info">Add Next Chapter</a>
-		</div-->
-	</div>
+      }
+      @if (novel && novel.driver == 'kakuyomu') {
+        <div class="column">
+          <a (click)="updateAllChapters()" class="button" [ngClass]="{'is-danger': disableupdate > 0, 'is-info': disableupdate == 0}">Update All Chapters (Alternative)</a>
+        </div>
+      }
+      <!--div class="column" *ngIf="novel && novel.driver == 'syosetu'">
+      <a (click)="downloadChapter()" class="button is-info">Add Next Chapter</a>
+    </div-->
+  </div>
 </ng-template>
-<div class="notification is-info is-light" *ngIf="runningJob as rj">
-	<i class="fas fa-sync fa-spin"></i> Updating this novel: <b>{{ label(rj) }}</b>
-	<progress *ngIf="rj.total > 0" class="progress is-small is-info" [value]="rj.current" [max]="rj.total"></progress>
-	<progress *ngIf="rj.total == 0" class="progress is-small is-info"></progress>
-</div>
-<div class="notification is-light" *ngIf="finishedJob as fj" [ngClass]="fj.phase == 'done' ? 'is-success' : 'is-danger'">
-	<i class="fas" [ngClass]="fj.phase == 'done' ? 'fa-check' : 'fa-times'"></i> {{ label(fj) }}
-</div>
-<div id="novelInfo" *ngIf="novel">
-	<p>Name:<br /><b>{{ novel.nameCustom }}</b></p>
-	<p>Original:<br /><b>{{ novel.nameOriginal }}</b></p>
-	<p>Number of Chapters:<br /><b>{{ novel.numberChapters }}</b></p>
-	<p>Source:<br /><a href="{{ novel.urlSource }}" target="_blank">{{ novel.urlSource }}</a></p>
-</div>
+@if (runningJob; as rj) {
+  <div class="notification is-info is-light">
+    <i class="fas fa-sync fa-spin"></i> Updating this novel: <b>{{ label(rj) }}</b>
+    @if (rj.total > 0) {
+      <progress class="progress is-small is-info" [value]="rj.current" [max]="rj.total"></progress>
+    }
+    @if (rj.total == 0) {
+      <progress class="progress is-small is-info"></progress>
+    }
+  </div>
+}
+@if (finishedJob; as fj) {
+  <div class="notification is-light" [ngClass]="fj.phase == 'done' ? 'is-success' : 'is-danger'">
+    <i class="fas" [ngClass]="fj.phase == 'done' ? 'fa-check' : 'fa-times'"></i> {{ label(fj) }}
+  </div>
+}
+@if (novel) {
+  <div id="novelInfo">
+    <p>Name:<br /><b>{{ novel.nameCustom }}</b></p>
+    <p>Original:<br /><b>{{ novel.nameOriginal }}</b></p>
+    <p>Number of Chapters:<br /><b>{{ novel.numberChapters }}</b></p>
+    <p>Source:<br /><a href="{{ novel.urlSource }}" target="_blank">{{ novel.urlSource }}</a></p>
+  </div>
+}
 <div id='novelTable'>
-	<ng-container *ngTemplateOutlet="actionButtons"></ng-container>
-	<table class='table is-striped is-hoverable'>
-		<thead>
-			<tr>
-				<th [ngClass]="{'orderedBy': currentSort.by == 'number'}">
-					Number
-					<i class="fas fa-sort-numeric-down" *ngIf="currentSort.by != 'number' || currentSort.dir != '-'" (click)="sort('number', '-')"></i>
-					<i class="fas fa-sort-numeric-up" *ngIf="currentSort.by == 'number' && currentSort.dir == '-'" (click)="sort('number', '+')"></i>
-				</th>
-				<th>
-					Arc
-				</th>
-				<th [ngClass]="{'orderedBy': currentSort.by == 'title'}">
-					Title
-					<i class="fas fa-sort-alpha-down" *ngIf="currentSort.by != 'title' || currentSort.dir != '-'" (click)="sort('title', '-')"></i>
-					<i class="fas fa-sort-alpha-up" *ngIf="currentSort.by == 'title' && currentSort.dir == '-'" (click)="sort('title', '+')"></i>
-				</th>
-				<th [ngClass]="{'orderedBy': currentSort.by == 'created'}">
-					Date Created
-					<i class="fas fa-sort-numeric-down" *ngIf="currentSort.by != 'created' || currentSort.dir != '-'" (click)="sort('created', '-')"></i>
-					<i class="fas fa-sort-numeric-up" *ngIf="currentSort.by == 'created' && currentSort.dir == '-'" (click)="sort('created', '+')"></i>
-				</th>
-				<th [ngClass]="{'orderedBy': currentSort.by == 'updated'}">
-					Date Updated
-					<i class="fas fa-sort-numeric-down" *ngIf="currentSort.by != 'updated' || currentSort.dir != '-'" (click)="sort('updated', '-')"></i>
-					<i class="fas fa-sort-numeric-up" *ngIf="currentSort.by == 'updated' && currentSort.dir == '-'" (click)="sort('updated', '+')"></i>
-				</th>
-				<th>
-					Dictionary<br />Google Translator
-				</th>
-				<th>
-					Actions
-				</th>
-				<!--th>Actions</th-->
-			</tr>
-		</thead>
-		<tbody>
-			<ng-container *ngFor="let chapter of chapters" >
-				<tr title="{{ novel.title }}" [ngClass]="{'disabled': updating && updating[chapter.no]}">
-					<td>{{ chapter.no }}</td>
-					<td [routerLink]="['/novel/', chapter.idNovel, chapter.no]">{{ chapter.arc }}</td>
-					<td [routerLink]="['/novel/', chapter.idNovel, chapter.no]">{{ chapter.title }}</td>
-					<td [routerLink]="['/novel/', chapter.idNovel, chapter.no]">{{ chapter.dateOriginalPost }}</td>
-					<td [routerLink]="['/novel/', chapter.idNovel, chapter.no]">{{ chapter.dateOriginalRevision }}</td>
-                    <!--td><ng-container *ngIf="chapter.hasText == 1; then success else danger"></ng-container></td-->
-                    <td>
-                        <p *ngFor="let dictionary of dictionaries" >
-							<a (click)="openGT(chapter,dictionary);">{{dictionary.language}}</a>
-						</p>
-                    </td>
-					<td>
-						<i class="fas fa-align-justify is-danger" *ngIf="!chapter.hasText" title="Text is not loaded"></i>
-						<i class="fas fa-align-justify" *ngIf="chapter.hasText" title="Text is loaded"></i>
-						<a (click)="updateChapter(chapter.no)">
-							<i class="has-text-info fas fa-sync" title="Update Chapter"></i>
-						</a>
-						<a href="{{ chapter.urlSource }}" target="_blank">
-							<i class="has-text-info fas fa-external-link-alt" title="Source"></i>
-						</a>
-						<!--a [routerLink]="['/novel/', chapter.idNovel, chapter.no, 'edit']">UPD</a>
-						/
-						<a [routerLink]="['/novel/', chapter.idNovel, chapter.no, 'del']">DEL</a-->
-					</td>
-					<ng-template #success>
-						<a class='button is-success'>
-							<span class="icon is-small">
-								<i class="fas fa-check"></i>
-							</span>
-						</a>
-					</ng-template>
-					<ng-template #danger>
-						<a class='button is-danger'>
-							<span class="icon is-small">
-								<i class="fas fa-times"></i>
-							</span>
-						</a>
-					</ng-template>
-				</tr>
-			</ng-container>
-		</tbody>
-	</table>
+  <ng-container *ngTemplateOutlet="actionButtons"></ng-container>
+  <table class='table is-striped is-hoverable'>
+    <thead>
+      <tr>
+        <th [ngClass]="{'orderedBy': currentSort.by == 'number'}">
+          Number
+          @if (currentSort.by != 'number' || currentSort.dir != '-') {
+            <i class="fas fa-sort-numeric-down" (click)="sort('number', '-')"></i>
+          }
+          @if (currentSort.by == 'number' && currentSort.dir == '-') {
+            <i class="fas fa-sort-numeric-up" (click)="sort('number', '+')"></i>
+          }
+        </th>
+        <th>
+          Arc
+        </th>
+        <th [ngClass]="{'orderedBy': currentSort.by == 'title'}">
+          Title
+          @if (currentSort.by != 'title' || currentSort.dir != '-') {
+            <i class="fas fa-sort-alpha-down" (click)="sort('title', '-')"></i>
+          }
+          @if (currentSort.by == 'title' && currentSort.dir == '-') {
+            <i class="fas fa-sort-alpha-up" (click)="sort('title', '+')"></i>
+          }
+        </th>
+        <th [ngClass]="{'orderedBy': currentSort.by == 'created'}">
+          Date Created
+          @if (currentSort.by != 'created' || currentSort.dir != '-') {
+            <i class="fas fa-sort-numeric-down" (click)="sort('created', '-')"></i>
+          }
+          @if (currentSort.by == 'created' && currentSort.dir == '-') {
+            <i class="fas fa-sort-numeric-up" (click)="sort('created', '+')"></i>
+          }
+        </th>
+        <th [ngClass]="{'orderedBy': currentSort.by == 'updated'}">
+          Date Updated
+          @if (currentSort.by != 'updated' || currentSort.dir != '-') {
+            <i class="fas fa-sort-numeric-down" (click)="sort('updated', '-')"></i>
+          }
+          @if (currentSort.by == 'updated' && currentSort.dir == '-') {
+            <i class="fas fa-sort-numeric-up" (click)="sort('updated', '+')"></i>
+          }
+        </th>
+        <th>
+          Dictionary<br />Google Translator
+        </th>
+        <th>
+          Actions
+        </th>
+      <!--th>Actions</th-->
+    </tr>
+  </thead>
+  <tbody>
+    @for (chapter of chapters; track chapter) {
+      <tr title="{{ novel.title }}" [ngClass]="{'disabled': updating && updating[chapter.no]}">
+        <td>{{ chapter.no }}</td>
+        <td [routerLink]="['/novel/', chapter.idNovel, chapter.no]">{{ chapter.arc }}</td>
+        <td [routerLink]="['/novel/', chapter.idNovel, chapter.no]">{{ chapter.title }}</td>
+        <td [routerLink]="['/novel/', chapter.idNovel, chapter.no]">{{ chapter.dateOriginalPost }}</td>
+        <td [routerLink]="['/novel/', chapter.idNovel, chapter.no]">{{ chapter.dateOriginalRevision }}</td>
+        <!--td><ng-container *ngIf="chapter.hasText == 1; then success else danger"></ng-container></td-->
+        <td>
+          @for (dictionary of dictionaries; track dictionary) {
+            <p >
+              <a (click)="openGT(chapter,dictionary);">{{dictionary.language}}</a>
+            </p>
+          }
+        </td>
+        <td>
+          @if (!chapter.hasText) {
+            <i class="fas fa-align-justify is-danger" title="Text is not loaded"></i>
+          }
+          @if (chapter.hasText) {
+            <i class="fas fa-align-justify" title="Text is loaded"></i>
+          }
+          <a (click)="updateChapter(chapter.no)">
+            <i class="has-text-info fas fa-sync" title="Update Chapter"></i>
+          </a>
+          <a href="{{ chapter.urlSource }}" target="_blank">
+            <i class="has-text-info fas fa-external-link-alt" title="Source"></i>
+          </a>
+        <!--a [routerLink]="['/novel/', chapter.idNovel, chapter.no, 'edit']">UPD</a>
+        /
+        <a [routerLink]="['/novel/', chapter.idNovel, chapter.no, 'del']">DEL</a-->
+      </td>
+      <ng-template #success>
+        <a class='button is-success'>
+          <span class="icon is-small">
+            <i class="fas fa-check"></i>
+          </span>
+        </a>
+      </ng-template>
+      <ng-template #danger>
+        <a class='button is-danger'>
+          <span class="icon is-small">
+            <i class="fas fa-times"></i>
+          </span>
+        </a>
+      </ng-template>
+    </tr>
+  }
+</tbody>
+</table>
 </div>

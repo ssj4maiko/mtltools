@@ -1,34 +1,39 @@
 <div class='flexContent'>
-	<!--div class="show-sidebar" (click)="toogleSidebar()"></div-->
-	<div class="sidebar" [hidden]="!showSidebar">
-		<app-chapter-sidebar #SidebarChild (Sidebar2Chapter)="translateText($event)"></app-chapter-sidebar>
-	</div>
-	<div #Content id="content" class='content'>
-		<ng-template #controlButtons>
-			<div class="columns controlButtons">
-				<div class="column">
-					<a class="button is-large is-primary" *ngIf="chapterPrevious" (click)="chapterRoute.previous()"> Previous </a>
-				</div>
-				<div class="column">
-					<a class="button is-large is-primary" [routerLink]="['/novel/', idNovel]"> Table of Contents </a>
-				</div>
-				<div class="column">
-					<a class="button is-large is-primary" *ngIf="chapterNext" (click)="chapterRoute.next()"> Next </a>
-				</div>
-			</div>
-		</ng-template>
+<!--div class="show-sidebar" (click)="toogleSidebar()"></div-->
+<div class="sidebar" [hidden]="!showSidebar">
+  <app-chapter-sidebar #SidebarChild (Sidebar2Chapter)="translateText($event)"></app-chapter-sidebar>
+</div>
+<div #Content id="content" class='content'>
+  <ng-template #controlButtons>
+    <div class="columns controlButtons">
+      <div class="column">
+        @if (chapterPrevious) {
+          <a class="button is-large is-primary" (click)="chapterRoute.previous()"> Previous </a>
+        }
+      </div>
+      <div class="column">
+        <a class="button is-large is-primary" [routerLink]="['/novel/', idNovel]"> Table of Contents </a>
+      </div>
+      <div class="column">
+        @if (chapterNext) {
+          <a class="button is-large is-primary" (click)="chapterRoute.next()"> Next </a>
+        }
+      </div>
+    </div>
+  </ng-template>
 
-		<ng-container *ngTemplateOutlet="controlButtons"></ng-container>
-		<ng-container *ngIf="chapter">
-			<h2 *ngIf="chapter.arc">{{ chapter.arc }}</h2>
-			<h1 class='title'  [innerHTML]="renderedTitle | safeHtml"></h1>
-			<hr />
-			<div class="novel-content" [innerHTML]="renderedText | safeHtml">
-
-			</div>
-		</ng-container>
-		<ng-container *ngTemplateOutlet="controlButtons"></ng-container>
-	</div>
+  <ng-container *ngTemplateOutlet="controlButtons"></ng-container>
+  @if (chapter) {
+    @if (chapter.arc) {
+      <h2>{{ chapter.arc }}</h2>
+    }
+    <h1 class='title'  [innerHTML]="renderedTitle | safeHtml"></h1>
+    <hr />
+    <div class="novel-content" [innerHTML]="renderedText | safeHtml">
+    </div>
+  }
+  <ng-container *ngTemplateOutlet="controlButtons"></ng-container>
+</div>
 
 </div>
 <ng-keyboard-shortcuts [shortcuts]="shortcuts"></ng-keyboard-shortcuts>

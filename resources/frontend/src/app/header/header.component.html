@@ -1,13 +1,13 @@
 <header>
-	<img src="assets/mtl_tools.png" class='appName'  routerLink="/" />
-	<ul>
-        <li routerLink="/dashboard" routerLinkActive="router-link-active">
-            <a>Dashboard</a>
-        </li>
-        <ng-container  *ngFor="let breadcrumb of breadcrumbs">
-            <li [routerLink]="breadcrumb.url" routerLinkActive="router-link-active">
-                <a>/ {{ breadcrumb.label }}</a>
-            </li>
-        </ng-container>
-	</ul>
+  <img src="assets/mtl_tools.png" class='appName'  routerLink="/" />
+  <ul>
+    <li routerLink="/dashboard" routerLinkActive="router-link-active">
+      <a>Dashboard</a>
+    </li>
+    @for (breadcrumb of breadcrumbs; track breadcrumb) {
+      <li [routerLink]="breadcrumb.url" routerLinkActive="router-link-active">
+        <a>/ {{ breadcrumb.label }}</a>
+      </li>
+    }
+  </ul>
 </header>

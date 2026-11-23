@@ -15,9 +15,6 @@ import { FormService } from '../form.service';
 
 @Component({
     selector: 'app-list',
-    host: {
-        '(blur)': 'onBlur($event)'
-    },
     templateUrl: './list.component.html',
     styleUrls: ['./list.component.scss'],
     standalone: false

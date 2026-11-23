@@ -2,7 +2,7 @@
   "compileOnSave": false,
   "compilationMode": "full",
   "compilerOptions": {
-    "baseUrl": "./",
+    "paths": { "src/*": ["./src/*"] },
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
@@ -14,10 +14,6 @@
     "target": "ES2022",
     "typeRoots": [
       "node_modules/@types"
-    ],
-    "lib": [
-      "es2020",
-      "dom"
     ],
     "useDefineForClassFields": false
   },

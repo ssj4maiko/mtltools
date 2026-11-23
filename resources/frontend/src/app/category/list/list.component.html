@@ -1,39 +1,41 @@
 <ng-template #actionButtons>
-	<div class="columns actionButtons">
-		<div class="column">
-			<a (click)="rebuildCache();" class="button is-primary">Update Dictionary Cache</a>
-		</div>
-		<div class="column">
-			<a (click)="LINK(null,'add');" class="button is-info">Add Category</a>
-		</div>
-	</div>
+  <div class="columns actionButtons">
+    <div class="column">
+      <a (click)="rebuildCache();" class="button is-primary">Update Dictionary Cache</a>
+    </div>
+    <div class="column">
+      <a (click)="LINK(null,'add');" class="button is-info">Add Category</a>
+    </div>
+  </div>
 </ng-template>
 
 
 <div>
-	<ng-container *ngTemplateOutlet="actionButtons"></ng-container>
-	<table class='table is-striped is-hoverable is-fullwidth'>
-		<thead>
-			<tr>
-				<th>Name</th>
-				<th style="width: 200px;"># of Entries</th>
-				<th style="width: 150px;">Actions</th>
-			</tr>
-		</thead>
-		<tbody class="clickable-table">
-			<tr *ngFor="let category of categories">
-				<td (click)="LINK(category.id);">{{ category.name }}</td>
-				<td (click)="LINK(category.id);">{{ category.count_entries ? category.count_entries : "-" }}</td>
-				<td>
-                    <a  (click)="LINK(category.id,'edit');" class="icon has-text-success">
-                        <i class="fas fa-info-circle"></i>
-                    </a>
-                    /
-                    <a [routerLink]="[]" (click)="delete(category.id);"  class="icon has-text-danger">
-                        <i class="fas fa-ban"></i>
-                    </a>
-				</td>
-			</tr>
-		</tbody>
-	</table>
+  <ng-container *ngTemplateOutlet="actionButtons"></ng-container>
+  <table class='table is-striped is-hoverable is-fullwidth'>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th style="width: 200px;"># of Entries</th>
+        <th style="width: 150px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="clickable-table">
+      @for (category of categories; track category) {
+        <tr>
+          <td (click)="LINK(category.id);">{{ category.name }}</td>
+          <td (click)="LINK(category.id);">{{ category.count_entries ? category.count_entries : "-" }}</td>
+          <td>
+            <a  (click)="LINK(category.id,'edit');" class="icon has-text-success">
+              <i class="fas fa-info-circle"></i>
+            </a>
+            /
+            <a [routerLink]="[]" (click)="delete(category.id);"  class="icon has-text-danger">
+              <i class="fas fa-ban"></i>
+            </a>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
 </div>
