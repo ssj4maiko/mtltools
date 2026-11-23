@@ -5,9 +5,10 @@ import { ApiService } from '../../api';
 import { Dictionary } from '../../_models/dictionary';
 
 @Component({
-  selector: 'app-dictionary-list',
-  templateUrl: './list.component.html',
-  styleUrls: ['./list.component.scss']
+    selector: 'app-dictionary-list',
+    templateUrl: './list.component.html',
+    styleUrls: ['./list.component.scss'],
+    standalone: false
 })
 export class ListComponent implements OnInit {
 

@@ -8,9 +8,10 @@ import { UpdateJobsService } from '../../_services/update-jobs.service';
 import { ListComponent } from 'src/app/novel/list/list.component';
 
 @Component({
-  selector: 'app-dashboard-novel',
-  templateUrl: './novel.component.html',
-  styleUrls: ['../../novel/list/list.component.scss']
+    selector: 'app-dashboard-novel',
+    templateUrl: './novel.component.html',
+    styleUrls: ['../../novel/list/list.component.scss'],
+    standalone: false
 })
 export class NovelComponent extends ListComponent {
   constructor(

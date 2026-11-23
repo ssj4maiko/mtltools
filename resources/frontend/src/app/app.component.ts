@@ -3,12 +3,13 @@ import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: [
-    './app.component.scss',
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: [
+        './app.component.scss',
         './_services/modal/modal.component.scss',
-  ]
+    ],
+    standalone: false
 })
 export class AppComponent {
     title = 'frontend';

@@ -9,9 +9,10 @@ import { FormService } from '../form.service';
 import { Novel } from 'src/app/_models';
 
 @Component({
-  selector: 'app-dictionary-add',
-  templateUrl: '../../_views/form/form.component.html',
-  styleUrls: ['../../_views/form/form.component.scss']
+    selector: 'app-dictionary-add',
+    templateUrl: '../../_views/form/form.component.html',
+    styleUrls: ['../../_views/form/form.component.scss'],
+    standalone: false
 })
 export class AddComponent extends FormService implements OnInit {
 

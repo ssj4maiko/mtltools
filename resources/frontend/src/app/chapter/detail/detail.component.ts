@@ -14,7 +14,10 @@ import { AllowIn, KeyboardShortcutsComponent, ShortcutEventOutput, ShortcutInput
 import { PipeTransform, Pipe } from "@angular/core";
 import { DictionaryEntry } from 'src/app/_models';
 
-@Pipe({ name: 'safeHtml' })
+@Pipe({
+    name: 'safeHtml',
+    standalone: false
+})
 export class SafeHtmlPipe implements PipeTransform {
   constructor(private sanitized: DomSanitizer) { }
   transform(value) {
@@ -23,10 +26,11 @@ export class SafeHtmlPipe implements PipeTransform {
 }
 
 @Component({
-  selector: 'app-chapter-detail',
-  templateUrl: './detail.component.html',
-  styleUrls: ['./detail.component.scss'],
-  encapsulation: ViewEncapsulation.None
+    selector: 'app-chapter-detail',
+    templateUrl: './detail.component.html',
+    styleUrls: ['./detail.component.scss'],
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class DetailComponent implements OnInit {
   @ViewChild(SidebarComponent) Sidebar;

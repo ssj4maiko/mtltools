@@ -9,9 +9,10 @@ import { FormField, Option } from '../../_models/formField';
 import { FormService } from '../form.service';
 
 @Component({
-  selector: 'app-category-add',
-  templateUrl: '../../_views/form/form.component.html',
-  styleUrls: ['../../_views/form/form.component.scss']
+    selector: 'app-category-add',
+    templateUrl: '../../_views/form/form.component.html',
+    styleUrls: ['../../_views/form/form.component.scss'],
+    standalone: false
 })
 
 export class AddComponent extends FormService implements OnInit {

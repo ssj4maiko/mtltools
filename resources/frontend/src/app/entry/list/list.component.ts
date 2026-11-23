@@ -18,8 +18,9 @@ import { FormService } from '../form.service';
     host: {
         '(blur)': 'onBlur($event)'
     },
-  templateUrl: './list.component.html',
-  styleUrls: ['./list.component.scss']
+    templateUrl: './list.component.html',
+    styleUrls: ['./list.component.scss'],
+    standalone: false
 })
 export class ListComponent extends FormService implements OnInit, OnDestroy {
 

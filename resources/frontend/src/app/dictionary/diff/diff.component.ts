@@ -6,9 +6,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DictionaryEntry } from 'src/app/_models/dictionaryentry';
 
 @Component({
-  selector: 'app-diff',
-  templateUrl: './diff.component.html',
-  styleUrls: ['./diff.component.scss']
+    selector: 'app-diff',
+    templateUrl: './diff.component.html',
+    styleUrls: ['./diff.component.scss'],
+    standalone: false
 })
 export class DiffComponent implements OnInit, OnDestroy {
 

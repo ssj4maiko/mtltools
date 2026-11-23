@@ -8,9 +8,10 @@ import { Novel } from '../../_models/novel';
 
 
 @Component({
-  selector: 'app-dashboard-dictionary',
-  templateUrl: './dictionary.component.html',
-  styleUrls: ['../../dictionary/list/list.component.scss']
+    selector: 'app-dashboard-dictionary',
+    templateUrl: './dictionary.component.html',
+    styleUrls: ['../../dictionary/list/list.component.scss'],
+    standalone: false
 })
 export class DictionaryComponent extends ListComponent {
 

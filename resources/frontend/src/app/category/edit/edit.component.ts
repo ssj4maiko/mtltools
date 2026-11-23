@@ -9,9 +9,10 @@ import { DictionaryCategory } from 'src/app/_models/dictionarycategory';
 import { FormService } from '../form.service';
 
 @Component({
-  selector: 'app-category-edit',
-  templateUrl: '../../_views/form/form.component.html',
-  styleUrls: ['../../_views/form/form.component.scss']
+    selector: 'app-category-edit',
+    templateUrl: '../../_views/form/form.component.html',
+    styleUrls: ['../../_views/form/form.component.scss'],
+    standalone: false
 })
 
 export class EditComponent extends FormService implements OnInit {

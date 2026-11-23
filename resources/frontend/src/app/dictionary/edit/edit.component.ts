@@ -8,9 +8,10 @@ import { FormField, Meta, Option } from '../../_models/formField';
 import { FormService } from '../form.service';
 
 @Component({
-  selector: 'app-dictionary-edit',
-  templateUrl: '../../_views/form/form.component.html',
-  styleUrls: ['../../_views/form/form.component.scss']
+    selector: 'app-dictionary-edit',
+    templateUrl: '../../_views/form/form.component.html',
+    styleUrls: ['../../_views/form/form.component.scss'],
+    standalone: false
 })
 export class EditComponent extends FormService implements OnInit {
 

@@ -5,9 +5,10 @@ import { ModalService } from './modal.service';
 // https://jasonwatmore.com/post/2019/04/16/angular-7-custom-modal-window-dialog-box
 
 @Component({
-	selector: 'jw-modal',
-	templateUrl: './modal.component.html',
-	styleUrls: ['./modal.component.scss']
+    selector: 'jw-modal',
+    templateUrl: './modal.component.html',
+    styleUrls: ['./modal.component.scss'],
+    standalone: false
 })
 export class ModalComponent implements OnInit, OnDestroy {
     @Input() id: string;
