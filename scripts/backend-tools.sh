@@ -35,9 +35,6 @@ case "$cmd" in
   test:live)
     $COMPOSE run --rm tools npm run test:live "$@"
     ;;
-  test:compare)
-    $COMPOSE -f docker-compose.backend.compare.yml run --rm tools npm test -- test/contract/compareLaravel.test.ts "$@"
-    ;;
   typecheck)
     $COMPOSE run --rm tools npm run typecheck "$@"
     ;;
@@ -76,7 +73,7 @@ case "$cmd" in
     echo "compiled mode: nginx :8800 is proxying to mtltools-prod-backend (dist)"
     ;;
   *)
-    echo "Usage: $0 test | test:live | test:compare | typecheck | build | cache-purge --novel=ID|--dictionary=ID|--all | cache-purge:tools --novel=ID|--all | extract-images [--dry-run] [--novel=ID]... [--no=N]... [--limit=N] | deploy | dev-on | dev-off" >&2
+    echo "Usage: $0 test | test:live | typecheck | build | cache-purge --novel=ID|--dictionary=ID|--all | cache-purge:tools --novel=ID|--all | extract-images [--dry-run] [--novel=ID]... [--no=N]... [--limit=N] | deploy | dev-on | dev-off" >&2
     exit 2
     ;;
 esac

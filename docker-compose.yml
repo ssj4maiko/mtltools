@@ -1,78 +1,14 @@
-version: '3.7'
-
+# Frontend toolchain only (Angular 13 on Node 18). The backend and the full stack live in
+# docker-compose.prod.yml and docker-compose.backend*.yml.
+#   docker compose up node-app                 # ng serve on :4200
+#   ./build-front-production.sh                # AOT production build into public/
 services:
-  nginx:
-    image: nginx
-    restart: "unless-stopped"
-    networks:
-      - mtltools
-    depends_on:
-      - php-api
-      - node-app
-    volumes:
-      - ./:/var/www/api
-      - ./resources/frontend:/home/node/app
-      - ./.docker/nginx/nginx.conf:/etc/nginx/nginx.conf
-    ports:
-      - 800:80
-
-  php-api:
-    build:
-      context: ./.docker/php
-      args:
-        development: "true"
-        memory_limit: "512"
-    restart: "unless-stopped"
-    working_dir: /var/www/api
-    env_file: .env
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    networks:
-      - mtltools
-    volumes:
-      - ./:/var/www/api
-      - ./.docker/php/xdebug.ini:/usr/local/etc/php/conf.d/99-xdebug.ini
-
   node-app:
     build:
       context: ./.docker/node
-    restart: "unless-stopped"
     working_dir: /home/node/app
     entrypoint: bash -c "npm install && npm run startDev"
-    networks:
-      - mtltools
+    ports:
+      - "4200:4200"
     volumes:
       - ./resources/frontend:/home/node/app
-
-  db:
-    image: mariadb
-    restart: "unless-stopped"
-    networks:
-      - mtltools
-    volumes:
-      - ./DATABASE/:/var/lib/mysql/
-    ports:
-      - 33061:3306
-    environment:
-      MYSQL_ROOT_PASSWORD: REDACTED_SECRET
-      MARIADB_ROOT_PASSWORD: REDACTED_SECRET
-      MARIADB_DATABASE: db
-
-  php-startup:
-    build:
-      context: ./.docker/php
-    working_dir: /var/www/api
-    env_file: .env
-    entrypoint: bash -c "composer install; php artisan migrate;"
-    depends_on:
-      - db
-    networks:
-      - mtltools
-    volumes:
-      - ./:/var/www/api
-
-
-networks:
-  mtltools:
-    name: mtltools
-    driver: bridge

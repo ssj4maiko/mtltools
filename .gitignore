@@ -48,3 +48,5 @@ yarn-error.log
 
 # local dev env (secrets)
 .env.local
+/storage/
+/bootstrap/cache/

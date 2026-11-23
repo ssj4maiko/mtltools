@@ -1,6 +1,6 @@
 # mtltools Node backend
 
-This service serves the Laravel-to-Node cutover routes that have already moved:
+This service is the MTL Tools API. It replaced the original Laravel backend, which was removed from the repository (see git history). Routes:
 
 ```
 GET /api/chapter/{idNovel}
@@ -51,9 +51,6 @@ docker compose -f docker-compose.backend.yml run --rm tools npm run typecheck
 # opt-in canaries against public Syosetu and Kakuyomu pages (see below)
 docker compose -f docker-compose.backend.yml run --rm tools npm run test:live
 
-# live compare against Laravel (prod stack must be up; bodies stay in memory)
-docker compose -f docker-compose.backend.yml -f docker-compose.backend.compare.yml \
-  run --rm tools npm test -- test/contract/compareLaravel.test.ts
 
 # smoke the cache-purge CLI against a throwaway dir (compiled dist, not tsx)
 docker compose -f docker-compose.backend.yml run --rm tools node dist/cli.js cache-purge --novel=1
@@ -73,11 +70,11 @@ docker compose -f docker-compose.prod.yml --project-name mtltools-prod \
 ./scripts/backend-tools.sh dev-off   # back to the compiled image
 ```
 
-`scripts/backend-tools.sh` wraps: `test`, `test:live`, `test:compare`, `typecheck`, `build`, `cache-purge`, `cache-purge:tools`, `deploy`, `dev-on`, `dev-off`.
+`scripts/backend-tools.sh` wraps: `test`, `test:live`, `typecheck`, `build`, `cache-purge`, `cache-purge:tools`, `deploy`, `dev-on`, `dev-off`.
 
 Live site canaries (public works only; polite delays; story text is asserted in memory and never written): `npm run test:live` in the tools container as above.
 
-The epub scrapper's `execute.sh` should call the production `cache-purge` compose command after a load, not a host `node` binary. Laravel write paths call `App\Support\NodeCache` so catalog and chapter files stay consistent during the dual-run.
+The epub scrapper's `execute.sh` should call the production `cache-purge` compose command after a load, not a host `node` binary.
 
 ## Rollback
 

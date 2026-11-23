@@ -12,45 +12,42 @@ An interface to **back up Japanese web novels and partially translate their keyw
 |---|---|---|
 | `backend/` | Node 22, Fastify, Kysely, MariaDB | The API, static chapter pages, the Kakuyomu/Syosetu updaters, the job store and the weekly updater. Compiled (`dist/`) in production. |
 | `resources/frontend/` | Angular 13 (AOT), Bulma | The single-page app. Lazy modules: dashboard, novel, chapter, dictionary, category and entry. The production build is copied into `public/`. |
-| `app/`, `routes/`, ... | Laravel (PHP) | The original API. The Node backend now serves nearly every route; PHP stays only as a rollback target behind the same nginx. |
-| nginx | `nginx:1.27` | Serves the SPA from `public/`, routes the migrated `/api/...` and `/static/...` paths to Node and everything else to PHP. |
+| nginx | `nginx:1.27` | Serves the SPA from `public/`, proxies `/api/...` and `/static/...` to the Node backend, and serves `/images/` from disk. |
 | MariaDB | `mariadb:11.4` | Novels, chapters, dictionaries. |
 
 The frontend takes its API origin from `window.location.origin` in production, so the same build works behind any host name. No host name or secret is stored in the repository.
 
 ## Everything runs in Docker
 
-No host Node, PHP or MariaDB is required. There are two stacks.
+No host Node or MariaDB is required. There is a production-style stack, plus a frontend toolchain and backend tooling.
 
 ### Production-style stack (`docker-compose.prod.yml`)
 
 ```bash
-cp .env.example .env.prod      # fill in database values (never commit it)
+cp .env.example .env.prod      # fill in database values (never commit it); .env.prod.db holds the MariaDB container variables
 docker compose -f docker-compose.prod.yml up -d --build
 ```
 
-It starts nginx (published on port 8800, put your TLS reverse proxy in front of it), the Node backend (published only on `127.0.0.1:8801`), PHP and MariaDB. Data lives outside git: `storage-prod/` holds the chapter cache, the generated static pages and the chapter images, and the database files live in the MariaDB data directory.
+It starts nginx (published on port 8800, put your TLS reverse proxy in front of it), the Node backend (published only on `127.0.0.1:8801`) and MariaDB. Data lives outside git: `storage-prod/` holds the chapter cache, the generated static pages and the chapter images, and the database files live in the MariaDB data directory.
 
+* **Fresh database:** create the tables from `backend/test/integration/schema.sql` (the schema the tests use).
 * **Chapter images** are extracted from chapter text to disk (`storage-prod/app/public/images`) and served from `/images/` instead of being stored inside the database (`node dist/cli.js extract-images`).
 * **Caches** are plain files under `storage-prod/app/node-cache/`, never an in-memory store of chapter text.
 * Rebuild only the backend: `docker compose -f docker-compose.prod.yml up -d --build backend`. Rebuilding the backend resets its in-memory job state, so do it when no update is running.
-* Build the frontend (Docker, production AOT) and copy it to `public/` and `resources/views/index.blade.php`: `sh build-front-production.sh`.
+* Build the frontend (Docker, production AOT) and copy it to `public/`: `sh build-front-production.sh`.
 
-### Development stack (`docker-compose.yml`)
+### Frontend toolchain (`docker-compose.yml`)
 
 ```bash
-cp .env.example .env           # fill in the database values
-docker compose up              # or: sh start.sh
+docker compose up node-app     # ng serve on http://localhost:4200
+sh shell-node.sh               # shell inside the Node 18 / Angular 13 container
 ```
 
-Add to your `hosts` file (`/etc/hosts` or `C:\Windows\System32\drivers\etc\hosts`):
+The dev server talks to the API origin set in `resources/frontend/src/environments/`. For backend work, `scripts/backend-tools.sh dev-on` runs the backend with live reload behind the production stack.
 
-```
-127.0.0.1   mtltools.docker
-127.0.0.1   api.mtltools.docker
-```
+## Removed: the Laravel backend
 
-Frontend: http://mtltools.docker:800/ and API: http://api.mtltools.docker:800/api/. The first time, prepare the database with `sh shell-php.sh` then `php artisan migrate`. `shell-node.sh` opens a shell in the Node container (`npm i` for the frontend).
+The original Laravel (PHP) API was deleted in the commit "Remove legacy Laravel backend". It is still in git history. To bring it back, revert that commit (`git revert <sha>`), or check out its parent.
 
 Backend development and tests also run in Docker (`docker-compose.backend.yml`, wrapped by `scripts/backend-tools.sh`). Details are in [backend/README.md](backend/README.md).
 

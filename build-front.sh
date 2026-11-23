@@ -2,4 +2,4 @@
 cd resources/frontend/
 sh build2php.sh
 
-git add ./public/ ./resources/views/
+git add ./public/
