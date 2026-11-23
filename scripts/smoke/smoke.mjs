@@ -12,6 +12,7 @@ const go = async (path) => { await page.goto(BASE + path, { waitUntil: 'networki
 
 await go('/novel');
 await page.waitForSelector('table tbody tr');
+await page.screenshot({ path: '/smoke/shots/novel.png' });
 const rows = await page.locator('table tbody tr').count();
 log('novel list rows:', rows);
 const headers = await page.locator('table thead th').allInnerTexts();
@@ -58,6 +59,7 @@ if (/\/novel\/\d+\/\d+/.test(page.url())) {
   await page.keyboard.press('Alt+PageDown'); await page.waitForTimeout(1500);
   log('alt+pagedown navigated:', before !== page.url(), page.url().replace(BASE, ''));
 }
+await page.screenshot({ path: '/smoke/shots/chapter.png' });
 await go('/dictionary');
 await page.waitForTimeout(800);
 log('dictionary list rows:', await page.locator('table tbody tr').count());

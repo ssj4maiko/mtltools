@@ -17,12 +17,10 @@
     "@angular/platform-browser": "^22.3.0",
     "@angular/platform-browser-dynamic": "^22.3.0",
     "@angular/router": "^22.3.0",
-    "@fortawesome/angular-fontawesome": "^0.10.1",
-    "@fortawesome/fontawesome-svg-core": "^1.2.18",
-    "@fortawesome/free-solid-svg-icons": "^5.8.2",
     "papaparse": "^5.4.1",
     "rxjs": "^7.8.1",
-    "zone.js": "~0.15.1"
+    "zone.js": "~0.15.1",
+    "@fortawesome/fontawesome-free": "^7.3.1"
   },
   "devDependencies": {
     "@angular/build": "^22.3.0",

@@ -9,15 +9,11 @@ import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
 import { ModalComponent } from './_services/modal/modal.component';
 
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { fas } from '@fortawesome/free-solid-svg-icons';
 import { KeyboardShortcutsModule } from './_services/keyboard-shortcuts/keyboard-shortcuts';
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { SafeHtmlPipe } from './_pipes/safe-html.pipe';
 
 
-library.add(fas);
 
 @NgModule({ declarations: [
         AppComponent,
@@ -32,7 +28,6 @@ library.add(fas);
         AppRoutingModule, // Necessary for API Services
         FormsModule, // Necessary for Dynamic Forms
         ReactiveFormsModule, // Necessary for Dynamic Forms
-        FontAwesomeModule, // Necessary for SVG
         //Papa,    // Necessary for CSV
         KeyboardShortcutsModule,
         BrowserAnimationsModule], providers: [

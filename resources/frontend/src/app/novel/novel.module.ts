@@ -9,7 +9,6 @@ import { EditComponent } from './edit/edit.component';
 import { NovelRoutingModule } from './novel-routing.module';
 
 import { FormsModule, ReactiveFormsModule  } from '@angular/forms';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [
@@ -23,7 +22,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     RouterModule,
     FormsModule,
     ReactiveFormsModule,
-    FontAwesomeModule,	// Necessary for SVG
   ]
 })
 export class NovelModule { }
