@@ -90,3 +90,18 @@ include /etc/nginx/nginx-node-static.conf;
 ```
 
 The first include covers `GET /api/chapter/{id}` and `GET /api/chapter/{id}/{no}`. The second covers the catalog reads, `POST /api/meta`, and `GET/PUT /api/cache/dictionary/{id}`. The third covers `GET /static/{novel}/{dict}/{chapter}/`. Each can be rolled back independently. Leave the backend container running or stop it; it is not required once all Node includes are commented out.
+
+## Update jobs and the weekly updater
+
+```
+GET  /api/jobs                       current (or just finished) update job, as {"jobs":[...]}
+GET  /api/jobs/{jobId}               one job snapshot
+GET  /api/jobs/{jobId}/events        server-sent events until the job ends
+GET  /api/jobs/kakuyomu/{idNovel}    job for a novel (also /syosetu/)
+POST /api/internal/weekly-update     start the weekly run (?dryRun=1 only lists the novels)
+GET  /api/internal/weekly-update     progress, or the last saved summary
+```
+
+The job store is in memory (one job at a time, kept 15 minutes after it ends), so rebuilding or restarting the backend drops a running job. The `/api/internal/` routes are not proxied by nginx; use `scripts/weekly-update.sh` from the repo root.
+
+The weekly run selects novels with `completed = 0` and driver `kakuyomu` or `syosetu`, updates them one at a time and marks a novel completed only when the work or index page answers 404/410 twice in a row. Its summary is written to `$CACHE_DIR/weekly-update/last-run.json`.

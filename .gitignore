@@ -45,3 +45,6 @@ yarn-error.log
 *.sql.gz
 *.epub
 *.jsonl
+
+# local dev env (secrets)
+.env.local
