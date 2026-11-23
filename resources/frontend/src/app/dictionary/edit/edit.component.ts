@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../api';
-import { FormControl, FormGroupDirective, FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
+import { FormControl, FormGroupDirective, UntypedFormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 
 import { Novel, Dictionary } from 'src/app/_models';
 import { FormField, Meta, Option } from '../../_models/formField';
@@ -24,7 +24,7 @@ export class EditComponent extends FormService implements OnInit {
       private router: Router
     , private route: ActivatedRoute
     , public api: ApiService
-    , public formBuilder: FormBuilder
+    , public formBuilder: UntypedFormBuilder
   ) {
     super(formBuilder);
   }

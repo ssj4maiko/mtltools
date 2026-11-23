@@ -1,8 +1,8 @@
 import { Optional } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 
 export class Option {
-  control: FormControl;
+  control: UntypedFormControl;
   constructor(
     public value: string,
     @Optional() public label: string = null,
@@ -12,7 +12,7 @@ export class Option {
       this.label = this.value;
     }
     if (this.checked !== null) {
-      this.control = new FormControl(this.checked);
+      this.control = new UntypedFormControl(this.checked);
       this.control.setValue(this.checked);
     }
   }

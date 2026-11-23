@@ -5,7 +5,7 @@ import { ApiService } from '../../api';
 import { ModalService } from '../../_services/modal/modal.service';
 import * as Papa from 'papaparse';
 
-import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
+import { UntypedFormBuilder, FormGroup, FormArray } from '@angular/forms';
 
 import { DictionaryEntry } from '../../_models/dictionaryentry';
 import { DictionaryCategory } from '../../_models/dictionarycategory';
@@ -27,7 +27,7 @@ export class ListComponent extends FormService implements OnInit, OnDestroy {
           private router: Router
         , private route: ActivatedRoute
         , public api: ApiService
-        , public formBuilder: FormBuilder
+        , public formBuilder: UntypedFormBuilder
         , private modalService: ModalService
     ) {
         super(formBuilder);

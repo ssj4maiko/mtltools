@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormArray, UntypedFormBuilder, FormControl, UntypedFormGroup } from '@angular/forms';
 import { Dictionary } from '../_models/dictionary';
 import { FormField, Meta, Option } from '../_models/formField';
 import { Novel } from '../_models/novel';
@@ -9,7 +9,7 @@ import { Novel } from '../_models/novel';
 })
 export class FormService {
   constructor(
-      public formBuilder: FormBuilder
+      public formBuilder: UntypedFormBuilder
   ) {
     this.formGroup = formBuilder.group({
         id: [null]
@@ -19,7 +19,7 @@ export class FormService {
     });
   }
 
-  formGroup: FormGroup;
+  formGroup: UntypedFormGroup;
   form: FormField[];
 
   selectNovels: Option[] = [];
@@ -50,7 +50,7 @@ export class FormService {
 
   setValues(dictionary: Dictionary, novels: Novel[]): void {
     const novValues = novels.map((nove: Novel) => nove.id + '');
-    const nov = new FormArray(this.selectNovels.map((option) => {
+    const nov = new UntypedFormArray(this.selectNovels.map((option) => {
       if (novValues.includes(option.value)) {
         option.setChecked(true);
       }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormArray, UntypedFormBuilder, FormControl, UntypedFormGroup } from '@angular/forms';
 import { DictionaryCategory, DictionaryEntry, EntryForm } from '../_models';
 import { Dictionary } from '../_models/dictionary';
 import { FormField, Meta, Option } from '../_models/formField';
@@ -11,13 +11,13 @@ import { Novel } from '../_models/novel';
 })
 export class FormService {
   constructor(
-      public formBuilder: FormBuilder
+      public formBuilder: UntypedFormBuilder
   ) {}
   idCategory: number;
   idDictionary: number;
 
-  formGroup: FormGroup;
-  entryArray: FormArray;
+  formGroup: UntypedFormGroup;
+  entryArray: UntypedFormArray;
 
   indexes: string[] = [];
 

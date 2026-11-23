@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../api';
-import { FormControl, FormGroupDirective, FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
+import { FormControl, FormGroupDirective, UntypedFormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 
 import { Novel } from '../../_models/novel';
 import { FormField, Meta } from '../../_models/formField';
@@ -21,7 +21,7 @@ export class AddComponent extends FormService implements OnInit {
       private router: Router
     , private route: ActivatedRoute
     , private api: ApiService
-    , public formBuilder: FormBuilder
+    , public formBuilder: UntypedFormBuilder
   ) {
     super(formBuilder);
   }
