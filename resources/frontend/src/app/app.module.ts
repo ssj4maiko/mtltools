@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -19,30 +19,24 @@ import { SafeHtmlPipe } from './_pipes/safe-html.pipe';
 
 library.add(fas);
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    HeaderComponent,
-    SafeHtmlPipe,
-    //Papa,    // Necessary for CSV
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule, 	// Necessary for API Services
-    FormsModule,		// Necessary for Dynamic Forms
-    ReactiveFormsModule, // Necessary for Dynamic Forms
-    FontAwesomeModule,	// Necessary for SVG
-    //Papa,    // Necessary for CSV
-    KeyboardShortcutsModule.forRoot(),
-    BrowserAnimationsModule
-  ],
-  exports: [
-    //Papa,    // Necessary for CSV
-  ],
-  providers: [
-        ModalComponent,
+@NgModule({ declarations: [
+        AppComponent,
+        HeaderComponent,
+        SafeHtmlPipe,
+        //Papa,    // Necessary for CSV
     ],
-  bootstrap: [AppComponent]
-})
+    exports: [
+    //Papa,    // Necessary for CSV
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        AppRoutingModule, // Necessary for API Services
+        FormsModule, // Necessary for Dynamic Forms
+        ReactiveFormsModule, // Necessary for Dynamic Forms
+        FontAwesomeModule, // Necessary for SVG
+        //Papa,    // Necessary for CSV
+        KeyboardShortcutsModule.forRoot(),
+        BrowserAnimationsModule], providers: [
+        ModalComponent,
+        provideHttpClient(withInterceptorsFromDi()),
+    ] })
 export class AppModule { }
