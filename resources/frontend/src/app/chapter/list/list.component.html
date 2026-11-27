@@ -82,7 +82,7 @@
   </thead>
   <tbody>
     @for (chapter of chapters; track chapter) {
-      <tr title="{{ novel.title }}" [ngClass]="{'disabled': updating && updating[chapter.no]}">
+      <tr [title]="chapter.title || novel.nameCustom" [ngClass]="{'disabled': updating && updating[chapter.no]}">
         <td>{{ chapter.no }}</td>
         <td [routerLink]="['/novel/', chapter.idNovel, chapter.no]">{{ chapter.arc }}</td>
         <td [routerLink]="['/novel/', chapter.idNovel, chapter.no]">{{ chapter.title }}</td>

@@ -56,8 +56,10 @@ export class ListComponent implements OnInit, OnDestroy {
   readonly tableSort = new TableSort<Chapter>([
     { key: 'number', value: (c) => c.no },
     { key: 'title', value: (c) => c.title },
-    { key: 'created', value: (c) => c.dateCreated as unknown as string },
-    { key: 'updated', value: (c) => (c.dateRevision ?? c.dateCreated) as unknown as string },
+    // Sort by the same source dates the columns show. Empty values sort last (same as the
+    // novel-list date columns); a hidden fallback would put blank cells in the middle.
+    { key: 'created', value: (c) => c.dateOriginalPost as unknown as string, firstDir: 'desc' },
+    { key: 'updated', value: (c) => c.dateOriginalRevision as unknown as string, firstDir: 'desc' },
   ], { by: 'number', dir: 'desc' }, 'chapter');
   currentSort: SortState = this.tableSort.defaultState;
   private querySub: Subscription;

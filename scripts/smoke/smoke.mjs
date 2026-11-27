@@ -117,6 +117,31 @@ const ids = await page.evaluate(() => fetch('/api/novel').then((r) => r.json()).
 const other = ids.find((i) => i !== 3);
 await go('/novel/' + other); await page.waitForSelector('table tbody tr'); await settle();
 check(q().get('chapterSort') === 'title', `the chapter sort follows to another novel (#${other}): ` + page.url().replace(BASE, ''));
+await go('/novel/3'); await page.waitForSelector('table tbody tr'); await settle();
+
+// Date Created / Date Updated must sort by the values shown in the cells (source dates).
+const dateCells = async (col) => (await page.locator(`table tbody tr td:nth-child(${col})`).allInnerTexts()).map((t) => t.trim());
+const datesNewestFirst = (vals) => {
+  const real = vals.filter(Boolean);
+  return real.length > 1 && real.every((t, k) => k === 0 || real[k - 1] >= t) && vals.slice(real.length).every((t) => t === '');
+};
+await sortBy('created');
+check(q().get('chapterSort') === 'created' && q().get('chapterDir') === 'desc', 'Date Created starts newest first in the URL: ' + page.url().replace(BASE, ''));
+check(datesNewestFirst(await dateCells(4)), 'Date Created order matches the displayed dates, newest first, empty last');
+await sortBy('created');
+const createdAsc = (await dateCells(4)).filter(Boolean);
+check(q().get('chapterDir') === 'asc' && createdAsc.length > 1 && createdAsc.every((t, k) => k === 0 || createdAsc[k - 1] <= t), 'second click on Date Created flips to oldest first');
+await sortBy('updated');
+check(q().get('chapterSort') === 'updated' && q().get('chapterDir') === 'desc', 'Date Updated starts newest first');
+check(datesNewestFirst(await dateCells(5)), 'Date Updated order matches the displayed dates, newest first, empty last');
+
+const firstTitle = (await page.locator('table tbody tr td:nth-child(3)').first().innerText()).trim();
+const firstTip = await page.locator('table tbody tr').first().getAttribute('title');
+check(!!firstTip && firstTip === firstTitle, 'chapter row tooltip is the chapter title: ' + JSON.stringify(firstTip));
+await go('/novel/1'); await page.waitForSelector('table tbody tr'); await settle();
+check(q().get('chapterSort') === 'updated' && q().get('chapterDir') === 'desc', 'the Date Updated sort is remembered on another novel: ' + page.url().replace(BASE, ''));
+
+
 const crumbTops = await page.locator('header ul li').evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().top)));
 check(new Set(crumbTops).size === 1, 'breadcrumb is on one line');
 await page.setViewportSize({ width: 380, height: 900 }); await settle();
