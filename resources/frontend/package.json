@@ -27,7 +27,7 @@
     "@angular/cli": "^22.3.0",
     "@angular/compiler-cli": "^22.3.0",
     "@angular/language-service": "^22.3.0",
-    "@types/node": "^22.10.0",
+    "@types/node": "^26.6.6",
     "@types/papaparse": "^5.3.14",
     "bulma": "^1.0.4",
     "tslib": "^2.0.3",
