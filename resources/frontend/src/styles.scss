@@ -32,6 +32,13 @@ jw-modal#confirm-import .jw-modal .jw-modal-body {
     --bulma-body-background-color: #000;
     --bulma-body-color: #fff;
     --bulma-label-color: #fff;
+    // Bulma 1 picks near-black text for its light solid colours; the app wants white button text again
+    // (as with Bulma 0.9). Warning keeps its dark text.
+    --bulma-primary-invert-l: 100%;
+    --bulma-link-invert-l: 100%;
+    --bulma-info-invert-l: 100%;
+    --bulma-success-invert-l: 100%;
+    --bulma-danger-invert-l: 100%;
 }
 // Bulma defines these on the components themselves, so they are overridden there.
 .title, .title strong, .subtitle {
