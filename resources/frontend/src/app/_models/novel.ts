@@ -15,5 +15,9 @@ export class Novel {
   completed: boolean;
   addedBy: Date;
   show: boolean;
+  urlSource: string;
+  /** ISO timestamps (UTC) of the newest chapter added / revised; null when there is none. */
+  lastChapterAddedAt: string | null;
+  lastChapterRevisedAt: string | null;
   /*@Optional()*/ dictionary: Dictionary[];
 }

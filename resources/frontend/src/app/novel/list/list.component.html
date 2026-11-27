@@ -21,81 +21,50 @@
       }
     </div>
   }
-  <table class='table is-striped is-hoverable is-fullwidth'>
+  <div class="filterBar">
+    <span class="icon filterIcon"><i class="fas fa-search"></i></span>
+    <input id="novelFilter" class="input is-small" type="search" autocomplete="off"
+           placeholder="Filter by name or driver…" [value]="filterText" (input)="onFilter($any($event.target).value)" />
+    <span class="filterCount">{{ visible.length }} / {{ novels.length }}</span>
+  </div>
+  <table class='table is-striped is-hoverable is-fullwidth novelTable'>
     <thead>
       <tr>
-        <th [ngClass]="{'orderedBy': currentSort.by == 'id'}" style="width:65px;">
-          ID
-          @if (currentSort.by != 'id' || currentSort.dir != '-') {
-            <i class="fas fa-sort-numeric-down" (click)="sort('id', '-')"></i>
-          }
-          @if (currentSort.by == 'id' && currentSort.dir == '-') {
-            <i class="fas fa-sort-numeric-up" (click)="sort('id', '+')"></i>
-          }
+        <th class="colId" [ngClass]="{'orderedBy': currentSort.by == 'id'}">
+          <span class="sortable" data-sort="id" (click)="sort('id')">ID <i class="fas" [ngClass]="sortIcon('id')"></i></span>
         </th>
-        <th>
-          Code
-        </th>
-        <th [ngClass]="{'orderedBy': currentSort.by == 'name'}">
+        <th class="colCode">Code</th>
+        <th class="colName" [ngClass]="{'orderedBy': currentSort.by == 'name' || currentSort.by == 'nameJP'}">
           Name
-          @if (currentSort.by != 'name' || currentSort.dir != '-') {
-            <i class="fas fa-sort-alpha-down" (click)="sort('name', '-')"></i>
-          }
-          @if (currentSort.by == 'name' && currentSort.dir == '-') {
-            <i class="fas fa-sort-alpha-up" (click)="sort('name', '+')"></i>
-          }
+          <span class="sortable" data-sort="name" title="Sort by English name" (click)="sort('name')">EN <i class="fas" [ngClass]="sortIcon('name')"></i></span>
+          <span class="sortable" data-sort="nameJP" title="Sort by Japanese name" (click)="sort('nameJP')">JP <i class="fas" [ngClass]="sortIcon('nameJP')"></i></span>
         </th>
-        <th [ngClass]="{'orderedBy': currentSort.by == 'nameJP'}">
-          Name Japanese
-          @if (currentSort.by != 'nameJP' || currentSort.dir != '-') {
-            <i class="fas fa-sort-alpha-down" (click)="sort('nameJP', '-')"></i>
-          }
-          @if (currentSort.by == 'nameJP' && currentSort.dir == '-') {
-            <i class="fas fa-sort-alpha-up" (click)="sort('nameJP', '+')"></i>
-          }
+        <th class="colChapters" [ngClass]="{'orderedBy': currentSort.by == 'chapters'}">
+          <span class="sortable" data-sort="chapters" (click)="sort('chapters')">Chapters <i class="fas" [ngClass]="sortIcon('chapters')"></i></span>
         </th>
-        <th [ngClass]="{'orderedBy': currentSort.by == 'chapters'}" style="width:120px;">
-          Chapters
-          @if (currentSort.by != 'chapters' || currentSort.dir != '-') {
-            <i class="fas fa-sort-numeric-down" (click)="sort('chapters', '-')"></i>
-          }
-          @if (currentSort.by == 'chapters' && currentSort.dir == '-') {
-            <i class="fas fa-sort-numeric-up" (click)="sort('chapters', '+')"></i>
-          }
+        <th class="colDriver" [ngClass]="{'orderedBy': currentSort.by == 'driver'}">
+          <span class="sortable" data-sort="driver" (click)="sort('driver')">Driver <i class="fas" [ngClass]="sortIcon('driver')"></i></span>
         </th>
-        <th [ngClass]="{'orderedBy': currentSort.by == 'driver'}" style="text-align:center;width:100px;">
-          Driver
-          @if (currentSort.by != 'driver' || currentSort.dir != '-') {
-            <i class="fas fa-sort-alpha-down" (click)="sort('driver', '-')"></i>
-          }
-          @if (currentSort.by == 'driver' && currentSort.dir == '-') {
-            <i class="fas fa-sort-alpha-up" (click)="sort('driver', '+')"></i>
-          }
+        <th class="colStatus">Status</th>
+        <th class="colAdded" [ngClass]="{'orderedBy': currentSort.by == 'added'}">
+          <span class="sortable" data-sort="added" (click)="sort('added')">Added By <i class="fas" [ngClass]="sortIcon('added')"></i></span>
         </th>
-        <th style="width:76px;">
-          Status
+        <th class="colWhen" [ngClass]="{'orderedBy': currentSort.by == 'lastAdded'}" title="When the newest chapter was added">
+          <span class="sortable" data-sort="lastAdded" (click)="sort('lastAdded')">Last added <i class="fas" [ngClass]="sortIcon('lastAdded')"></i></span>
         </th>
-        <th [ngClass]="{'orderedBy': currentSort.by == 'added'}" style="width:125px;">
-          Added By
-          @if (currentSort.by != 'added' || currentSort.dir != '-') {
-            <i class="fas fa-sort-alpha-down" (click)="sort('added', '-')"></i>
-          }
-          @if (currentSort.by == 'added' && currentSort.dir == '-') {
-            <i class="fas fa-sort-alpha-up" (click)="sort('added', '+')"></i>
-          }
+        <th class="colWhen" [ngClass]="{'orderedBy': currentSort.by == 'lastRevised'}" title="When a chapter was last revised">
+          <span class="sortable" data-sort="lastRevised" (click)="sort('lastRevised')">Last revised <i class="fas" [ngClass]="sortIcon('lastRevised')"></i></span>
         </th>
-        <th style="text-align:center;width:160px;">
-          Actions
-        </th>
+        <th class="colActions">Actions</th>
       </tr>
     </thead>
     <tbody>
-      @for (novel of novels; track novel) {
-        @if (novel.show) {
-          <tr title="{{ novel.nameOriginal }}" [ngClass]="{'disabled': updating[novel.id] }">
-            <td>{{ novel.id }}</td>
-            <td [routerLink]="['/novel/', novel.id]">{{ novel.code }}</td>
-            <td [routerLink]="['/novel/', novel.id]">
+      @for (novel of visible; track novel.id) {
+        <tr [ngClass]="{'disabled': updating[novel.id] }">
+          <td>{{ novel.id }}</td>
+          <td class="ellipsis" [routerLink]="['/novel/', novel.id]" [title]="novel.code">{{ novel.code }}</td>
+          <td class="nameCell" [routerLink]="['/novel/', novel.id]">
+            <div class="nameEn ellipsis" [title]="novel.nameCustom">
               {{ novel.nameCustom }}
               @if (updating[novel.id]) {
                 <span class="tag is-warning updateTag">
@@ -107,44 +76,49 @@
                   <i class="fas" [ngClass]="fj.phase == 'done' ? 'fa-check' : 'fa-times'"></i>&nbsp;{{ label(fj) }}
                 </span>
               }
-            </td>
-            <td [routerLink]="['/novel/', novel.id]">{{ novel.nameOriginal }}</td>
-            <td [routerLink]="['/novel/', novel.id]">{{ novel.numberChapters }}</td>
-            <td>{{ novel.driver }}</td>
-            <td class="status">
-              @if (novel.completed) {
-                <i class="fas fa-envelope has-text-success" title="Complete"></i>
-              }
-              @if (!novel.completed) {
-                <i class="fas fa-envelope-open-text has-text-info" title="Still going"></i>
-              }
-              @if (novel.flagR18) {
-                <i class="fas fa-user-secret has-text-danger" title="R18"></i>
-              }
-              @if (!novel.flagR18) {
-                <i class="fas fa-user-secret has-text-grey-lighter" title="Everyone"></i>
-              }
-            </td>
-            <td>{{ novel.addedBy }}</td>
-            <td>
-              <a href="{{ novel.urlSource }}" target="_blank">
-                <i class="has-text-info fas fa-external-link-alt" title="Source"></i>
-              </a>
-              <a [routerLink]="['/novel/dictionary', novel.id]">
-                <i class=" fas fa-book-open" title="Dictionaries"></i>
-              </a>
-              <a (click)="updateChapters(novel.id)">
-                <i class="has-text-info fas fa-sync" [ngClass]="{'fa-spin': updating[novel.id]}" [title]="updating[novel.id] ? 'Updating…' : 'Update Chapters'"></i>
-              </a>
-              <a [routerLink]="['/novel/edit', novel.id]">
-                <i class="has-text-success fas fa-edit" title="Edit"></i>
-              </a>
-              <a (click)="delete(novel.id);">
-                <i class="has-text-danger fas fa-trash" title="Delete"></i>
-              </a>
-            </td>
-          </tr>
-        }
+            </div>
+            <div class="nameJp ellipsis" [title]="novel.nameOriginal">{{ novel.nameOriginal }}</div>
+          </td>
+          <td [routerLink]="['/novel/', novel.id]">{{ novel.numberChapters }}</td>
+          <td class="ellipsis" [title]="novel.driver">{{ novel.driver }}</td>
+          <td class="status">
+            @if (novel.completed) {
+              <i class="fas fa-envelope has-text-success" title="Complete"></i>
+            }
+            @if (!novel.completed) {
+              <i class="fas fa-envelope-open-text has-text-info" title="Still going"></i>
+            }
+            @if (novel.flagR18) {
+              <i class="fas fa-user-secret has-text-danger" title="R18"></i>
+            }
+            @if (!novel.flagR18) {
+              <i class="fas fa-user-secret has-text-grey-lighter" title="Everyone"></i>
+            }
+          </td>
+          <td class="ellipsis" [title]="novel.addedBy">{{ novel.addedBy }}</td>
+          <td class="when" [title]="whenFull(novel.lastChapterAddedAt)">{{ when(novel.lastChapterAddedAt) }}</td>
+          <td class="when" [title]="whenFull(novel.lastChapterRevisedAt)">{{ when(novel.lastChapterRevisedAt) }}</td>
+          <td class="actions">
+            <a href="{{ novel.urlSource }}" target="_blank">
+              <i class="has-text-info fas fa-external-link-alt" title="Source"></i>
+            </a>
+            <a [routerLink]="['/novel/dictionary', novel.id]">
+              <i class=" fas fa-book-open" title="Dictionaries"></i>
+            </a>
+            <a (click)="updateChapters(novel.id)">
+              <i class="has-text-info fas fa-sync" [ngClass]="{'fa-spin': updating[novel.id]}" [title]="updating[novel.id] ? 'Updating…' : 'Update Chapters'"></i>
+            </a>
+            <a [routerLink]="['/novel/edit', novel.id]">
+              <i class="has-text-success fas fa-edit" title="Edit"></i>
+            </a>
+            <a (click)="delete(novel.id);">
+              <i class="has-text-danger fas fa-trash" title="Delete"></i>
+            </a>
+          </td>
+        </tr>
+      }
+      @if (visible.length == 0 && novels.length > 0) {
+        <tr class="noMatch"><td colspan="10">No novels match “{{ filterText }}”.</td></tr>
       }
       <ng-template #success>
         <a class='button is-success'>

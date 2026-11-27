@@ -1,34 +1,22 @@
 <div>
-  <table class='table is-striped is-hoverable is-fullwidth'>
+  <table class='table is-striped is-hoverable is-fullwidth novelTable dashboardNovels'>
     <thead>
       <tr>
         <th [ngClass]="{'orderedBy': currentSort.by == 'name'}">
-          Name
-          @if (currentSort.by != 'name' || currentSort.dir != '-') {
-            <i class="fas fa-sort-alpha-down" (click)="sort('name', '-')"></i>
-          }
-          @if (currentSort.by == 'name' && currentSort.dir == '-') {
-            <i class="fas fa-sort-alpha-up" (click)="sort('name', '+')"></i>
-          }
+          <span class="sortable" (click)="sort('name')">Name <i class="fas" [ngClass]="sortIcon('name')"></i></span>
         </th>
-        <th [ngClass]="{'orderedBy': currentSort.by == 'chapters'}" style="width:120px;">
-          Chapters
-          @if (currentSort.by != 'chapters' || currentSort.dir != '-') {
-            <i class="fas fa-sort-numeric-down" (click)="sort('chapters', '-')"></i>
-          }
-          @if (currentSort.by == 'chapters' && currentSort.dir == '-') {
-            <i class="fas fa-sort-numeric-up" (click)="sort('chapters', '+')"></i>
-          }
+        <th class="colChapters" [ngClass]="{'orderedBy': currentSort.by == 'chapters'}" style="width:120px;">
+          <span class="sortable" (click)="sort('chapters')">Chapters <i class="fas" [ngClass]="sortIcon('chapters')"></i></span>
         </th>
         <th style="width:75px">Status</th>
         <th style="width:75px">Actions</th>
       </tr>
     </thead>
     <tbody>
-      @for (novel of novels; track novel) {
+      @for (novel of visible; track novel.id) {
         @if (novel.show) {
           <tr title="{{ novel.nameOriginal }}" [ngClass]="{'disabled': updating[novel.id] }">
-            <td [routerLink]="['/novel/', novel.id]">{{ novel.nameCustom }}</td>
+            <td class="ellipsis" [routerLink]="['/novel/', novel.id]" [title]="novel.nameOriginal">{{ novel.nameCustom }}</td>
             <td class="noChapters">{{ novel.numberChapters }}</td>
             <td class="status">
               @if (novel.completed) {

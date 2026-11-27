@@ -1,21 +1,12 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 // import { ApiService } from '../../api.service';
 import { ApiService } from '../../api';
 import { Novel } from '../../_models/novel';
 import { UpdateJob, UpdateJobsService } from '../../_services/update-jobs.service';
-
-/**
- * Comparators must return a number. Returning a boolean works in Firefox's merge sort by luck
- * but breaks in Chrome (V8's TimSort treats `true`/`false` as 1/0 and never sees "less than").
- */
-function compare(a: any, b: any): number {
-  if (a === b) { return 0; }
-  if (a === null || a === undefined || a === '') { return 1; }
-  if (b === null || b === undefined || b === '') { return -1; }
-  if (typeof a === 'number' && typeof b === 'number') { return a - b; }
-  return String(a).localeCompare(String(b), undefined, { numeric: true, sensitivity: 'base' });
-}
+import { SortState, TableSort } from '../../_services/table-sort';
+import { formatWhen, formatWhenFull } from '../../_services/format-when';
 
 @Component({
     selector: 'app-novel-list',
@@ -27,11 +18,14 @@ function compare(a: any, b: any): number {
 export class ListComponent implements OnInit, OnDestroy {
 
   novels: Novel[] = [];
+  /** The rows on screen: shown novels that match the filter, in the current order. */
+  visible: Novel[] = [];
 
   constructor(
       protected api: ApiService,
       public jobs: UpdateJobsService,
-      // private cacheService: CacheService
+      protected router: Router,
+      protected route: ActivatedRoute,
   ) {}
 
   /** Latest job snapshot from the backend (in-memory there; mirrored here for display). */
@@ -39,10 +33,12 @@ export class ListComponent implements OnInit, OnDestroy {
   private runningJobId: string | null = null;
   private lastFinishedHandled: string | null = null;
   private sub: Subscription;
+  private querySub: Subscription;
   readonly label = UpdateJobsService.label;
   readonly isRunning = UpdateJobsService.isRunning;
 
   ngOnInit() {
+    if (this.sortInUrl) { this.querySub = this.route.queryParamMap.subscribe((params) => this.onQuery(params)); }
     this.loadList();
     this.sub = this.jobs.job$.subscribe((job) => this.onJob(job));
     // Pick up a job that is already running (or just finished) when the page is (re)loaded.
@@ -53,6 +49,8 @@ export class ListComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.sub) { this.sub.unsubscribe(); }
+    if (this.querySub) { this.querySub.unsubscribe(); }
+    clearTimeout(this.filterTimer);
   }
 
   private onJob(job: UpdateJob | null) {
@@ -83,6 +81,7 @@ export class ListComponent implements OnInit, OnDestroy {
       for (const i in this.novels) {
         if (this.novels[i].id === novel.id) { this.novels[i] = novel; break; }
       }
+      this.refreshView();
     });
   }
 
@@ -92,34 +91,91 @@ export class ListComponent implements OnInit, OnDestroy {
       .then((novels) => {
         // this.novels = [novels];
         this.novels = Object.values(novels);
-        this.sort(this.currentSort.by, this.currentSort.dir);
+        this.refreshView();
       }, (error) => {
         console.log(error);
       });
   }
-  sortingAlg = {
-    idAsc: (a: Novel, b: Novel) => compare(a.id, b.id),
-    nameAsc: (a: Novel, b: Novel) => compare(a.nameCustom, b.nameCustom),
-    nameJPAsc: (a: Novel, b: Novel) => compare(a.nameOriginal, b.nameOriginal),
-    chaptersAsc: (a: Novel, b: Novel) => compare(a.numberChapters, b.numberChapters),
-    driverAsc: (a: Novel, b: Novel) => compare(a.driver, b.driver),
-    addedAsc: (a: Novel, b: Novel) => compare(a.addedBy, b.addedBy),
-    idDesc: (a: Novel, b: Novel) => compare(b.id, a.id),
-    nameDesc: (a: Novel, b: Novel) => compare(b.nameCustom, a.nameCustom),
-    nameJPDesc: (a: Novel, b: Novel) => compare(b.nameOriginal, a.nameOriginal),
-    chaptersDesc: (a: Novel, b: Novel) => compare(b.numberChapters, a.numberChapters),
-    driverDesc: (a: Novel, b: Novel) => compare(b.driver, a.driver),
-    addedDesc: (a: Novel, b: Novel) => compare(b.addedBy, a.addedBy),
+  /** Sort columns; the URL carries them as novelSort/novelDir (the chapter table has its own pair). */
+  readonly tableSort = new TableSort<Novel>([
+    { key: 'id', value: (n) => n.id },
+    { key: 'name', value: (n) => n.nameCustom },
+    { key: 'nameJP', value: (n) => n.nameOriginal },
+    { key: 'chapters', value: (n) => n.numberChapters },
+    { key: 'driver', value: (n) => n.driver },
+    { key: 'added', value: (n) => n.addedBy as unknown as string },
+    { key: 'lastAdded', value: (n) => n.lastChapterAddedAt, firstDir: 'desc' },
+    { key: 'lastRevised', value: (n) => n.lastChapterRevisedAt, firstDir: 'desc' },
+  ], { by: 'id', dir: 'asc' }, 'novel');
+  currentSort: SortState = this.tableSort.defaultState;
+  /** The full list keeps its sort and filter in the URL; the dashboard's embedded copy sorts locally. */
+  protected sortInUrl = true;
+  /** Instant filter text, also kept in the URL as ?q= */
+  filterText = '';
+  private filterKey = '';
+  private filterTimer: ReturnType<typeof setTimeout>;
+
+  private onQuery(params: ParamMap) {
+    let state = this.tableSort.fromParams(params);
+    if (!state) {
+      // No sort in the URL: use what was chosen last time (and show it in the URL).
+      state = this.tableSort.recall();
+      if (state) {
+        this.router.navigate([], {
+          relativeTo: this.route, queryParams: this.tableSort.toParams(state), queryParamsHandling: 'merge', replaceUrl: true,
+        });
+      }
+    } else {
+      this.tableSort.remember(state);
+    }
+    this.currentSort = state ?? this.tableSort.defaultState;
+    const q = params.get('q') ?? '';
+    if (q !== this.filterText.trim()) { this.filterText = q; }
+    this.refreshView();
   }
-  currentSort = {
-    by: 'id',
-    dir: '+'
+
+  /** Header click: flip the active column or switch column. A new history entry, so Back undoes it. */
+  sort(by: string) {
+    if (!this.sortInUrl) {
+      this.currentSort = this.tableSort.next(this.currentSort, by);
+      this.refreshView();
+      return;
+    }
+    this.router.navigate([], {
+      relativeTo: this.route, queryParams: this.tableSort.toParams(this.tableSort.next(this.currentSort, by)), queryParamsHandling: 'merge',
+    });
   }
-  sort(sortAlg: string, dir: string) {
-    this.currentSort.by = sortAlg;
-    this.currentSort.dir = dir;
-    this.novels.sort(this.sortingAlg[this.currentSort.by + (dir == '+' ? 'Asc' : 'Desc')]);
+
+  sortIcon(by: string): string {
+    if (this.currentSort.by !== by) { return 'fa-sort'; }
+    return this.currentSort.dir === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
   }
+
+  onFilter(value: string) {
+    this.filterText = value;
+    this.refreshView();
+    // The URL follows after a short pause, so a navigation echo never overwrites text still being typed.
+    clearTimeout(this.filterTimer);
+    this.filterTimer = setTimeout(() => {
+      this.router.navigate([], {
+        relativeTo: this.route, queryParams: { q: this.filterText.trim() || null }, queryParamsHandling: 'merge', replaceUrl: true,
+      });
+    }, 250);
+  }
+
+  protected refreshView() {
+    this.tableSort.sort(this.novels, this.currentSort);
+    this.filterKey = this.filterText.trim().toLowerCase();
+    this.visible = this.novels.filter((n) => n.show && this.matches(n));
+  }
+
+  private matches(n: Novel): boolean {
+    if (!this.filterKey) { return true; }
+    return [n.nameCustom, n.nameOriginal, n.driver, n.code].some((v) => !!v && String(v).toLowerCase().includes(this.filterKey));
+  }
+
+  readonly when = formatWhen;
+  readonly whenFull = formatWhenFull;
 
   updating:boolean[] = [];
   updateChapters(idNovel: number) {
@@ -144,6 +200,7 @@ export class ListComponent implements OnInit, OnDestroy {
                                     break;
                                 }
                               }
+                              this.refreshView();
                               if (!updated) {
                                 console.log('The novel was not found on the list? Impossible...');
                               }

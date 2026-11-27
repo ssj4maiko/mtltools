@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { ApiService } from '../../api';
 
 import { Chapter } from '../../_models/chapter';
@@ -8,17 +8,7 @@ import { Novel } from '../../_models/novel';
 import { environment } from 'src/environments/environment';
 import { Dictionary } from 'src/app/_models/dictionary';
 import { UpdateJob, UpdateJobsService } from '../../_services/update-jobs.service';
-
-/**
- * Comparators must return a number. Returning a boolean works in Firefox but not in Chrome (V8 TimSort).
- */
-function compare(a: any, b: any): number {
-  if (a === b) { return 0; }
-  if (a === null || a === undefined || a === '') { return 1; }
-  if (b === null || b === undefined || b === '') { return -1; }
-  if (typeof a === 'number' && typeof b === 'number') { return a - b; }
-  return a < b ? -1 : (a > b ? 1 : 0);
-}
+import { SortState, TableSort } from '../../_services/table-sort';
 
 @Component({
     selector: 'app-chapter-list',
@@ -59,30 +49,55 @@ export class ListComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.sub) { this.sub.unsubscribe(); }
+    if (this.querySub) { this.querySub.unsubscribe(); }
   }
 
-  sortingAlg = {
-    numberAsc: (a: Chapter, b: Chapter) => compare(a.no, b.no),
-    titleAsc: (a: Chapter, b: Chapter) => compare(a.title, b.title),
-    createdAsc: (a: Chapter, b: Chapter) => compare(a.dateCreated, b.dateCreated),
-    updatedAsc: (a: Chapter, b: Chapter) => compare((a.dateRevision ?? a.dateCreated), (b.dateRevision ?? b.dateCreated)),
-    numberDesc: (a: Chapter, b: Chapter) => compare(b.no, a.no),
-    titleDesc: (a: Chapter, b: Chapter) => compare(b.title, a.title),
-    createdDesc: (a: Chapter, b: Chapter) => compare(b.dateCreated, a.dateCreated),
-    updatedDesc: (a: Chapter, b: Chapter) => compare((b.dateRevision ?? b.dateCreated), (a.dateRevision ?? a.dateCreated)),
+  /** Sort columns; the URL carries them as chapterSort/chapterDir (the novel table has its own pair). */
+  readonly tableSort = new TableSort<Chapter>([
+    { key: 'number', value: (c) => c.no },
+    { key: 'title', value: (c) => c.title },
+    { key: 'created', value: (c) => c.dateCreated as unknown as string },
+    { key: 'updated', value: (c) => (c.dateRevision ?? c.dateCreated) as unknown as string },
+  ], { by: 'number', dir: 'desc' }, 'chapter');
+  currentSort: SortState = this.tableSort.defaultState;
+  private querySub: Subscription;
+
+  private onQuery(params: ParamMap) {
+    let state = this.tableSort.fromParams(params);
+    if (!state) {
+      // No sort in the URL: use what was chosen last time, on any novel (and show it in the URL).
+      state = this.tableSort.recall();
+      if (state) {
+        this.router.navigate([], {
+          relativeTo: this.route, queryParams: this.tableSort.toParams(state), queryParamsHandling: 'merge', replaceUrl: true,
+        });
+      }
+    } else {
+      this.tableSort.remember(state);
+    }
+    this.currentSort = state ?? this.tableSort.defaultState;
+    this.applySort();
   }
-  currentSort = {
-    by: 'number',
-    dir: '-'
+
+  /** Header click: flip the active column or switch column. A new history entry, so Back undoes it. */
+  sort(by: string) {
+    this.router.navigate([], {
+      relativeTo: this.route, queryParams: this.tableSort.toParams(this.tableSort.next(this.currentSort, by)), queryParamsHandling: 'merge',
+    });
   }
-  sort(sortAlg:string, dir:string) {
-    this.currentSort.by = sortAlg;
-    this.currentSort.dir = dir;
-    this.chapters.sort(this.sortingAlg[this.currentSort.by + (dir == '+' ? 'Asc' : 'Desc' ) ] );
+
+  sortIcon(by: string): string {
+    if (this.currentSort.by !== by) { return 'fa-sort'; }
+    return this.currentSort.dir === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
+  }
+
+  private applySort() {
+    this.tableSort.sort(this.chapters, this.currentSort);
   }
 
   ngOnInit() {
     this.idNovel = this.route.snapshot.params.idNovel;
+    this.querySub = this.route.queryParamMap.subscribe((params) => this.onQuery(params));
     this.sub = this.jobs.job$.subscribe((job) => this.job = job);
     this.jobs.refresh().then((job) => {
       if (UpdateJobsService.isRunning(job)) { this.jobs.watch(); }
@@ -96,7 +111,7 @@ export class ListComponent implements OnInit, OnDestroy {
                             this.api.Chapter.getAll({idNovel: this.idNovel})
                                             .then(chapters => {
                                               this.chapters = Object.values(chapters);
-                                              this.sort(this.currentSort.by, this.currentSort.dir);
+                                              this.applySort();
                                             });
                           });
                 });
@@ -115,7 +130,7 @@ export class ListComponent implements OnInit, OnDestroy {
         this.api.Chapter.getAll({ idNovel: this.idNovel })
           .then(chapters => {
             this.chapters = Object.values(chapters);
-            this.sort(this.currentSort.by, this.currentSort.dir);
+            this.applySort();
           });
         delete this.updating[noChapter];
       }, err => {
@@ -153,7 +168,7 @@ export class ListComponent implements OnInit, OnDestroy {
         this.api.Chapter.getAll({ idNovel: this.idNovel })
                       .then(chapters => {
                         this.chapters = Object.values(chapters);
-                        this.sort(this.currentSort.by, this.currentSort.dir);
+                        this.applySort();
                       });
       }, err => {
         console.log(err);

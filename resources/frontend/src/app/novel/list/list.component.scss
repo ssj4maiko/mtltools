@@ -1,46 +1,93 @@
-.table {
-	.orderedBy {
-		color:white;
-		background-color: rgba($color: #fff, $alpha: 0.3);
+.novelTable {
+	// Fixed layout lets the name column shrink with an ellipsis instead of pushing other columns onto two lines.
+	table-layout: fixed;
+	width: 100%;
+
+	th, td {
+		white-space: nowrap;
+		padding: 0.4em 0.5em;
+	}
+	th {
+		font-size: 0.8rem;
+		vertical-align: middle;
+	}
+	.colId { width: 64px; }
+	.colCode { width: 128px; }
+	.colChapters { width: 96px; }
+	.colDriver { width: 88px; }
+	.colStatus { width: 84px; text-align: center; }
+	.colAdded { width: 100px; }
+	.colWhen { width: 112px; }
+	.colActions { width: 172px; text-align: center; }
+
+	.ellipsis, .nameCell {
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.nameCell {
+		.nameEn { font-weight: 600; }
+		.nameJp { font-size: 0.85em; opacity: 0.75; }
+	}
+	.when { cursor: default; }
+	.noMatch td { text-align: center; opacity: 0.7; padding: 1.5em; }
+	td.status, td.actions { text-align: center; }
+
+	.sortable {
+		cursor: pointer;
+		user-select: none;
+		margin-right: 0.5em;
+		&:last-child { margin-right: 0; }
 	}
 	th .fas {
-		display:block;
-		float:right;
+		display: inline;
+		float: none;
+		margin: 0 0 0 2px;
+		font-size: inherit;
+		vertical-align: baseline;
+		cursor: pointer;
+		&.fa-sort { opacity: 0.4; }
 	}
-	& tr {
-		td:nth-child(5),
-		td:nth-child(6),
-		td:nth-child(8){
-			text-align:center;
-		}
+	.orderedBy {
+		color: white;
+		background-color: rgba($color: #fff, $alpha: 0.3);
 	}
 	tr.disabled > td {
 		background-color: rgba($color: #007c10, $alpha: 0.5);
 	}
-	.fas {
-		margin:3px;
+	td .fas {
+		margin: 3px;
 		font-size: 20px;
 		vertical-align: super;
-		cursor:pointer;
+		cursor: pointer;
 	}
+	td .updateTag .fas, .updateTag .fas {
+		font-size: 12px;
+		margin: 0;
+		vertical-align: baseline;
+		cursor: default;
+	}
+	td.actions .fas { margin: 3px 4px; }
 }
 .updateBanner {
-	margin:5px;
+	margin: 5px;
 }
 .updateTag {
-	margin-left:8px;
-	vertical-align:middle;
-	.fas {
-		font-size:12px;
-		margin:0;
-		vertical-align:baseline;
-		cursor:default;
-	}
+	margin-left: 8px;
+	vertical-align: middle;
+}
+.filterBar {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin: 5px 5px 10px;
+	.input { max-width: 360px; }
+	.filterIcon { opacity: 0.6; }
+	.filterCount { opacity: 0.6; font-size: 0.85rem; }
 }
 .columns {
-	margin:5px;
+	margin: 5px;
 }
 .actionButtons a {
 	text-align: center;
-	width:100%;
+	width: 100%;
 }

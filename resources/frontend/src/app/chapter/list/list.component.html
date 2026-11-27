@@ -53,47 +53,23 @@
 }
 <div id='novelTable'>
   <ng-container *ngTemplateOutlet="actionButtons"></ng-container>
-  <table class='table is-striped is-hoverable'>
+  <table class='table is-striped is-hoverable chapterTable'>
     <thead>
       <tr>
         <th [ngClass]="{'orderedBy': currentSort.by == 'number'}">
-          Number
-          @if (currentSort.by != 'number' || currentSort.dir != '-') {
-            <i class="fas fa-sort-numeric-down" (click)="sort('number', '-')"></i>
-          }
-          @if (currentSort.by == 'number' && currentSort.dir == '-') {
-            <i class="fas fa-sort-numeric-up" (click)="sort('number', '+')"></i>
-          }
+          <span class="sortable" data-sort="number" (click)="sort('number')">Number <i class="fas" [ngClass]="sortIcon('number')"></i></span>
         </th>
         <th>
           Arc
         </th>
         <th [ngClass]="{'orderedBy': currentSort.by == 'title'}">
-          Title
-          @if (currentSort.by != 'title' || currentSort.dir != '-') {
-            <i class="fas fa-sort-alpha-down" (click)="sort('title', '-')"></i>
-          }
-          @if (currentSort.by == 'title' && currentSort.dir == '-') {
-            <i class="fas fa-sort-alpha-up" (click)="sort('title', '+')"></i>
-          }
+          <span class="sortable" data-sort="title" (click)="sort('title')">Title <i class="fas" [ngClass]="sortIcon('title')"></i></span>
         </th>
         <th [ngClass]="{'orderedBy': currentSort.by == 'created'}">
-          Date Created
-          @if (currentSort.by != 'created' || currentSort.dir != '-') {
-            <i class="fas fa-sort-numeric-down" (click)="sort('created', '-')"></i>
-          }
-          @if (currentSort.by == 'created' && currentSort.dir == '-') {
-            <i class="fas fa-sort-numeric-up" (click)="sort('created', '+')"></i>
-          }
+          <span class="sortable" data-sort="created" (click)="sort('created')">Date Created <i class="fas" [ngClass]="sortIcon('created')"></i></span>
         </th>
         <th [ngClass]="{'orderedBy': currentSort.by == 'updated'}">
-          Date Updated
-          @if (currentSort.by != 'updated' || currentSort.dir != '-') {
-            <i class="fas fa-sort-numeric-down" (click)="sort('updated', '-')"></i>
-          }
-          @if (currentSort.by == 'updated' && currentSort.dir == '-') {
-            <i class="fas fa-sort-numeric-up" (click)="sort('updated', '+')"></i>
-          }
+          <span class="sortable" data-sort="updated" (click)="sort('updated')">Date Updated <i class="fas" [ngClass]="sortIcon('updated')"></i></span>
         </th>
         <th>
           Dictionary<br />Google Translator

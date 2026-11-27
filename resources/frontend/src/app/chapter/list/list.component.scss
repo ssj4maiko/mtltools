@@ -29,6 +29,20 @@
 			color:white;
 			background-color: rgba($color: #fff, $alpha: 0.3);
 		}
+		th {
+			font-size: 0.8rem;
+			white-space: nowrap;
+			vertical-align: middle;
+			.sortable { cursor:pointer; user-select:none; }
+			.fas {
+				display: inline;
+				float: none;
+				margin: 0 0 0 2px;
+				font-size: inherit;
+				vertical-align: baseline;
+				&.fa-sort { opacity: 0.4; }
+			}
+		}
 	}
 
 
