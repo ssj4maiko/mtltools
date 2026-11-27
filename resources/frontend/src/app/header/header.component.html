@@ -2,11 +2,11 @@
   <img src="assets/mtl-tools-logo.png" class="appName" alt="MTL Tools" routerLink="/" />
   <ul>
     <li routerLink="/dashboard" routerLinkActive="router-link-active">
-      <a>Dashboard</a>
+      <a><span>Dashboard</span></a>
     </li>
     @for (breadcrumb of breadcrumbs; track breadcrumb) {
-      <li [routerLink]="breadcrumb.url" routerLinkActive="router-link-active">
-        <a>/ {{ breadcrumb.label }}</a>
+      <li [routerLink]="breadcrumb.url" routerLinkActive="router-link-active" [title]="'/ ' + breadcrumb.label">
+        <a><span>/ {{ breadcrumb.label }}</span></a>
       </li>
     }
   </ul>
