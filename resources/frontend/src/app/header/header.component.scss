@@ -9,7 +9,10 @@ header {
         float:left;
     }
     & > .appName {
-        height: 100%;
+        // The square icon sits in the 100px bar with a small margin around it.
+        height: 76px;
+        width: 76px;
+        margin: 12px 8px 12px 12px;
     }
     & > ul {
         list-style: none;
