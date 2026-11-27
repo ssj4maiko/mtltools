@@ -25,5 +25,5 @@ docker run -d --rm --name $NAME --network host -v "$DIR":/site:ro -v "$CONF":/et
 trap 'docker rm -f $NAME >/dev/null 2>&1; rm -f "$CONF"' EXIT
 sleep 1
 docker run --rm --network host --ipc=host -v "$PWD/scripts/smoke":/smoke -w /smoke \
-  -e SMOKE -e BASE=http://127.0.0.1:8810 -e HOME=/tmp mcr.microsoft.com/playwright:v$PW-noble \
+  -e SMOKE -e SHOT -e BASE=http://127.0.0.1:8810 -e HOME=/tmp mcr.microsoft.com/playwright:v$PW-noble \
   bash -c "npm install --no-save --silent playwright@$PW >/dev/null 2>&1; node ${SMOKE:-smoke.mjs}"
