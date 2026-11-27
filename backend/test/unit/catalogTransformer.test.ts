@@ -32,7 +32,7 @@ describe("catalog transformers", () => {
       [dict],
     );
     expect(phpJsonEncode(novel)).toBe(
-      '{"id":1,"code":"n1234ab","nameOriginal":"\\u6e90","nameCustom":"Source","driver":"syosetu","numberChapters":3,"flagR18":0,"completed":0,"addedBy":"me","show":1,"urlSource":"https:\\/\\/ncode.syosetu.com\\/n1234ab\\/","dictionary":[{"id":10,"name":"\\u4eba\\u540d","language":"english","dateCreated":"2020-01-02T03:04:05.000000Z","dateRevision":"2021-02-03T04:05:06.000000Z","count_categories":2}]}',
+      '{"id":1,"code":"n1234ab","nameOriginal":"\\u6e90","nameCustom":"Source","driver":"syosetu","numberChapters":3,"flagR18":0,"completed":0,"addedBy":"me","show":1,"lastChapterAddedAt":null,"lastChapterRevisedAt":null,"urlSource":"https:\\/\\/ncode.syosetu.com\\/n1234ab\\/","dictionary":[{"id":10,"name":"\\u4eba\\u540d","language":"english","dateCreated":"2020-01-02T03:04:05.000000Z","dateRevision":"2021-02-03T04:05:06.000000Z","count_categories":2}]}',
     );
   });
 

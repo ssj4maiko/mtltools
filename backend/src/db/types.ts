@@ -12,6 +12,8 @@ export interface NovelsTable {
   completed: number;
   addedBy: string;
   show: number;
+  lastChapterAddedAt: string | null;
+  lastChapterRevisedAt: string | null;
 }
 
 export interface ChaptersTable {

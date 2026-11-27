@@ -1,4 +1,5 @@
 import { novelUrlSource } from "../drivers/urls.js";
+import { laravelTimestampToJson } from "../json/phpJson.js";
 import type { DictionaryListItem } from "./dictionaryTransformer.js";
 
 function asInt(value: number | boolean | Buffer | string | null | undefined): number {
@@ -20,6 +21,8 @@ export type NovelRow = {
   completed: number | boolean | Buffer | string;
   addedBy: string;
   show: number | boolean | Buffer | string;
+  lastChapterAddedAt?: string | null;
+  lastChapterRevisedAt?: string | null;
 };
 
 export type NovelListItem = {
@@ -33,6 +36,8 @@ export type NovelListItem = {
   completed: number;
   addedBy: string;
   show: number;
+  lastChapterAddedAt: string | null;
+  lastChapterRevisedAt: string | null;
   urlSource: string;
 };
 
@@ -53,6 +58,8 @@ export function transformNovel(row: NovelRow): NovelListItem {
     completed: asInt(row.completed) ? 1 : 0,
     addedBy: row.addedBy,
     show: asInt(row.show) ? 1 : 0,
+    lastChapterAddedAt: laravelTimestampToJson(row.lastChapterAddedAt),
+    lastChapterRevisedAt: laravelTimestampToJson(row.lastChapterRevisedAt),
     urlSource: novelUrlSource({ driver: row.driver, code: row.code, flagR18 }),
   };
 }

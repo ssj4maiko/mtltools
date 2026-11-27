@@ -3,6 +3,7 @@ import { FileCache } from "./cache/fileCache.js";
 import { LaravelChapterCache } from "./cache/laravelChapterCache.js";
 import { createDb, createPoolFromConfig } from "./db/client.js";
 import { extractChapterImages } from "./services/extractImages.js";
+import { refreshNovelUpdateDates } from "./services/novelUpdateDates.js";
 
 function arg(name: string): string | undefined {
   const prefix = `--${name}=`;
@@ -116,8 +117,29 @@ if (cmd === "extract-images") {
   process.exit(0);
 }
 
+if (cmd === "refresh-update-dates") {
+  // For chapter writes that bypass the backend (SQL imports): recompute the novels' last-chapter dates.
+  const novel = arg("novel");
+  if (novel !== undefined && !/^[0-9]+$/.test(novel)) {
+    console.error("Usage: node dist/cli.js refresh-update-dates [--novel=ID]");
+    process.exit(2);
+  }
+  const pool = createPoolFromConfig(config);
+  const db = createDb(pool);
+  try {
+    const touched = await refreshNovelUpdateDates(db, novel === undefined ? undefined : Number(novel));
+    if (novel === undefined) await cache.invalidateCatalog();
+    else await cache.invalidateNovel(Number(novel));
+    console.log(`refreshed last-chapter dates for ${touched} novel row(s)${novel === undefined ? "" : ` (novel ${novel})`}`);
+  } finally {
+    await db.destroy();
+  }
+  process.exit(0);
+}
+
 console.error(
   "Usage: node dist/cli.js cache-purge --novel=ID | --dictionary=ID | --all\n" +
+    "       node dist/cli.js refresh-update-dates [--novel=ID]\n" +
     "       node dist/cli.js extract-images [--dry-run] [--novel=ID]... [--no=N]... [--limit=N]",
 );
 process.exit(2);

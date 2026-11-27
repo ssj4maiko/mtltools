@@ -265,6 +265,8 @@ export class CatalogService {
         "n.completed",
         "n.addedBy",
         "n.show",
+        "n.lastChapterAddedAt",
+        "n.lastChapterRevisedAt",
       ])
       .where("nd.idDictionary", "in", ids)
       .orderBy("nd.id", "asc")
@@ -284,6 +286,8 @@ export class CatalogService {
         completed: link.completed,
         addedBy: link.addedBy,
         show: link.show,
+        lastChapterAddedAt: link.lastChapterAddedAt,
+        lastChapterRevisedAt: link.lastChapterRevisedAt,
       });
       const list = byDict.get(idDictionary) ?? [];
       list.push(item);

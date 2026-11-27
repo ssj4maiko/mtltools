@@ -10,6 +10,8 @@ CREATE TABLE novels (
   completed tinyint(3) unsigned NOT NULL DEFAULT 0,
   addedBy varchar(255) NOT NULL,
   `show` tinyint(3) unsigned NOT NULL DEFAULT 1,
+  lastChapterAddedAt datetime DEFAULT NULL,
+  lastChapterRevisedAt datetime DEFAULT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY novels_code_unique (code)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

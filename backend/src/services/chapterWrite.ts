@@ -1,3 +1,4 @@
+import { refreshNovelUpdateDates } from "./novelUpdateDates.js";
 import type { Db } from "../db/client.js";
 import type { FileCache } from "../cache/fileCache.js";
 import type { LaravelChapterCache } from "../cache/laravelChapterCache.js";
@@ -178,6 +179,7 @@ export class ChapterWriteService {
   }
 
   private async invalidate(idNovel: number, _no: number): Promise<void> {
+    await refreshNovelUpdateDates(this.deps.db, idNovel);
     await this.deps.cache.invalidateNovel(idNovel);
     await this.deps.chapterHtml.invalidateNovel(idNovel);
   }

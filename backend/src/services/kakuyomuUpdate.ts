@@ -18,6 +18,7 @@ import {
 import { SyosetuClient, type SyosetuEpisode, type SyosetuIndex } from "../drivers/syosetu.js";
 import { matchSyosetuChapters as matchSyosetuChaptersPure } from "./syosetuMatch.js";
 import { phpJsonEncode } from "../json/phpJson.js";
+import { refreshNovelUpdateDates } from "./novelUpdateDates.js";
 import { KakuyomuJobConflictError, KakuyomuJobStore, type KakuyomuJob } from "./kakuyomuJob.js";
 
 export class DriverNotSupportedError extends Error {
@@ -95,6 +96,7 @@ export class KakuyomuUpdateService {
       });
     }
     await job.finished;
+    await refreshNovelUpdateDates(this.deps.db, idNovel);
     await this.invalidateNovelCaches(idNovel);
     return this.deps.catalog.getNovelJson(idNovel);
   }
@@ -112,6 +114,8 @@ export class KakuyomuUpdateService {
       });
     }
     await job.finished;
+    await refreshNovelUpdateDates(this.deps.db, idNovel);
+    await this.invalidateNovelCaches(idNovel);
     return this.deps.chapterList.getChapterJson(idNovel, no);
   }
 
